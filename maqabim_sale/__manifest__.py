@@ -15,7 +15,8 @@ Maqabim Distributors: Invoice customizations
     'depends': ['sale_management'],
     'data': [
         'views/account_invoice_views.xml',
-        'views/report_invoice.xml'
+        'views/report_invoice.xml',
+        'views/portal_templates.xml'
     ],
     'license': 'OEEL-1',
 }
