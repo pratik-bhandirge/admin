@@ -16,6 +16,7 @@ This module will, block website shop page for non-portal users
     'version': '1',
     'depends': ['website_sale'],
     'data': [
+        'views/templates.xml'
     ],
     'demo': [
     ],
