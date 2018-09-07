@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+ 
+    <!--Display default code on Main Product List-->
+    <t t-extend="Product">
+        <t t-jquery="div.product-name" t-operation="prepend">
+             <t t-if="product.default_code">[<t t-esc="product.default_code"/>]</t>
+        </t>
+    </t>
+
+    <!--Display default code on Cart line-->
+    <t t-extend="Orderline">
+        <t t-jquery="span.product-name" t-operation="prepend">
+             <t t-if="line.get_product().default_code">[<t t-esc="line.get_product().default_code"/>]</t>
+        </t>
+    </t>
+
+    <!--Display default code on receipt-->
+    <t t-extend="PosTicket">
+        <t t-jquery="tr[t-foreach*='orderlines'][t-as*='orderline'] td:first" t-operation="prepend">
+            <t t-if="orderline.get_product().default_code">[<t t-esc="orderline.get_product().default_code"/>]</t>
+        </t>
+    </t>
+
+    <!--Hide  TAX Action button-->
+    <t t-extend="SetFiscalPositionButton">
+        <t t-jquery="div" t-operation="replace">
+            <span/>
+        </t>
+    </t>
+
+</templates>
