@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 	<template id="report_invoice_document_inherit_maqabim_sale" inherit_id="account.report_invoice_document">
-	    <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[2]" position="before">
-			<th class="text-right">Ordered Quantity</th>
+	    <xpath expr="//table[@name='invoice_line_table']/thead/tr" position="replace">
+			<tr>
+                <th>Description</th>
+                <th class="hidden">Source Document</th>
+                <th class="text-right">Ordered Quantity</th>
+                <th class="text-right">Invoiced Quantity</th>
+                <th class="text-right">Unit Price</th>
+                <th t-if="display_discount" class="text-right">Disc.(%)</th>
+                <th class="text-right">Taxes</th>
+                <th class="text-right">Amount</th>
+            </tr>
 		</xpath>
 		<xpath expr="//span[@t-field='l.quantity']/.." position="before">
 			<td class="text-right">
