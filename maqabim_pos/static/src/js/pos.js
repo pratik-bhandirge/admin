@@ -15,54 +15,89 @@ var _super_order = models.Order.prototype;
 
 models.Order = models.Order.extend({
 
-    export_for_printing: function(){
+    export_for_printing: function() {
         var json = _super_order.export_for_printing.apply(this, arguments);
         json.tax_details = this.get_tax_details_by_tax_group();
         return json;
     },
 
-    get_tax_details_by_tax_group: function(){
-        var details = {};
+    get_tax_details_by_tax_group: function() {
         var fulldetails = [];
-        var tax_by_group = {};
 
-        this.orderlines.each(function(line){
-            var ldetails = line.get_tax_details();
-            for(var id in ldetails){
-                if(ldetails.hasOwnProperty(id)){
-                    details[id] = (details[id] || 0) + ldetails[id];
+        this.orderlines.each(function(line) {
+            var ldetails = line.get_tax_details_by_group();
+            for (var id in ldetails) {
+                if (ldetails.hasOwnProperty(id)) {
+                    var details = _.findWhere(fulldetails, {
+                        id: id
+                    });
+                    if (details) {
+                        details['amount'] += ldetails[id]['amount'];
+                    } else {
+                        fulldetails.push({
+                            amount: ldetails[id]['amount'],
+                            name: ldetails[id]['name'],
+                            id: id,
+                        });
+                    }
                 }
             }
         });
-
-        for (var id in details) {
-            if(details.hasOwnProperty(id)) {
-                var tax_group_id = this.pos.taxes_by_id[id].tax_group_id[0];
-                var tax_group_name = this.pos.taxes_by_id[id].tax_group_id[1];
-                if (tax_by_group.hasOwnProperty(tax_group_id)) {
-                    tax_by_group[tax_group_id]['amount'] += details[id];
-                } else {
-                    tax_by_group[tax_group_id] = {
-                        id: tax_group_id,
-                        name: tax_group_name,
-                        amount: details[id]
-                    };
-                }
-            }
-        }
-
-        for(var id in tax_by_group){
-            if(tax_by_group.hasOwnProperty(id)){
-                fulldetails.push({amount: tax_by_group[id]['amount'], name: tax_by_group[id]['name']});
-            }
-        }
-        return fulldetails;
+        return _.sortBy(fulldetails, 'amount');
     },
 });
-
 var _super_orderline = models.Orderline.prototype;
 
 models.Orderline = models.Orderline.extend({
+    get_tax_details_by_group: function(){
+        return this.get_all_prices().taxByGroup;
+    },
+    get_all_prices: function() {
+        /*
+            complete override to group the taxes by tax group
+            changes are marked with CUSTOM
+        */
+        var price_unit = this.get_unit_price() * (1.0 - (this.get_discount() / 100.0));
+        var taxtotal = 0;
+
+        var product =  this.get_product();
+        var taxes_ids = product.taxes_id;
+        var taxes =  this.pos.taxes;
+        var taxdetail = {};
+        var product_taxes = [];
+
+        _(taxes_ids).each(function(el){
+            product_taxes.push(_.detect(taxes, function(t){
+                return t.id === el;
+            }));
+        });
+
+        var all_taxes = this.compute_all(product_taxes, price_unit, this.get_quantity(), this.pos.currency.rounding);
+        _(all_taxes.taxes).each(function(tax) {
+            taxtotal += tax.amount;
+            taxdetail[tax.id] = tax.amount;
+        });
+
+        //CUSTOM
+        var tax_by_group = {};
+        _.each(product_taxes, function(pt) {
+            var group_id = pt.tax_group_id[0];
+            tax_by_group[group_id] = {amount: 0, name: pt.tax_group_id[1]};
+            _.each(all_taxes.taxes, function(tx) {
+                if(tx.id == pt.id || _.contains(_.pluck(pt.children_tax_ids, 'id'), tx.id)) {
+                    tax_by_group[group_id]['amount'] += tx.amount;
+                }
+            });
+        });
+
+        return {
+            "priceWithTax": all_taxes.total_included,
+            "priceWithoutTax": all_taxes.total_excluded,
+            "tax": taxtotal,
+            "taxDetails": taxdetail,
+            "taxByGroup": tax_by_group, //custom
+        };
+    },
     generate_wrapped_product_name: function() {
         /*
             complete override to append the internal reference on xml receipt, a receipt that print via posbox
