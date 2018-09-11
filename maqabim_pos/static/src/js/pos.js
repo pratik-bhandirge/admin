@@ -36,13 +36,14 @@ models.Order = models.Order.extend({
                     } else {
                         fulldetails.push({
                             amount: ldetails[id]['amount'],
-                            name: ldetails[id]['name']
+                            name: ldetails[id]['name'],
+                            id: id,
                         });
                     }
                 }
             }
         });
-        return fulldetails;
+        return _.sortBy(fulldetails, 'amount');
     },
 });
 var _super_orderline = models.Orderline.prototype;
