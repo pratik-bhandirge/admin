@@ -57,6 +57,7 @@ models.Orderline = models.Orderline.extend({
             complete override to group the taxes by tax group
             changes are marked with CUSTOM
         */
+        var self = this;
         var price_unit = this.get_unit_price() * (1.0 - (this.get_discount() / 100.0));
         var taxtotal = 0;
 
@@ -81,6 +82,7 @@ models.Orderline = models.Orderline.extend({
         //CUSTOM
         var tax_by_group = {};
         _.each(product_taxes, function(pt) {
+            var pt = self._map_tax_fiscal_position(pt) || pt;
             var group_id = pt.tax_group_id[0];
             tax_by_group[group_id] = {amount: 0, name: pt.tax_group_id[1]};
             _.each(all_taxes.taxes, function(tx) {
