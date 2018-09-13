@@ -2,7 +2,7 @@
 <odoo>
 
     <template id="report_simple_label">
-        <div class="col-xs-3" style="padding:0;">
+        <div class="col-xs-3" style="padding:0;margin-top:2px;">
             <table style="border-spacing:0;margin-bottom:0;width: 1.73in; height:0.49in;font-size:9px;line-height:initial;margin-left:2px;">
                 <tbody>
                     <tr>
