@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<record id="purchase_order_form_inherit_maqabim_extended_security" model="ir.ui.view">
+	    <field name="name">purchase.order.form.inherit.maqabim_extended_security</field>
+	    <field name="model">purchase.order</field>
+	    <field name="inherit_id" ref="purchase.purchase_order_form"/>
+	    <field name="arch" type="xml">
+			<xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//field[@name='order_line']/tree//field[@name='price_subtotal']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//button[@id='draft_confirm']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//button[@id='bid_confirm']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//button[@name='print_quotation'][@states='draft']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//button[@name='print_quotation'][@states='sent']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//notebook//group[hasclass('oe_subtotal_footer')]" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+		    <xpath expr="//field[@name='message_follower_ids']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//field[@name='activity_ids']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+			<xpath expr="//field[@name='message_ids']" position="attributes">
+			    <attribute name="groups">purchase.group_purchase_user,purchase.group_purchase_manager</attribute>
+			</xpath>
+	    </field>
+	</record>
+    <data noupdate="1">
+	    <record id="purchase.action_report_purchase_order" model="ir.actions.report">
+	        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
+	    </record>
+	    <record id="purchase.report_purchase_quotation" model="ir.actions.report">
+	        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
+	    </record>
+	</data>
+</odoo>
