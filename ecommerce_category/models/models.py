@@ -6,4 +6,4 @@ class ProductPublicCategory(models.Model):
     _inherit='product.public.category'
 
     website_id = fields.Many2one('website', string='Website')
-    child_website_id = fields.Many2one(related='parent_id.website_id', string='Website')
+    parent_website_id = fields.Many2one(related='parent_id.website_id', string='Website')

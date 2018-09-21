@@ -8,7 +8,7 @@
       <field name="arch" type="xml">
         <xpath expr="//group/field[last()]" position="after">
           <field name="website_id" attrs="{'invisible':[('parent_id','!=',False)]}"/>
-          <field name="child_website_id" readonly="1" attrs="{'invisible':[('parent_id','=',False)]}"/>
+          <field name="parent_website_id" readonly="1" attrs="{'invisible':[('parent_id','=',False)]}"/>
         </xpath>
       </field>
     </record>
