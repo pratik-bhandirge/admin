@@ -28,6 +28,14 @@ class WebsiteSale(WebsiteSale):
         '/shop/category/<model("product.public.category"):category>/page/<int:page>'
     ], type='http', auth="public", website=True)
     def shop(self, page=0, category=None, search='', ppg=False, **post):
+        # we strictly assume that, they are using group_public as a website user
+        # Merged Code from : /maqabim_website_sale/controllers/main.py
+        if request.env.user.id == request.website.user_id.id:
+            url = '/web/login?redirect=/shop'
+            if request.env['ir.config_parameter'].sudo().get_param('auth_signup.allow_uninvited') == 'True':
+                url = '/web/signup?redirect=/shop'
+            return request.redirect(url)
+
         if ppg:
             try:
                 ppg = int(ppg)
