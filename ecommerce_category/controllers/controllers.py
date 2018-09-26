@@ -21,6 +21,15 @@ PPR = 4   # Products Per Row
 
 class WebsiteSale(WebsiteSale):
 
+
+    @http.route(['/shop/product/<model("product.template"):product>'], type='http', auth="public", website=True)
+    def product(self, product, category='', search='', **kwargs):
+        current_website = request.env['website'].get_current_website()
+        if current_website.website_shop_login and (request.env.user._is_public() or request.env.user.id == request.website.user_id.id):
+            return request.redirect('/web/login?redirect=%s'%(request.httprequest.url))
+        return super(WebsiteSale, self).product(product, category=category, search=search, **kwargs)
+
+
     @http.route([
         '/shop',
         '/shop/page/<int:page>',
@@ -28,13 +37,12 @@ class WebsiteSale(WebsiteSale):
         '/shop/category/<model("product.public.category"):category>/page/<int:page>'
     ], type='http', auth="public", website=True)
     def shop(self, page=0, category=None, search='', ppg=False, **post):
-        # we strictly assume that, they are using group_public as a website user
-        # Merged Code from : /maqabim_website_sale/controllers/main.py
-        if request.env.user.id == request.website.user_id.id:
-            url = '/web/login?redirect=/shop'
-            if request.env['ir.config_parameter'].sudo().get_param('auth_signup.allow_uninvited') == 'True':
-                url = '/web/signup?redirect=/shop'
-            return request.redirect(url)
+        current_website = request.env['website'].get_current_website()
+        if current_website.website_shop_login and (request.env.user._is_public() or request.env.user.id == request.website.user_id.id):
+            # redirct uset to /web/login always
+            # if request.env['ir.config_parameter'].sudo().get_param('auth_signup.allow_uninvited') == 'True':
+            #     url = '/web/signup?redirect=/shop'
+            return request.redirect('/web/login?redirect=/shop')
 
         if ppg:
             try:

@@ -16,10 +16,13 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['website_sale'],
+    'depends': ['website_sale', 'website_multi'],
 
     # always loaded
     'data': [
+        'views/res_config_settings_views.xml',
         'views/views.xml',
+        'views/templates.xml',
+        'views/website_views.xml'
     ],
 }
