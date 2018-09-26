@@ -21,14 +21,16 @@ PPR = 4   # Products Per Row
 
 class WebsiteSale(WebsiteSale):
 
-
     @http.route(['/shop/product/<model("product.template"):product>'], type='http', auth="public", website=True)
     def product(self, product, category='', search='', **kwargs):
         current_website = request.env['website'].get_current_website()
         if current_website.website_shop_login and (request.env.user._is_public() or request.env.user.id == request.website.user_id.id):
-            return request.redirect('/web/login?redirect=%s'%(request.httprequest.url))
+            redirect_url = '/web/login?redirect=%s'%(request.httprequest.url)
+            # redirct user to /web/signup if b2c signup is enable
+            if current_website.website_auth_signup_uninvited == 'b2c':
+                redirect_url = '/web/signup?redirect=%s'%(request.httprequest.url)
+            return request.redirect(redirect_url)
         return super(WebsiteSale, self).product(product, category=category, search=search, **kwargs)
-
 
     @http.route([
         '/shop',
@@ -39,10 +41,11 @@ class WebsiteSale(WebsiteSale):
     def shop(self, page=0, category=None, search='', ppg=False, **post):
         current_website = request.env['website'].get_current_website()
         if current_website.website_shop_login and (request.env.user._is_public() or request.env.user.id == request.website.user_id.id):
-            # redirct uset to /web/login always
-            # if request.env['ir.config_parameter'].sudo().get_param('auth_signup.allow_uninvited') == 'True':
-            #     url = '/web/signup?redirect=/shop'
-            return request.redirect('/web/login?redirect=/shop')
+            redirect_url = '/web/login?redirect=/shop'
+            # redirct user to /web/signup if b2c signup is enable
+            if current_website.website_auth_signup_uninvited == 'b2c':
+                redirect_url = '/web/signup?redirect=/shop'
+            return request.redirect(redirect_url)
 
         if ppg:
             try:
