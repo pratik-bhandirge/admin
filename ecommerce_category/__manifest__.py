@@ -13,13 +13,16 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.1',
+    'version': '1.2',
 
     # any module necessary for this one to work correctly
-    'depends': ['website_sale'],
+    'depends': ['website_sale', 'website_multi'],
 
     # always loaded
     'data': [
+        'views/res_config_settings_views.xml',
         'views/views.xml',
+        'views/templates.xml',
+        'views/website_views.xml'
     ],
 }
