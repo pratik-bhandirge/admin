@@ -12,4 +12,5 @@ _logger = logging.getLogger(__name__)
 class Website(models.Model):
     _inherit = 'website'
 
-    website_shop_login = fields.Boolean(string='Requires Login to Shop')
+    website_shop_login = fields.Boolean(string='Requires registration to shop')
+    website_shop_login_redirect = fields.Char(string='Registration URL')

@@ -9,12 +9,21 @@
                 <data>
 
                     <xpath expr="//div[@id='cdn_setting']" position="after">
-                        <div class="col-xs-12 col-md-6 o_setting_box" id="force_shop_login" title="Force public users to sign-in to shop.">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="force_shop_login" title="Requires registration to shop.">
                             <div class="o_setting_left_pane">
                                 <field name="website_shop_login" />
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="website_shop_login" string="Force public users to sign-in to shop." />
+                                <label for="website_shop_login" string="Requires registration to shop."/>
+                                <div class="text-muted">
+                                    Redircts user to the below configure registration page to approve them to shop
+                                </div>
+                                <div class="content-group" attrs="{'invisible': [('website_shop_login', '=', False)]}">
+                                    <div class="row mt16">
+                                        <label class="col-md-3 o_light_label" for="website_shop_login_redirect"/>
+                                        <field name="website_shop_login_redirect" attrs="{'required': [('website_shop_login', '=', True)]}" placeholder="/registration" t-translation="off"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </xpath>
