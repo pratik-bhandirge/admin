@@ -10,6 +10,8 @@
         <xpath expr="//h1[@itemprop='name']" position="attributes">
             <attribute name="t-field">product.display_name</attribute>
         </xpath>
+        <xpath expr="//div[@id='product_details']/p[last()]" position="replace">
+        </xpath>
     </template>
     <template id="cart_lines_maqabim" inherit_id="website_sale.cart_lines">
         <xpath expr="//td[@class='td-product_name']" position="replace">
@@ -93,4 +95,27 @@
             </div>
         </xpath>
     </template>
+
+
+    <!-- eCom/Email debranding view based on insalled app -->
+    <template id="maq_debrand_layout_footer_copyright" inherit_id="website.layout_footer_copyright" name="Footer Debranding" priority="64">
+        <xpath expr="//div[@t-ignore='true']" position="replace">
+        </xpath>
+    </template>
+
+    <template id="maq_debrand_support_page" inherit_id="im_livechat.support_page" name="Livechat : Support Page Debranding" priority="64">
+        <xpath expr="//div[contains(@class, 'main')]/div[1]" position="replace">
+        </xpath>
+    </template>
+
+    <template id="maq_debrand_message_user_assigned" inherit_id="mail.message_user_assigned" name="message_user_assigned Debranding" priority="64">
+        <xpath expr="//p[4]" position="replace">
+        </xpath>
+    </template>
+
+    <template id="maq_debrand_menu_secondary" inherit_id="web.menu_secondary" name="menu_secondary Debranding" priority="64">
+        <xpath expr="//div[contains(@class, 'o_sub_menu_footer')]" position="replace">
+        </xpath>
+    </template>
+
 </odoo>

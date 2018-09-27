@@ -9,20 +9,24 @@
     'author': "Odoo",
     'website': "http://www.odoo.com",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
+    'category': 'Odoo Customied App',
+    'version': '1.2',
 
-    # any module necessary for this one to work correctly
-    'depends': ['website_sale', 'website_multi'],
-
-    # always loaded
+    'depends': [
+        'website_sale',
+        'website_multi',
+        'im_livechat'
+    ],
     'data': [
         'views/res_config_settings_views.xml',
         'views/views.xml',
         'views/templates.xml',
-        'views/website_views.xml'
+        'views/website_views.xml',
+        # emali debranding files
+        'data/sale_mail_template_data.xml',
+        'data/account_mail_template_data.xml',
+        'data/purchase_mail_template_data.xml',
+        #Delivery is not enable in prod 
+        #'data/delivery_mail_template_data.xml'
     ],
 }
