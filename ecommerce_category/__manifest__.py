@@ -22,6 +22,7 @@
         'views/views.xml',
         'views/templates.xml',
         'views/website_views.xml',
+        'views/hide_pricing_template.xml',
         # emali debranding files
         'data/sale_mail_template_data.xml',
         'data/account_mail_template_data.xml',

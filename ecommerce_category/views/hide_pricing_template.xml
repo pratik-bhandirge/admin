@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="products_item_maqabim_hp" inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('product_price')]" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+    </template>
+
+    <template id="product_price_maqabim_hp" inherit_id="website_sale.product_price">
+        <xpath expr="//div[hasclass('product_price')]" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+    </template>
+
+    <template id="modal_maqabim_hp" inherit_id="website_sale_options.modal">
+        <xpath expr="//td[@name='price']" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+        <xpath expr="//th[hasclass('td-price')]" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+    </template>
+
+    <template id="cart_lines_maqabim_hp" inherit_id="website_sale.cart_lines">
+        <xpath expr="//td[@name='price']" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+        <xpath expr="//th[hasclass('td-price')]" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+    </template>
+
+    <template id="total_maqabim_hp" inherit_id="website_sale.total">
+        <xpath expr="//div[@id='cart_total']" position="attributes">
+            <attribute name="groups">!stock.group_stock_user</attribute>
+        </xpath>
+    </template>
+</odoo>
