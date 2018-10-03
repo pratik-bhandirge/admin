@@ -5,72 +5,78 @@
 @border_color_1: black;
 @border_bottom_color_1: black;
 
+html[data-website-id="1"] {
+    * {
+        div#footer {
+            background-color: @background_color_1 !important;
+        }
+    }
+}
 div#footer {
-	background-color: @background_color_1 !important;
-	* {
-		color: @color_1 !important;
-	}
+    * {
+        color: @color_1 !important;
+    }
 }
 li#my_cart {
-	* {
-		color: @color_1 !important;
-	}
+    * {
+        color: @color_1 !important;
+    }
 }
 div.dropdown_sorty_by {
-	* {
-		color: @color_1 !important;
-	}
+    * {
+        color: @color_1 !important;
+    }
 }
 ul#top_menu {
-	* {
-		color: @color_1 !important;
-	}
+    * {
+        color: @color_1 !important;
+    }
 }
 button.oe_search_button {
-	* {
-		color: @color_1 !important;
-	}
+    * {
+        color: @color_1 !important;
+    }
 }
 a {
-	>span.fa-shopping-cart {
-		color: @color_1 !important;
-	}
+    >span.fa-shopping-cart {
+        color: @color_1 !important;
+    }
 }
 div#products_grid_before {
-	>ul {
-		>li.active {
-			>a {
-				background-color: @background_color_2 !important;
-				color: @color_2 !important;
-			}
-		}
-	}
+    >ul {
+        >li.active {
+            >a {
+                background-color: @background_color_2 !important;
+                color: @color_2 !important;
+            }
+        }
+    }
 }
 #products_grid {
-	.pagination {
-		>.active {
-			>a {
-				border-bottom-color: @border_bottom_color_1 !important;
-				color: @color_1 !important;
-			}
-		}
-	}
+    .pagination {
+        >.active {
+            >a {
+                border-bottom-color: @border_bottom_color_1 !important;
+                color: @color_1 !important;
+            }
+        }
+    }
 }
 #products_grid_before {
-	background-color: @background_color_1 !important;
-	color: @color_1 !important;
-	* {
-		background-color: @background_color_1 !important;
-		color: @color_1 !important;
-	}
+    background-color: @background_color_1 !important;
+    color: @color_1 !important;
+    * {
+        background-color: @background_color_1 !important;
+        color: @color_1 !important;
+    }
 }
 .input-group {
-	border-bottom-color: @border_bottom_color_1 !important;
+    border-bottom-color: @border_bottom_color_1 !important;
 }
 &::placeholder {
-	color: @color_1 !important;
+    color: @color_1 !important;
 }
 .btn-primary {
-	border-color: @border_color_1 !important;
-	color: @color_1 !important;
+    border-color: @border_color_1 !important;
+    color: @color_1 !important;
 }

@@ -120,11 +120,9 @@
 
     <!-- Maqabim Style edits (website 1 only), mainly color changes to black -->
     <template id="x_maq_style_edits" inherit_id="web.assets_backend">
-            <xpath expr="." position="inside">
-                <t t-if="website_id == 1">
-                    <link rel="stylesheet" href="/ecommerce_category/static/src/less/style.less"/>
-                </t>
-            </xpath>
-        </template>
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/ecommerce_category/static/src/less/style.less"/>
+        </xpath>
+    </template>
 
 </odoo>
