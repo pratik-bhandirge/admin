@@ -119,7 +119,7 @@
     </template>
 
     <!-- Maqabim Style edits (website 1 only), mainly color changes to black -->
-    <template id="x_maq_style_edits" inherit_id="web.assets_backend">
+    <template id="x_maq_style_edits" inherit_id="web.assets_common">
         <xpath expr="." position="inside">
             <link rel="stylesheet" href="/ecommerce_category/static/src/less/style.less"/>
         </xpath>
