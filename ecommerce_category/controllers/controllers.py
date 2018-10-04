@@ -13,11 +13,13 @@ from odoo.addons.website.controllers.main import Website
 from odoo.addons.website_form.controllers.main import WebsiteForm
 from odoo.osv import expression
 from odoo.addons.website_sale.controllers.main import WebsiteSale, TableCompute
+from odoo.addons.website_sale.controllers import main
+
 
 _logger = logging.getLogger(__name__)
 
-PPG = 20  # Products Per Page
-PPR = 4   # Products Per Row
+PPG = main.PPG  # Products Per Page
+PPR = main.PPR   # Products Per Row
 
 class WebsiteSale(WebsiteSale):
 
