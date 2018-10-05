@@ -15,7 +15,9 @@
     'depends': [
         'website_sale',
         'website_multi',
-        'im_livechat'
+        'im_livechat',
+        'sale_management',
+        'portal',
     ],
     'data': [
         'security/security.xml',
