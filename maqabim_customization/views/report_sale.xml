@@ -15,7 +15,7 @@
                 <th class="text-right price_tax_included" groups="sale.group_show_price_total">Total Price</th>
             </tr>
         </xpath>
-        <xpath expr="//span[@t-field='l.product_uom_qty']/.." position="before">
+        <xpath expr="//span[@t-field='l.product_uom_qty']/.." position="after">
             <td class="text-right">
                 <span t-field="l.qty_delivered"/>
                 <span t-field="l.qty_delivered" groups="product.group_uom"/>
