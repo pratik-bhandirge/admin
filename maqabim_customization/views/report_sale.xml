@@ -18,11 +18,11 @@
         <xpath expr="//span[@t-field='l.product_uom_qty']/.." position="after">
             <td class="text-right">
                 <span t-field="l.qty_delivered"/>
-                <span t-field="l.qty_delivered" groups="product.group_uom"/>
+                <span t-field="l.product_uom" groups="product.group_uom"/>
             </td>
             <td class="text-right">
                 <span t-field="l.qty_invoiced"/>
-                <span t-field="l.qty_invoiced" groups="product.group_uom"/>
+                <span t-field="l.product_uom" groups="product.group_uom"/>
             </td>
         </xpath>
     </template>
