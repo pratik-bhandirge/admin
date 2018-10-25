@@ -3,7 +3,7 @@
     <template id="products_quickview" inherit_id="website_sale.products_item" active="False" customize_show="True" name="Quick View">
         <xpath expr="//div[hasclass('product_price')]" position="inside">
             <a class="btn btn-default btn-xs btn-quickview" t-att-data-product_id="product.id">
-                <span class="fa fa-eye" />
+                <span style="color: #333 !important" class="fa fa-eye" />
             </a>
         </xpath>
     </template>
@@ -92,12 +92,6 @@
                                         <div class="o_not_editable">
                                             <p t-field="product.description_sale" class="text-muted" />
                                         </div>
-                                        <hr />
-                                        <p class="text-muted">
-                                          30-day money-back guarantee<br />
-                                          Free Shipping in U.S.<br />
-                                          Buy now, get in 2 days
-                                        </p>
                                     </div>
                                 </div>
                             </section>
