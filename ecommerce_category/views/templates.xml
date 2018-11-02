@@ -118,11 +118,19 @@
         </xpath>
     </template>
 
-    <!-- Maqabim Style edits (website 1 only), mainly color changes to black -->
+    <template id="website_sale_search_inherit_maqabim_website_sale" inherit_id="website_sale.search">
+        <xpath expr="//form" position="attributes">
+            <attribute name="t-att-action">keep('/shop'+ ('/category/'+slug(category)) if (category and not website.search_all_products) else None, search=0)</attribute>
+            <attribute name="t-att-data-search-all">request.website.search_all_products</attribute>
+        </xpath>
+    </template>
+
     <template id="x_maq_style_edits" inherit_id="web.assets_frontend">
         <xpath expr="." position="inside">
             <link rel="stylesheet" type="text/less" href="/ecommerce_category/static/src/less/style.less"/>
         </xpath>
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/ecommerce_category/static/src/js/website_sale_search.js"></script>
+        </xpath>
     </template>
-
 </odoo>

@@ -14,3 +14,4 @@ class Website(models.Model):
 
     website_shop_login = fields.Boolean(string='Requires registration to shop')
     website_shop_login_redirect = fields.Char(string='Registration URL')
+    search_all_products = fields.Boolean("Search All Products", help="Search all products regardless of the category on which currently you are.")
