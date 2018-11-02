@@ -16,6 +16,7 @@ from odoo.addons.website_sale.controllers.main import WebsiteSale, TableCompute
 
 _logger = logging.getLogger(__name__)
 
+
 PPG = 28  # Products Per Page
 PPR = 4   # Products Per Row
 

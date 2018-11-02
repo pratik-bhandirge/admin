@@ -15,7 +15,9 @@
     'depends': [
         'website_sale',
         'website_multi',
-        'im_livechat'
+        'im_livechat',
+        'sale_management',
+        'portal',
     ],
     'data': [
         'security/security.xml',
@@ -24,7 +26,9 @@
         'views/templates.xml',
         'views/website_views.xml',
         'views/hide_pricing_template.xml',
-        # emali debranding files
+
+        'report/report_sale.xml',
+        # email debranding files
         'data/sale_mail_template_data.xml',
         'data/account_mail_template_data.xml',
         'data/purchase_mail_template_data.xml',
