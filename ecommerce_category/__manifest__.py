@@ -10,7 +10,7 @@
     'website': "http://www.odoo.com",
 
     'category': 'Odoo Customied App',
-    'version': '1.2',
+    'version': '1.3',
 
     'depends': [
         'website_sale',
