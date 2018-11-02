@@ -1,4 +1,4 @@
-odoo.define('maqabim_website_sale.stick_menu', function (require) {
+odoo.define('ecommerce_category.stick_menu', function (require) {
 'use strict';
 
     $(document).ready(function() {
