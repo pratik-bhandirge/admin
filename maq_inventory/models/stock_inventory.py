@@ -37,8 +37,11 @@ class Inventory(models.Model):
         quant_products = self.env['product.product']
         locations = self.env['stock.location'].search(
             [('id', 'child_of', [self.location_id.id])])
-        args = (tuple(locations.ids),)
-        domain = "location_id in %s " % args
+
+        if len(locations.ids) == 1:
+            domain = "location_id = %s " % locations.ids[0]
+        else:
+            domain = "location_id in %s " % (tuple(locations.ids),)
 
         product_supplierinfo_obj = self.env['product.supplierinfo']
         if self.filter in ('suppliers'):
