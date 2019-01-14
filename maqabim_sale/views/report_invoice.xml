@@ -6,6 +6,7 @@
                 <th>Description</th>
                 <th class="hidden">Source Document</th>
                 <th class="text-right">Ordered Quantity</th>
+                <th class="text-right">Back Order Quantity</th>
                 <th class="text-right">Invoiced Quantity</th>
                 <th class="text-right">Unit Price</th>
                 <th t-if="display_discount" class="text-right">Disc.(%)</th>
@@ -26,3 +27,4 @@
 		</xpath> 
 	</template>
 </odoo>
+
