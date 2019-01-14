@@ -7,6 +7,7 @@
 	    <field name="arch" type="xml">
 	    	<xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='quantity']" position="before">
 	    		<field name="ordered_qty"/>
+                <field name="back_order_qty"/>
 	    	</xpath>
 	    	<xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='quantity']" position="attributes">
 	    		<attribute name="string">Invoiced Quantity</attribute>
@@ -24,7 +25,13 @@
 	    			<field name="ordered_qty" class="oe_inline"/>
                     <field name="uom_id" class="oe_inline" groups="product.group_uom"/>
 	    		</div>
+                <label for="back_order_qty"/>
+                <div>
+                    <field name="back_order_qty" class="oe_inline"/>
+                    <field name="uom_id" class="oe_inline" groups="product.group_uom"/>
+                </div>
 	    	</xpath>
 	    </field>
 	</record>
 </odoo>
+

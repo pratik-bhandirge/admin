@@ -16,6 +16,7 @@
 		<xpath expr="//tr[@t-foreach='invoice.invoice_line_ids']//span[@t-field='l.quantity']/.." position="before">
 			<td class="text-right">
                 <span t-field="l.ordered_qty"/>
+                <span t-field="l.back_order_qty"/>
                 <span t-field="l.uom_id"  groups="product.group_uom"/>
             </td>
 		</xpath>
