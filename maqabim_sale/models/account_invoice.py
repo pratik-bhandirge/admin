@@ -26,5 +26,5 @@ class AccountInvoiceLine(models.Model):
             if invoice_line.quantity:
                 invoice_line.back_order_qty = invoice_line.ordered_qty - invoice_line.quantity
             else:
-                invoice_line.back_order_qty = 0
+                invoice_line.back_order_qty = invoice_line.ordered_qty
 
