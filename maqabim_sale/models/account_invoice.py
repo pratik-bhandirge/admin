@@ -23,7 +23,7 @@ class AccountInvoiceLine(models.Model):
         Back order Quantity = Order Quantity - Invoice Quantity
         """
         for invoice_line in self.filtered(lambda l: l.sale_line_ids):
-            if invoice_line.quantity > 0:
+            if invoice_line.quantity:
                 invoice_line.back_order_qty = invoice_line.ordered_qty - invoice_line.quantity
             else:
                 invoice_line.back_order_qty = 0
