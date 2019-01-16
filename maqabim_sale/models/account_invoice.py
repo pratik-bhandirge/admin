@@ -7,7 +7,7 @@ class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
     ordered_qty = fields.Float(string="Ordered Qty", compute="_compute_ordered_qty", digits=dp.get_precision('Product Unit of Measure'))
-    back_order_qty = fields.Float(string="Back Ordered Qty", compute="_compute_back_ordered_qty",
+    back_order_qty = fields.Float(string="Backorder Qty", compute="_compute_backorder_qty",
                                 digits=dp.get_precision('Product Unit of Measure'))
 
     @api.multi
@@ -18,7 +18,7 @@ class AccountInvoiceLine(models.Model):
 
     @api.multi
     @api.depends('ordered_qty','quantity')
-    def _compute_back_ordered_qty(self):
+    def _compute_backorder_qty(self):
         """
         Back order Quantity = Order Quantity - Invoice Quantity
         """

@@ -10,7 +10,7 @@
                 <field name="back_order_qty"/>
 	    	</xpath>
 	    	<xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='quantity']" position="attributes">
-	    		<attribute name="string">Invoiced Quantity</attribute>
+	    		<attribute name="string">Invoiced Qty</attribute>
 	    	</xpath>
 	    </field>
 	</record>
