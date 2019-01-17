@@ -14,8 +14,6 @@ class WebsiteSaleExt(WebsiteSale):
         """
         res = super(WebsiteSaleExt, self).get_attribute_value_ids(product)
         product_variant = request.env['product.product'].sudo()
-        for rec in res:
-            product_variant_id = product_variant.browse(rec[0])
-            if product_variant_id.is_website_publish == False:
-                res.remove(rec)
+        res = [rec for rec in res if product_variant.browse(
+            rec[0]).is_website_publish]
         return res
