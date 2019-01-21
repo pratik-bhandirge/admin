@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" name="website_sale_expand assets"
+              inherit_id="website_sale_options.assets_frontend">
+        <xpath expr="//script[contains(@src,'/website_sale_options/static/src/js/website_sale.js')]" position="replace">
+            <script type="text/javascript"
+                    src="/bista_website_sale_options/static/src/js/website_sale.js"/>
+        </xpath>
+    </template>
+</odoo>
+
