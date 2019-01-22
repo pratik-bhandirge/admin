@@ -1,0 +1,26 @@
+
+.maq_image_overlay {
+  position: absolute; 
+  bottom: 0; 
+  background: rgba(0, 0, 0, 0.5); /* Black see-through */
+  width: 100%;
+  transition: .5s ease;
+  opacity:0;
+  color: white;
+  font-size: 20px;
+  padding: 20px;
+  text-align: center;
+  display: none;
+}
+
+.oe_product div.oe_product_cart:hover{
+    height:100%;
+    box-shadow: 0 5px 15px 2px #000000bf;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.oe_product div.oe_product_cart:hover div.oe_product_image .maq_image_overlay{
+    opacity:1;
+    display: block;
+    position: relative;
+}
