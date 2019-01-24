@@ -21,7 +21,7 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                 },
             }).then(function (modal) {
                 var $modal = $(modal);
-                
+
                 setTimeout(function(){ $('.js_goto_shop').trigger('click'); }, 2000);
 
                 $modal.find('img:first').attr("src", "/web/image/product.product/" + product_id + "/image_medium");
@@ -100,3 +100,4 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
         return false;
     });
 });
+
