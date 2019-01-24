@@ -10,7 +10,9 @@
     "license": "AGPL-3",
     'summary': 'Hide sale options module within 5 second.',
     "depends": [
+        "website_sale",
         "website_sale_options",
+        "maq_prod_variant_unpublish",
     ],
     "data": [
         "views/website_sale_options.xml",
