@@ -38,7 +38,8 @@
                         <tr>
                             <td>
                                 <div>
-                                    <span t-field="product.image_medium" t-options='{"widget": "image" }' />
+                                    <span t-field="product.image_medium" 
+                                        t-options='{"widget": "image" }' />
                                 </div>
                             </td>
                             <td>&#160;</td>
@@ -112,13 +113,13 @@
                         t-field="product.image"
                         t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image'}"
                         t-att-alt="product.name" />
-                </a>
-                <div class='maq_middle'>
-                    <div class="maq_text">
-                        <span t-esc="product.website_price"
+                    <div class='maq_middle'>
+                        <div class="maq_text">
+                            <span t-esc="product.website_price"
                             t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </xpath>
         <xpath expr="//div[hasclass('product_price')]" position="before">
@@ -173,13 +174,13 @@
                 <t
                     t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)">
                     <a class="btn btn-default btn-xs a-submit">
-                        <span class="fa fa-shopping-cart" />
+                        <span>Add To Cart</span>
                     </a>
                 </t>
                 <t
                     t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish == False)">
                     <a class="btn btn-default btn-xs a-submit hidden">
-                        <span class="fa fa-shopping-cart" />
+                        <span>Add To Cart</span>
                     </a>
                 </t>
             </t>
@@ -190,19 +191,19 @@
                     t-value="product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)" />
                 <t t-if="len(filterd_product_ids) == 1">
                     <a class="btn btn-default btn-xs a-submit">
-                        <span class="fa fa-shopping-cart" />
+                        <span>Add To Cart</span>
                     </a>
                 </t>
                 <!-- (>1)>><t t-esc="filterd_product_ids"/> -->
                 <t t-if="len(filterd_product_ids) &gt; 1">
                     <a class="btn btn-default btn-xs"
                         t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
-                        <span class="fa fa-shopping-cart" />
+                        <span>Add To Cart</span>
                     </a>
                 </t>
                 <t t-if="len(filterd_product_ids) &lt; 1">
                     <a class="btn btn-default btn-xs a-submit hidden">
-                        <span class="fa fa-shopping-cart" />
+                        <span>Add To Cart</span>
                     </a>
                 </t>
             </t>
