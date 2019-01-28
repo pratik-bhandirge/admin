@@ -264,17 +264,16 @@ h5 {
     font-weight: bold;
 }
 
-#products_grid .oe_product {
-    float: left;
-    width: 100%;
-    display: inline-block;
-    min-height: 200px;
-    height: auto !important;
-  }
+.oe_product div.oe_product_cart:hover .product_grid_qty {
+    opacity: 0;
+}
 
-.oe_product .oe_product_cart {
-    position: relative;
-    width: 100%;
-    height: 180px;
+.oe_product div.oe_product_cart:hover .maq_middle {
+    opacity: 0;
+}
+
+.oe_product div.oe_product_cart:hover a {
+    opacity: 0.9;
+    font-size: 14px;
 }
 }
