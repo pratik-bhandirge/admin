@@ -22,14 +22,15 @@
 .oe_product div.oe_product_cart:hover a{
     opacity: 0.9;
 }
-
+/**
 .product_grid_qty{
     opacity:0;
 }
-
+**/
+/**
 .oe_product div.oe_product_cart:hover .product_grid_qty{
     opacity:1;
-}
+}**/
 
 .maq_hide_span {
     opacity:1;
@@ -149,14 +150,14 @@ h5{
     z-index: 11111111;
 
 }
-
+/**
 .oe_product .oe_product_cart {
 
     position: relative;
     width: 100%;
     height: 66%;
 
-}
+}**/
 
 .oe_website_sale .oe_product section .product_price .btn-default {
 
@@ -219,11 +220,30 @@ h5 {
     text-align: left;
     border-bottom: 1px solid #d9d9d9;
 }
-
+/**
 .oe_product .oe_product_cart {
     position: relative;
     width: 100%;
     height: 100%;
+}**/
+
+.product_grid_qty {
+    display: none;
+}
+.oe_product .oe_product_cart {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    height: auto;
+}
+
+.oe_product div.oe_product_cart:hover .product_grid_qty {
+    display: inline-table;
+}
+
+.oe_product_cart p{
+    font-size: 10px;
+    line-height: 10px;
 }
 
 @media (max-width: 768px)
