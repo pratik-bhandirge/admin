@@ -290,11 +290,11 @@ h5 {
 }
 
 .oe_product div.oe_product_cart:hover .product_grid_qty {
-    opacity: 0;
+    display: none;
 }
 
 .oe_product div.oe_product_cart:hover .maq_middle {
-    opacity: 0;
+    display:none;
 }
 
 .oe_product div.oe_product_cart:hover a {
@@ -318,3 +318,21 @@ h5 {
     min-height:115px;
   }
 }
+
+.oe_product .oe_product_cart {
+    position: relative;
+    width: 100%;
+}
+
+#products_grid .oe_product.oe_grid section {
+    background: rgba(100, 100, 100, 0.2);
+    z-index: 5;
+}
+
+@media (max-width: 400px)
+{
+  #products_grid .oe_product.oe_grid {
+    height: 380px;
+}
+}
+
