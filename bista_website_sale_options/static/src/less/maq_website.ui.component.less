@@ -235,6 +235,7 @@ h5 {
     width: 100%;
     min-height: 380px;
     height: auto;
+    min-width: 176px;
 }
 
 .oe_product div.oe_product_cart:hover .product_grid_qty {
@@ -266,7 +267,7 @@ h5 {
 .oe_website_sale .oe_product section h5 {
     padding: 0px 0;
     padding-bottom: 0px;
-    font-size: 11.5px;
+    font-size: 14px;
     /* margin-bottom: 0px; */
     text-align: left;
     border-bottom: unset!important;
@@ -310,6 +311,12 @@ h5 {
     top: -42px;
 }  
 
+.oe_product div.oe_product_cart:hover {
+    height: 90%;
+    box-shadow: 0 5px 15px 2px #000000bf;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
 }
 
 @media (max-width: 375px)
@@ -343,6 +350,6 @@ h5 {
     position: relative;
     text-align: left;
     padding: 0;
-    top: 0;
+    top: 50px;
 }
 }
