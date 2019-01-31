@@ -19,7 +19,8 @@
         </xpath>
     </template>
     <!-- Changes in website add to cart modal on modal-title, modal-body and 
-        modal-footer -->
+        modal-footer
+        While adding cart into show following confirmation pop view-->
     <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
         inherit_id="website_sale_options.modal">
         <xpath
@@ -163,7 +164,9 @@
         </xpath>
     </template>
 
-    <!-- Override products_add_to_cart from website sale -->
+    <!-- Override products_add_to_cart from website sale
+    Replace add to cart icon with add to cart button in product sale section
+    -->
     <template id="website_sale.products_add_to_cart" inherit_id="website_sale.products_item"
         active="False" customize_show="True" name="Add to Cart">
         <xpath expr="//div[hasclass('product_price')]" position="inside">
