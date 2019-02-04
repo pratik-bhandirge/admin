@@ -31,7 +31,10 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                 $form.addClass('css_options');
 
                 $modal.appendTo($form)
-                    .modal()
+                    .modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    })
                     .on('hidden.bs.modal', function () {
                         $form.removeClass('css_options'); // possibly reactivate opacity (see above)
                         $(this).remove();
