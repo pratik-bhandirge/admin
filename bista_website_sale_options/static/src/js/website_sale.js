@@ -21,8 +21,8 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                 },
             }).then(function (modal) {
                 var $modal = $(modal);
-
-                setTimeout(function(){ $('.js_goto_shop').trigger('click'); }, 3000);
+                setTimeout(function(){ $('.js_goto_shop').trigger('click'); }, 100);
+                setTimeout(function(){ $modal.modal('hide');}, 3000);
 
                 $modal.find('img:first').attr("src", "/web/image/product.product/" + product_id + "/image_medium");
 
@@ -31,10 +31,7 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                 $form.addClass('css_options');
 
                 $modal.appendTo($form)
-                    .modal({
-                        backdrop: 'static',
-                        keyboard: false
-                    })
+                    .modal()
                     .on('hidden.bs.modal', function () {
                         $form.removeClass('css_options'); // possibly reactivate opacity (see above)
                         $(this).remove();
@@ -54,7 +51,7 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                             $q.html(quantity).hide().fadeIn(600);
                         }
                     });
-                    $modal.modal('hide');
+                    // $modal.modal('hide');
                     ev.preventDefault();
                 });
 
@@ -98,12 +95,6 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                                 product_ids.push(values[0]);
                             });
                         });
-                });
-
-                $modal.on("click", "button.close", function (event) {
-                    event.preventDefault();
-                    console.log("sssssssssssssssssssssssssssssss");
-                    $('.js_goto_shop').trigger('click');
                 });
             });
         return false;
