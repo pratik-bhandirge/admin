@@ -99,6 +99,12 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
                             });
                         });
                 });
+
+                $modal.on("click", "button.close", function (event) {
+                    event.preventDefault();
+                    console.log("sssssssssssssssssssssssssssssss");
+                    $('.js_goto_shop').trigger('click');
+                });
             });
         return false;
     });
