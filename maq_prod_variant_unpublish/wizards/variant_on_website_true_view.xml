@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Variant on Website True -->
+        <record id="variant_on_website_true_view" model="ir.ui.view">
+            <field name="name">Variant Show</field>
+            <field name="model">variant.website.true</field>
+            <field name="arch" type="xml">
+                <form string="Variant True">
+                    <span>Do you want to show the selected products on website?</span>
+                    <footer>
+                        <button string="Show" name="change_variant_true" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to add the Menu on the Action Menu List which appears on Selection of single or multiple product variants -->
+        <act_window id="variant_true_wizard_action"
+            name="Variant Show"
+            src_model="product.product"
+            res_model="variant.website.true"
+            view_type="form" view_mode="form"
+            key2="client_action_multi" target="new"
+            groups="base.group_erp_manager"/>
+
+    </data>
+</odoo>
+

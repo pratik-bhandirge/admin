@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add follwoing selection in inventory adjustment
+            1. Select suppliers
+            2. Product Reference
+            3. Website Product Category
+        -->
+        <record id="stock_inventory_form_inherit" model="ir.ui.view">
+            <field name="name">stock.inventory.form.inherit</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock.view_inventory_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/group/group[2]" position="inside">
+                    <field name="m_supplier_ids" widget="many2many_tags" domain="[('supplier', '=', True)]" attrs="{'invisible': [('filter', 'in', ('category', 'none', 'owner', 'product_owner','lot','pack','partial', 'product', 'reference', 'web_categ'))], 'required' : [('filter', 'in', ('suppliers'))], 'readonly' : [('state','not in', ('draft'))]}"/>
+                    <field name="m_internal_reference" attrs="{'invisible': [('filter', 'in', ('category', 'none', 'owner', 'product_owner','lot','pack','partial', 'product', 'suppliers', 'web_categ'))], 'required' : [('filter', 'in', ('reference'))], 'readonly' : [('state','not in', ('draft'))]}"/>
+                    <field name="m_website_category_ids" widget="many2many_tags" attrs="{'invisible': [('filter', 'in', ('category', 'none', 'owner', 'product_owner','lot','pack','partial', 'product', 'suppliers', 'reference'))], 'required' : [('filter', 'in', ('web_categ'))], 'readonly' : [('state','not in', ('draft'))]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+

@@ -5,8 +5,9 @@
 			<tr>
                 <th>Description</th>
                 <th class="hidden">Source Document</th>
-				<th class="text-right">Ordered Quantity</th>
-                <th class="text-right">Invoiced Quantity</th>
+				<th class="text-right">Ordered Qty</th>
+                <th class="text-right">Backorder Qty</th>
+                <th class="text-right">Invoiced Qty</th>
                 <th class="text-right">Unit Price</th>
                 <th t-if="display_discount" class="text-right">Disc.(%)</th>
                 <th class="text-right">Taxes</th>
@@ -16,6 +17,10 @@
 		<xpath expr="//tr[@t-foreach='invoice.invoice_line_ids']//span[@t-field='l.quantity']/.." position="before">
 			<td class="text-right">
                 <span t-field="l.ordered_qty"/>
+                <span t-field="l.uom_id"  groups="product.group_uom"/>
+            </td>
+            <td class="text-right">
+                <span t-field="l.back_order_qty"/>
                 <span t-field="l.uom_id"  groups="product.group_uom"/>
             </td>
 		</xpath>
