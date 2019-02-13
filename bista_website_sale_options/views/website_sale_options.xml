@@ -52,6 +52,7 @@
                             <td>&#160;</td>
                             <td>
                                 <div>
+                                    <span style='font-size: 20px;' t-field="product.name" /><span style='font-size: 20px;'>[</span><span style='font-size: 20px;' t-esc="product.default_code" /><span style='font-size: 20px;'>]</span>
                                     <span style='font-size: 20px;' t-field="product.name" />
                                 </div>
                                 <div>
@@ -63,7 +64,7 @@
                                     <input style="border: none; border-color: transparent;"
                                         type="text" data-min="1" name="add_qty" value="1" readonly="readonly" />
                                 </div>
-                                <div>
+                                <div groups="!ecommerce_category.group_hide_website_price">
                                     <b>Total:-</b>
                                     <!-- <span class="text-danger oe_default_price oe_optional"
                                         t-field="product.lst_price"
@@ -115,7 +116,7 @@
                         t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image'}"
                         t-att-alt="product.name" />
                     <div class='maq_middle'>
-                        <div class="maq_text">
+                        <div class="maq_text" groups="!ecommerce_category.group_hide_website_price">
                             <span t-esc="product.website_price"
                             t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
                         </div>
