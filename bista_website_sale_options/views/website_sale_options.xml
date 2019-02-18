@@ -134,7 +134,8 @@
                 </div>
             </t>
             <div t-if="len(filterd_value_ids) == 1"
-                class="css_quantity input-group oe_website_spinner product_grid_qty">
+                class="css_quantity input-group oe_website_spinner product_grid_qty"
+                 groups="!ecommerce_category.group_hide_website_price">
                 <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json hidden-xs">
                     <i class="fa fa-minus"></i>
                 </a>
@@ -162,6 +163,7 @@
                 <span class='maq_hide_span' itemprop="priceCurrency" style="display:none;"
                     t-esc="website.currency_id.name" />
             </b>
+            <br/>
         </xpath>
     </template>
 
@@ -170,7 +172,7 @@
     -->
     <template id="website_sale.products_add_to_cart" inherit_id="website_sale.products_item"
         active="False" customize_show="True" name="Add to Cart">
-        <xpath expr="//div[hasclass('product_price')]" position="inside">
+        <xpath expr="//div[hasclass('product_price')]" position="after">
             <input name="product_id" t-att-value="product.product_variant_id.id"
                 type="hidden" />
             <t t-if="len(product.product_variant_ids) == 1">
@@ -189,8 +191,7 @@
                 </t>
             </t>
 
-            <t
-                t-if="len(product.product_variant_ids) &gt; 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)">
+            <t t-if="len(product.product_variant_ids) &gt; 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)">
                 <t t-set="filterd_product_ids"
                     t-value="product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)" />
                 <t t-if="len(filterd_product_ids) == 1">
