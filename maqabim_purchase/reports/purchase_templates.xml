@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_simple_label">
+        <div class="col-xs-3" style="padding:0;">
+            <table style="border-spacing:0;margin-bottom:0;width: 1.73in; height:0.49in;font-size:12px;">
+                <tbody>
+                    <tr>
+                        <td width="70%" style="text-align: center; vertical-align: middle;">
+                            <div>
+                                <span t-field="product.default_code"/>
+                            </div>
+                            <div>
+                                <span t-field="product.list_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
+                            </div>
+                            <div>
+                                <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product.barcode, 600, 150)" style="width:100%;height:11%;"/>
+                            </div>
+                        </td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <span t-esc="vendor_code"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+    <template id="report_polabel">
+        <t t-call="web.basic_layout">
+            <div class="page" style="margin-right: -18px !important;">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <t t-set="seller" t-value="line.product_id.seller_ids.filtered(lambda s: s.name == line.order_id.partner_id)"/>
+                        <t t-set="vendor_code" t-value="''"/>
+                        <t t-if="seller">
+                            <t t-set="vendor_code" t-value="seller[0].product_code"/>
+                        </t>
+                        <t t-foreach="range(line.print_qty)" t-as="n">
+                            <t t-call="maqabim_purchase.report_simple_label">
+                                <t t-set="product" t-value="line.product_id"/>
+                                <t t-set="vendor_code" t-value="vendor_code"/>
+                            </t>
+                        </t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
