@@ -13,6 +13,7 @@
         "website_sale",
         "website_sale_options",
         "maq_prod_variant_unpublish",
+        "ecommerce_category",
     ],
     "data": [
         "views/website_sale_options.xml",
