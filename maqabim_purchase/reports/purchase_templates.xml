@@ -35,6 +35,7 @@
                         <t t-if="seller">
                             <t t-set="vendor_code" t-value="seller[0].product_code"/>
                         </t>
+                        
                         <t t-foreach="range(line.print_qty)" t-as="n">
                             <t t-call="maqabim_purchase.report_simple_label">
                                 <t t-set="product" t-value="line.product_id"/>

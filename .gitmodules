@@ -1,3 +1,4 @@
 [submodule "psus-maqdistributors"]
 	path = psus-maqdistributors
 	url = git@github.com:odoo-ps/psus-maqdistributors.git
+	company-switcer = 11.0-security
