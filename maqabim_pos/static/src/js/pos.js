@@ -52,11 +52,55 @@ models.Orderline = models.Orderline.extend({
     get_tax_details_by_group: function(){
         return this.get_all_prices().taxByGroup;
     },
+    _map_tax_fiscal_position_custom: function(tax) {
+        /*
+            This method will return the multiple taxes if same tax is replace by multiple taxes on fiscalposition
+            retrun Array if more than one tax found else return orignal tax
+
+            TODO: for included price this won't work
+        */
+        var self = this;
+        var current_order = this.pos.get_order();
+        var order_fiscal_position = current_order && current_order.fiscal_position;
+        var taxes = [];
+        if (order_fiscal_position) {
+            _.each(order_fiscal_position.fiscal_position_taxes_by_id, function(t) {
+                if (t.tax_src_id[0] === tax.id) {
+                    taxes.push(self.pos.taxes_by_id[t.tax_dest_id[0]]);
+                }
+            });
+        }
+        if (taxes.length > 1) {
+            return taxes;
+        }
+
+        return tax;
+    },
+    compute_all: function(taxes, price_unit, quantity, currency_rounding, no_map_tax) {
+        /*
+            Inherited in order to support the fiscal position having tax which replace with
+            multiple taxes
+            i.e GST 5% Replace with GST FOR SALE 3% AND PST FOR SALE 2%
+        */
+        var self = this;
+        _.each(taxes, function(tax, i) {
+            if (!no_map_tax) {
+                var temp_tax = tax;
+                tax = self._map_tax_fiscal_position_custom(tax);
+                if (tax != temp_tax) {
+                    Array.prototype.push.apply(taxes, tax);
+                    taxes[i] = false;
+                }
+            }
+        });
+        return _super_orderline.compute_all.call(this, taxes, price_unit, quantity, currency_rounding, no_map_tax);
+    },
     get_all_prices: function() {
         /*
             complete override to group the taxes by tax group
             changes are marked with CUSTOM
         */
+        var self = this;
         var price_unit = this.get_unit_price() * (1.0 - (this.get_discount() / 100.0));
         var taxtotal = 0;
 
@@ -73,21 +117,21 @@ models.Orderline = models.Orderline.extend({
         });
 
         var all_taxes = this.compute_all(product_taxes, price_unit, this.get_quantity(), this.pos.currency.rounding);
+        var tax_by_group = {};
+
         _(all_taxes.taxes).each(function(tax) {
             taxtotal += tax.amount;
             taxdetail[tax.id] = tax.amount;
-        });
 
-        //CUSTOM
-        var tax_by_group = {};
-        _.each(product_taxes, function(pt) {
-            var group_id = pt.tax_group_id[0];
-            tax_by_group[group_id] = {amount: 0, name: pt.tax_group_id[1]};
-            _.each(all_taxes.taxes, function(tx) {
-                if(tx.id == pt.id || _.contains(_.pluck(pt.children_tax_ids, 'id'), tx.id)) {
-                    tax_by_group[group_id]['amount'] += tx.amount;
-                }
-            });
+            //CUSTOM CODE START
+            var tax_obj = self.pos.taxes_by_id[tax.id];
+            var group_id = tax_obj.tax_group_id[0];
+            if (!_.has(tax_by_group), group_id) {
+                tax_by_group[group_id] = {amount: tax.amount, name: tax_obj.tax_group_id[1]};
+            } else {
+                tax_by_group[group_id]['amount'] += tax.amount;
+            }
+             //CUSTOM CODE END
         });
 
         return {
