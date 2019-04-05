@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Added Admin groups in pos config kanban view of pos config -->
+       <!--  <record id="view_pos_config_kanban_inherit" model="ir.ui.view">
+            <field name="name">view.pos.config.kanban.inherit</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[contains(@class, 'o_kanban_primary_left')]/button[3]" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//div[contains(@class, 'o_kanban_primary_left')]/button[@name='open_session_cb']" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+            </field>
+        </record> -->
+        
+        <!-- Added Admin groups in pos session form view -->
+        <record id="view_pos_session_form_inherit" model="ir.ui.view">
+            <field name="name">view.pos.session.form.inherit</field>
+            <field name="model">pos.session</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//header/button[3]" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//header/button[4]" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//header/button[5]" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//sheet/div[@class='oe_button_box']/button[@name='%(point_of_sale.action_pos_box_in)d']" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//sheet/div[@class='oe_button_box']/button[@name='%(point_of_sale.action_pos_box_out)d']" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//sheet/div[@class='oe_button_box']/button[3]" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//sheet/div[@class='oe_button_box']/button[4]" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath> -->
+
+                <!-- Access rights to hide and show Amount in Transactions in Summary by Payment Methods in POS Sessions -->
+                <xpath expr="//separator" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//field[@name='statement_ids']" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+
+                <xpath expr="//sheet/group/div[1]" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+                <xpath expr="//sheet/group/div[2]" position="attributes">
+                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+
