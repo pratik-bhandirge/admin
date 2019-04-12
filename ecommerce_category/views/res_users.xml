@@ -8,8 +8,8 @@
             <field name="arch" type="xml">
                 <data>
                     <field name="company_ids" position="after">
-                        <field name="login_website_ids"/>
-                    </group>
+                        <field name="login_website_ids" widget="many2many_tags"/>
+                    </field>
                 </data>
             </field>
         </record>
