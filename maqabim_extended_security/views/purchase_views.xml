@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 	<record id="purchase_order_form_inherit_maqabim_extended_security" model="ir.ui.view">
-	    <field name="name">PO Form for Purchase> Restricted User</field>
+	    <field name="name">PO Form for Purchase > Restricted User</field>
 	    <field name="model">purchase.order</field>
 	    <field name="inherit_id" ref="purchase.purchase_order_form"/>
 	    <field name="groups_id" eval="[(4, ref('maqabim_extended_security.group_purchase_restricted_user'))]"/>
@@ -156,4 +156,26 @@
 	        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
 	    </record>
 	</data>
+	<record id="purchase_oder_tree_inherit_maqabim_extended_securiy" model="ir.ui.view">
+		<field name="name">Hide price info for Restricted Purchase user</field>
+		<field name="model">purchase.order</field>
+		<field name="inherit_id" ref="purchase.purchase_order_tree"/>
+		<field name="groups_id"  eval="[(4, ref('maqabim_extended_security.group_purchase_restricted_user'))]"/>
+		<field name="arch" type="xml">
+			<tree position="replace">
+				<tree decoration-bf="message_unread==True" decoration-muted="state=='cancel'" decoration-info="state in ('wait','confirmed')" string="Purchase Order">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Reference"/>
+                    <field name="date_order" />
+                    <field name="partner_id"/>
+                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    <field name="date_planned" invisible="context.get('quotation_only', False)"/>
+                    <field name="origin"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state"/>
+                    <field name="invoice_status" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"/>
+                </tree>
+			</tree>
+		</field>
+	</record>
 </odoo>
