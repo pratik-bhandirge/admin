@@ -21,6 +21,7 @@
         'security/security.xml',
         'views/res_config_settings_views.xml',
         'views/views.xml',
+        'views/res_users.xml',
         'views/templates.xml',
         'views/website_views.xml',
         'views/hide_pricing_template.xml',
