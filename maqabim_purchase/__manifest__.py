@@ -20,6 +20,7 @@ This module will added new report on PO for priting product label
         'reports/purchase_templates.xml',
         'reports/sale_templates.xml',
         'reports/stock_templates.xml',
+        'reports/product_templates.xml',
         'reports/reports.xml',
 
         'views/purchase_views.xml',

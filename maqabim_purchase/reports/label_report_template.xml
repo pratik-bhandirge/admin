@@ -84,24 +84,16 @@
 
     <template id="label_report">
         <t t-if="report_format == 'f1_v1'">
-            <t t-call="maqabim_purchase.label_report_format1_version1">
-                <t t-set="product" t-value="line.product_id"/>
-            </t>
+            <t t-call="maqabim_purchase.label_report_format1_version1"/>
         </t>
         <t t-if="report_format == 'f1_v2'">
-            <t t-call="maqabim_purchase.label_report_format1_version2">
-                <t t-set="product" t-value="line.product_id"/>
-            </t>
+            <t t-call="maqabim_purchase.label_report_format1_version2"/>
         </t>
         <t t-if="report_format == 'f2_v1'">
-            <t t-call="maqabim_purchase.label_report_format2_version1">
-                <t t-set="product" t-value="line.product_id"/>
-            </t>
+            <t t-call="maqabim_purchase.label_report_format2_version1"/>
         </t>
         <t t-if="report_format == 'f2_v2'">
-            <t t-call="maqabim_purchase.label_report_format2_version2">
-                <t t-set="product" t-value="line.product_id"/>
-            </t>
+            <t t-call="maqabim_purchase.label_report_format2_version2"/>
         </t>
     </template>
 </odoo>

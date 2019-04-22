@@ -6,7 +6,9 @@
                 <t t-foreach="docs" t-as="doc">
                     <t t-foreach="doc.move_lines" t-as="line">
                         <t t-foreach="range(line.print_qty)" t-as="n">
-                            <t t-call="maqabim_purchase.label_report"/>
+                            <t t-call="maqabim_purchase.label_report">
+                                <t t-set="product" t-value="line.product_id"/>
+                            </t>
                         </t>
                     </t>
                 </t>

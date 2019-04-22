@@ -26,6 +26,7 @@
             file="maqabim_purchase.report_polabel"
             print_report_name="'PO Labels - %s' % (object.name)"
             paperformat="paperformat_a4_label"
+            menu="False"
         />
         <report
             id="report_so_label"
@@ -36,6 +37,7 @@
             file="maqabim_purchase.report_solabel"
             print_report_name="'SO Labels - %s' % (object.name)"
             paperformat="paperformat_a4_label"
+            menu="False"
         />
         <report
             id="report_picking_label"
@@ -46,6 +48,18 @@
             file="maqabim_purchase.report_pickinglabel"
             print_report_name="'Picking Labels - %s' % (object.name)"
             paperformat="paperformat_a4_label"
+            menu="False"
+        />
+        <report
+            id="report_product_label"
+            string="Print Product Labels"
+            model="product.product"
+            report_type="qweb-pdf"
+            name="maqabim_purchase.report_productlabel"
+            file="maqabim_purchase.report_productlabel"
+            print_report_name="'Product Labels - %s' % (object.name)"
+            paperformat="paperformat_a4_label"
+            menu="False"
         />
 
 </odoo>
