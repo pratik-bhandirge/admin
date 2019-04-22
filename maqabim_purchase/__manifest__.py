@@ -14,10 +14,17 @@ This module will added new report on PO for priting product label
     'version': '0.1',
     'depends': ['purchase'],
     'data': [
-        'reports/purchase_templates.xml',
-        'reports/purchase_reports.xml',
+        'wizard/label_report_views.xml',
 
-        'views/purchase_views.xml'
+        'reports/label_report_template.xml',
+        'reports/purchase_templates.xml',
+        'reports/sale_templates.xml',
+        'reports/stock_templates.xml',
+        'reports/reports.xml',
+
+        'views/purchase_views.xml',
+        'views/sale_views.xml',
+        'views/stock_views.xml',
     ],
     'license': 'OEEL-1',
 }
