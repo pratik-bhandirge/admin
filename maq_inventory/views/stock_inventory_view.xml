@@ -16,6 +16,25 @@
                     <field name="m_internal_reference" attrs="{'invisible': [('filter', 'in', ('category', 'none', 'owner', 'product_owner','lot','pack','partial', 'product', 'suppliers', 'web_categ'))], 'required' : [('filter', 'in', ('reference'))], 'readonly' : [('state','not in', ('draft'))]}"/>
                     <field name="m_website_category_ids" widget="many2many_tags" attrs="{'invisible': [('filter', 'in', ('category', 'none', 'owner', 'product_owner','lot','pack','partial', 'product', 'suppliers', 'reference'))], 'required' : [('filter', 'in', ('web_categ'))], 'readonly' : [('state','not in', ('draft'))]}"/>
                 </xpath>
+                <!-- 1.98 Add a new button and state for Ready for approval in Inventory Adjustment so Manager can only validate inventory -->
+                <xpath expr="/form/header" position="inside">
+                    <button name="action_approved" string="Approve Inventory" states="waiting_approval" class="oe_highlight" type="object" groups="maq_inventory.maq_inventory_adjustment_manager"/>
+                    <button name="action_approval" string="Ready for Approval" states="confirm" class="oe_highlight" type="object"/>
+                </xpath>
+                <xpath expr="/form/header/button[4]" position="replace">
+                    <button name="action_cancel_draft" states="approved,waiting_approval" string="Cancel Inventory" type="object" groups="stock.group_stock_manager"/>
+                    <button name="action_cancel_user_draft" states="confirm" string="Cancel Inventory" type="object"/>
+                </xpath>
+                <xpath expr="/form/header/button[@name='action_done']" position="replace">
+                    <button name="action_done" states="approved" string="Validate Inventory" type="object" class="oe_highlight" groups="stock.group_stock_manager"/>
+                </xpath>
+                <xpath expr="/form/header/field[@name='state']" position="replace">
+                    <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,approved,confirm,done"/>
+                </xpath>
+                <xpath expr="/form/sheet/group/group[2]/field[@name='date']" position="after">
+                    <field name="approve_id"/>
+                    <field name="approve_date"/>
+                </xpath>
             </field>
         </record>
     </data>
