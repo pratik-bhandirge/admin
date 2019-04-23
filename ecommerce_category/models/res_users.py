@@ -43,8 +43,8 @@ class ResUsers(models.Model):
                 if user:
                     # START====
                     #TODO: cleanup + better logic
+                    current_website_id = self.env['website'].get_current_website()
                     if user.id != SUPERUSER_ID:
-                        current_website_id = self.env['website'].get_current_website()
                         # Interal user can auth from different website as some company may 
                         # not have website so auth trough website of other company or
                         # allowed login website.
