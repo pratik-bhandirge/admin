@@ -7,9 +7,9 @@
 	    <field name="arch" type="xml">
 	    	<xpath expr="//field[@name='pos_security_pin']" position="after">
 	    		<!-- <label for="session_ids"/> -->
-	    		<field name="pos_ids" widget="many2many_tags"/>
+	    		<field name="pos_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
 	    		<!-- <label for="warehouse_ids"/> -->
-	    		<field name="warehouse_ids" widget="many2many_tags"/>
+	    		<field name="warehouse_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
 	    	</xpath>
 	    </field>
 	</record>
