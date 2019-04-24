@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, timedelta, time
 
 class SalesReport(models.Model):
     _name = 'sales.report'
@@ -20,6 +20,21 @@ class SalesReport(models.Model):
     internal_ref = fields.Char(string="Internal Reference", copy=False)
     is_lock = fields.Boolean("Locked", default=False, copy=False)
 
+    @api.onchange('m_sales_start_date', 'm_sales_end_date')
+    def _onchange_date(self):
+        tommorrow_date = datetime.now() + timedelta(days=1)
+        tommorrow_min_date = datetime.combine(tommorrow_date, time.min)
+        start_date = self.m_sales_start_date
+        end_date = self.m_sales_end_date
+
+        if start_date or start_date > tommorrow_min_date:
+            raise ValidationError(_("Date should not be future date. Kindly check the start date."))
+
+        if end_date or end_date > tommorrow_min_date:
+            raise ValidationError(_("Date should not be future date. Kindly check the end date."))
+
+        if self.m_sales_end_date and self.m_sales_start_date and self.m_sales_end_date < self.m_sales_start_date:
+            raise ValidationError(_("End date should be greater than start date"))
 
     @api.multi
     def lock_record(self):

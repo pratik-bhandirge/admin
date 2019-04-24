@@ -51,7 +51,9 @@
 									<field name="partner_ids" widget="many2many_tags" nolabel="1"
 										help="Add vendors here which you would like to filter"
 										placeholder="Vendors" attrs="{'readonly': [('is_lock', '=', True)]}"
-										options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+										options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
+										domain="[('supplier','=',True)]"
+										context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0}"/>
 									<label for="product_ids" string="AND" />
 									<field name="product_ids" string="Products" widget="many2many_tags" nolabel="1"
 										help="Add product here which you would like to filter"
@@ -131,7 +133,7 @@
 		</record>
 		
 		<record id="action_custom_sales_report" model="ir.actions.act_window">
-			<field name="name">Sales Report2</field>
+			<field name="name">Sales Report</field>
 			<field name="res_model">sales.report</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
