@@ -4,6 +4,7 @@ from odoo.osv import expression
 from odoo.tools import float_compare, float_round, float_repr
 from datetime import datetime, timedelta
 
+
 class AccountBankStatementLine(models.Model):
 
     _inherit = 'account.bank.statement.line'
@@ -11,6 +12,7 @@ class AccountBankStatementLine(models.Model):
     '''
     Override the move lines method and return the move lines in ascending order
     '''
+
     def get_move_lines_for_reconciliation(self, partner_id=None, excluded_ids=None, str=False, offset=0, limit=None, additional_domain=None, overlook_partner=False):
         """ Return account.move.line records which can be used for bank statement reconciliation.
 
@@ -90,13 +92,24 @@ class AccountBankStatementLine(models.Model):
                     'ref': self.name,
                     }
         account_mv_ln = self.env['account.move.line']
-        aml_search = account_mv_ln.search([('date_maturity','=',params.get('maturity_date')),
+        aml_search = None
+        if params.get('partner_id'):
+            aml_search = account_mv_ln.search(['|','&','&','&',('date_maturity','=',params.get('maturity_date')),
                                            ('partner_id','=', params.get('partner_id')),
+                                           ('payment_id', '!=', False),
                                            ('statement_line_id', '=', False),
-                                           ('amount_residual','=',params.get('amount'))])
+                                           ('id', 'not in', excluded_ids),
+                                           ('amount_residual','=',params.get('amount'))], limit=1)
+        else:
+            aml_search = account_mv_ln.search([('date_maturity','=',params.get('maturity_date')),
+                                               ('payment_id', '!=', False),
+                                               ('statement_line_id', '=', False),
+                                               ('id', 'not in', excluded_ids),
+                                               ('amount_residual','=',params.get('amount'))], limit=1)
         aml_date_maturity = False
         date_maturity_before = date_maturity_after = False
         aml_date_mat_before = aml_date_mat_after = False
+        date_maturity_before_max_dt = date_maturity_after_max_dt = False
         if aml_search.date_maturity:
             aml_date_maturity = datetime.strptime(aml_search.date_maturity, "%Y-%m-%d")
         if not aml_search:
@@ -123,22 +136,22 @@ class AccountBankStatementLine(models.Model):
                 date_maturity_after_date_list.append(date_maturity_aft)
             for date_before in date_maturity_before_date_list:
                 aml_search_date_mat_bef = account_mv_ln.search([('date_maturity','=',date_before),
-                                           ('partner_id','=', params.get('partner_id')),
+                                           ('payment_id', '!=', ''),
                                            ('statement_line_id', '=', False),
-                                           ('amount_residual','=',params.get('amount'))])
-                if aml_search_date_mat_bef.date_maturity:
+                                           ('id', 'not in', excluded_ids),
+                                           ('amount_residual','=',params.get('amount'))], limit=1)
+                if aml_search_date_mat_bef.date_maturity and aml_search_date_mat_bef.payment_id:
                     date_maturity_before_list.append(aml_search_date_mat_bef.date_maturity)
             for date_after in date_maturity_after_date_list:
                 aml_search_date_mat_aft = account_mv_ln.search([('date_maturity','=',date_after),
-                                           ('partner_id','=', params.get('partner_id')),
+                                           ('payment_id', '!=', ''),
                                            ('statement_line_id', '=', False),
-                                           ('amount_residual','=',params.get('amount'))])
-                if aml_search_date_mat_aft.date_maturity:
+                                           ('id', 'not in', excluded_ids),
+                                           ('amount_residual','=',params.get('amount'))], limit=1)
+                if aml_search_date_mat_aft.date_maturity and aml_search_date_mat_aft.payment_id:
                     date_maturity_after_list.append(aml_search_date_mat_aft.date_maturity)
-
             date_maturity_before_dt_tm_list = [datetime.strptime(date, '%Y-%m-%d') for date in date_maturity_before_list]
             date_maturity_after_dt_tm_list = [datetime.strptime(date, '%Y-%m-%d') for date in date_maturity_after_list]
-            date_maturity_before_max_dt = date_maturity_after_max_dt = False
             if date_maturity_before_dt_tm_list:
                 date_maturity_before_max_dt = max(date_maturity_before_dt_tm_list)
                 params.update({'date_maturity_before_max_dt': date_maturity_before_max_dt})
@@ -155,11 +168,13 @@ class AccountBankStatementLine(models.Model):
 #             params.update({'date_maturity_after': date_maturity_after, 'date_maturity_before': date_maturity_before})
             '''----------------------------------------------------------------------------------'''
             aml_search_date_mat_before = account_mv_ln.search([('date_maturity','=',params.get('date_maturity_before_max_dt')),
-                                           ('partner_id','=', params.get('partner_id')),
-                                           ('amount_residual','=',params.get('amount'))])
+                                           ('payment_id', '!=', ''),
+                                           ('id', 'not in', excluded_ids),
+                                           ('amount_residual','=',params.get('amount'))], limit=1)
             aml_search_date_mat_after = account_mv_ln.search([('date_maturity','=',params.get('date_maturity_after_max_dt')),
-                                           ('partner_id','=', params.get('partner_id')),
-                                           ('amount_residual','=',params.get('amount'))])
+                                           ('payment_id', '!=', ''),
+                                           ('id', 'not in', excluded_ids),
+                                           ('amount_residual','=',params.get('amount'))], limit=1)
             if aml_search_date_mat_before.date_maturity:
                 aml_date_mat_before = datetime.strptime(aml_search_date_mat_before.date_maturity, "%Y-%m-%d")
             if aml_search_date_mat_after.date_maturity:
@@ -183,22 +198,22 @@ class AccountBankStatementLine(models.Model):
         liquidity_amt_clause = currency and '%(amount)s::numeric' or 'abs(%(amount)s::numeric)'
         if aml_date_maturity and date_maturity == aml_date_maturity:
             sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
-                " AND date_maturity = %(maturity_date)s AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                " AND date_maturity = %(maturity_date)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
                   ORDER BY date_maturity asc, aml.id asc LIMIT 1"
-        elif date_maturity_before_max_dt or date_maturity_after_max_dt:
+        elif params.get('date_maturity_before_max_dt') or params.get('date_maturity_after_max_dt'):
             if (aml_date_mat_after and aml_date_mat_before) or \
-                (aml_date_mat_before and date_maturity_before_max_dt ==\
+                (aml_date_mat_before and params.get('date_maturity_before_max_dt') ==\
                  aml_date_mat_before):
                 sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
-                    " AND date_maturity = %(date_maturity_before_max_dt)s AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                    " AND date_maturity = %(date_maturity_before_max_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
                       ORDER BY date_maturity asc, aml.id asc LIMIT 1"
-            elif aml_date_mat_after and date_maturity_after_max_dt == aml_date_mat_after:
+            elif aml_date_mat_after and params.get('date_maturity_after_max_dt') == aml_date_mat_after:
                 sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
-                    " AND date_maturity = %(date_maturity_after_max_dt)s AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                    " AND date_maturity = %(date_maturity_after_max_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
                       ORDER BY date_maturity asc, aml.id asc LIMIT 1"
         else:
             sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
-                    " AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                    " AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
                     ORDER BY date_maturity asc, aml.id asc LIMIT 1"
         self.env.cr.execute(sql_query, params)
         results = self.env.cr.fetchone()
