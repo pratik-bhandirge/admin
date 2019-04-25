@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_polabel">
+    <template id="report_solabel">
         <t t-call="web.basic_layout">
             <div class="page" style="margin-right: -18px !important;">
                 <t t-foreach="docs" t-as="doc">
