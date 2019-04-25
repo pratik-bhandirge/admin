@@ -18,10 +18,10 @@ class LabelReportWizard(models.TransientModel):
         return res
 
     formats = fields.Selection([
-        ('f1_v1', '4W x 20L v1'),
-        ('f1_v2', '4W x 20L v2'),
-        ('f2_v1', '2W x 5L v1'),
-        ('f2_v2', '2W x 5L v2')
+        ('f1_v1', '4W x 20L v1 (internal reference, sales price, barcode)'),
+        ('f1_v2', '4W x 20L v2 (internal reference, barcode)'),
+        ('f2_v1', '2W x 5L v1 (internal reference, barcode)'),
+        ('f2_v2', '2W x 5L v2 (display name, barcode)')
     ], string='Report Formats', default='f1_v1')
 
     label_type = fields.Selection([
