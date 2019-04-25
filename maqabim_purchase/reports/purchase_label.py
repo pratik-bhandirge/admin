@@ -10,7 +10,6 @@ class ReportPurchaseLabel(models.AbstractModel):
 
     @api.model
     def get_report_values(self, docids, data=None):
-        print("\nNOTCALLED", data)
         if not data.get('form'):
             raise UserError(_("Form content is missing, this report cannot be printed."))
 

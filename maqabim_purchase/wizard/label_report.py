@@ -46,7 +46,6 @@ class LabelReportWizard(models.TransientModel):
         elif self.label_type == 'product':
             report = 'maqabim_purchase.report_product_label'
             data['form']['pqty_by_product'] = {p.product_id.id: p.print_qty for p in self.product_label_ids}
-            print("\n>>>>>", data['form']['pqty_by_product'])
         return self.env.ref(report).with_context(from_transient_model=True).report_action([], data=data)
 
 
