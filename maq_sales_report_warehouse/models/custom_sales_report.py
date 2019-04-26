@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, time
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class SalesReport(models.Model):
     _name = 'sales.report'
@@ -20,21 +21,25 @@ class SalesReport(models.Model):
     internal_ref = fields.Char(string="Internal Reference", copy=False)
     is_lock = fields.Boolean("Locked", default=False, copy=False)
 
-    @api.onchange('m_sales_start_date', 'm_sales_end_date')
-    def _onchange_date(self):
+    @api.multi
+    def _check_date(self):
         tommorrow_date = datetime.now() + timedelta(days=1)
         tommorrow_min_date = datetime.combine(tommorrow_date, time.min)
-        start_date = self.m_sales_start_date
-        end_date = self.m_sales_end_date
+        start_date = datetime.strptime(self.m_sales_start_date, DEFAULT_SERVER_DATETIME_FORMAT)
+        end_date = datetime.strptime(self.m_sales_end_date, DEFAULT_SERVER_DATETIME_FORMAT)
 
-        if start_date or start_date > tommorrow_min_date:
+        if start_date and start_date > tommorrow_min_date:
             raise ValidationError(_("Date should not be future date. Kindly check the start date."))
 
-        if end_date or end_date > tommorrow_min_date:
+        if end_date and end_date > tommorrow_min_date:
             raise ValidationError(_("Date should not be future date. Kindly check the end date."))
 
         if self.m_sales_end_date and self.m_sales_start_date and self.m_sales_end_date < self.m_sales_start_date:
             raise ValidationError(_("End date should be greater than start date"))
+
+    @api.onchange('m_sales_start_date', 'm_sales_end_date')
+    def _onchange_date(self):
+        self._check_date()
 
     @api.multi
     def lock_record(self):
@@ -154,12 +159,14 @@ class SalesReport(models.Model):
         4. update vals of exhusted product based on warehouse
         5. Create report line using a vals
         """
+        self._check_date()
         location_list = []
         if not self.m_sales_report_lines:
             # 1. gets all the locations from warehouses
             for rec in self:
                 for wr_house in rec.m_warehouse_id:
-                    warehouse_location_id = self.env['stock.location'].search([('id', 'child_of', wr_house.code), ('usage', '=', 'internal')])
+#                     warehouse_location_id = self.env['stock.location'].search([('id', 'child_of', wr_house.code), ('usage', '=', 'internal')])
+                    warehouse_location_id = self.env['stock.location'].search([('m_warehouse_id', '=', wr_house.id)])
                     location_list.append(warehouse_location_id)
             locations = []
             flat_list_locations = []
