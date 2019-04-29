@@ -9,7 +9,7 @@
                             <div style="line-height: 90%">
                                 <span t-field="product.default_code"/>
                             </div>
-                            <div style="line-height: 98%">
+                            <div style="line-height: 98%;font-size:11px; margin-bottom: 1px;">
                                 <span t-field="product.lst_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
                             </div>
                             <div>
