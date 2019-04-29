@@ -126,7 +126,7 @@
         </xpath>
         <xpath expr="//div[hasclass('product_price')]" position="before">
             <t t-set="filterd_value_ids"
-                t-value="product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)" />
+                t-value="product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)" />
             <t t-if="len(filterd_value_ids) > 1">
                 <div class="product_grid_qty">
                     <p>Multiple options available please select an option on product page
@@ -178,22 +178,22 @@
             <t t-if="len(product.product_variant_ids) == 1">
                 <!-- (=1)>><t t-esc="filterd_product_ids"/> -->
                 <t
-                    t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)">
+                    t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)">
                     <a class="btn btn-default btn-xs a-submit">
                         <span>Add To Cart</span>
                     </a>
                 </t>
                 <t
-                    t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish == False)">
+                    t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() == False)">
                     <a class="btn btn-default btn-xs a-submit hidden">
                         <span>Add To Cart</span>
                     </a>
                 </t>
             </t>
 
-            <t t-if="len(product.product_variant_ids) &gt; 1 and product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)">
+            <t t-if="len(product.product_variant_ids) &gt; 1 and product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)">
                 <t t-set="filterd_product_ids"
-                    t-value="product.product_variant_ids.filtered(lambda x:x.is_website_publish != False)" />
+                    t-value="product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)" />
                 <t t-if="len(filterd_product_ids) == 1">
                     <a class="btn btn-default btn-xs a-submit">
                         <span>Add To Cart</span>
