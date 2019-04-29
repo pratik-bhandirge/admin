@@ -1,0 +1,14 @@
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{
+    vertical-align: middle !important;
+}
+#product_details h1{
+    color:#4286f4;
+}
+#add_to_cart_b {
+    padding: 30px;
+    min-width: 240px;
+    display: inline-block;
+    -webkit-transition: all 0.5s ease-out;
+    -o-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+}
