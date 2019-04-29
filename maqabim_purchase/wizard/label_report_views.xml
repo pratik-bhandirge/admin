@@ -27,7 +27,7 @@
         </record>
 
         <act_window id="action_purchase_label_report"
-            multi="True"
+            multi="False"
             key2="client_action_multi"
             name="Print PO-labels"
             res_model="label.report.wizard"
@@ -38,7 +38,7 @@
             view_type="form" />
 
         <act_window id="action_sale_label_report"
-            multi="True"
+            multi="False"
             key2="client_action_multi"
             name="Print SO-labels"
             res_model="label.report.wizard"
@@ -49,6 +49,7 @@
             view_type="form" />
 
         <act_window id="action_picking_label_report"
+            multi="False"
             key2="client_action_multi"
             name="Print Picking Labels"
             res_model="label.report.wizard"
@@ -59,6 +60,7 @@
             view_type="form" />
 
         <act_window id="action_product_label_report"
+            multi="False"
             key2="client_action_multi"
             name="Print Product Labels"
             res_model="label.report.wizard"
