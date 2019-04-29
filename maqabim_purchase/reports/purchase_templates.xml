@@ -10,7 +10,7 @@
                                 <span t-field="product.default_code"/>
                             </div>
                             <div style="line-height: 98%">
-                                <span t-field="product.list_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
+                                <span t-field="product.lst_price" t-options='{"widget": "monetary", "display_currency": product.currency_id}'/>
                             </div>
                             <div>
                                 <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', product.barcode, 600, 150)" style="width:100%;height:10%;"/>
