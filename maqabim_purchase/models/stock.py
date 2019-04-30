@@ -12,12 +12,9 @@ class StockMove(models.Model):
     def onchange_quantity(self):
         self.print_qty = int(self.product_uom_qty)
 
-
-class ProcurementRule(models.Model):
-    _inherit = 'procurement.rule'
-
-    def _get_stock_move_values(self, product_id, product_qty, product_uom, location_id, name, origin, values, group_id):
-        result = super(ProcurementRule, self)._get_stock_move_values(product_id, product_qty, product_uom, location_id, name, origin, values, group_id)
-        if values.get('print_qty', 0):
-            result['print_qty'] = values['print_qty']
-        return result
+    @api.model
+    def create(self, vals):
+        if vals.get('product_uom_qty'):
+            vals['print_qty'] = int(vals['product_uom_qty'])
+        res = super(StockMove, self).create(vals)
+        return res
