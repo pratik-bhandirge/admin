@@ -15,10 +15,10 @@
         "website_sale_options",
         "maq_prod_variant_unpublish",
         "ecommerce_category",
-	"sale",
+        "sale",
     ],
     "data": [
-	'views/product_sale_view_inherit.xml',
+        'views/product_sale_view_inherit.xml',
         "views/website_sale_options.xml",
     ],
     #    "qweb": [
