@@ -153,11 +153,15 @@ class AccountBankStatementLine(models.Model):
             date_maturity_before_dt_tm_list = [datetime.strptime(date, '%Y-%m-%d') for date in date_maturity_before_list]
             date_maturity_after_dt_tm_list = [datetime.strptime(date, '%Y-%m-%d') for date in date_maturity_after_list]
             if date_maturity_before_dt_tm_list:
-                date_maturity_before_max_dt = max(date_maturity_before_dt_tm_list)
-                params.update({'date_maturity_before_max_dt': date_maturity_before_max_dt})
+                """ Search for maximum from dates list which are before maturity date and update in params"""
+#                 date_maturity_before_max_dt = max(date_maturity_before_dt_tm_list)
+#                 params.update({'date_maturity_before_max_dt': date_maturity_before_max_dt})
+                params.update({'date_maturity_before_dt_tm_list': date_maturity_before_dt_tm_list})
             if date_maturity_after_dt_tm_list:
-                date_maturity_after_max_dt = min(date_maturity_after_dt_tm_list)
-                params.update({'date_maturity_after_max_dt': date_maturity_after_max_dt})
+                """ Search for minimum from dates list which are after maturity date and update in params"""
+#                 date_maturity_after_max_dt = min(date_maturity_after_dt_tm_list)
+#                 params.update({'date_maturity_after_max_dt': date_maturity_after_max_dt})
+                params.update({'date_maturity_after_dt_tm_list': date_maturity_after_dt_tm_list})
 
             '''The below code is commented and IT can be used if u want to short the range of days from 3 to 1
             -------------------------------------------------------------------------------------'''
@@ -167,18 +171,23 @@ class AccountBankStatementLine(models.Model):
 #             date_maturity_after = datetime.strptime(date_maturity_after, "%Y-%m-%d")
 #             params.update({'date_maturity_after': date_maturity_after, 'date_maturity_before': date_maturity_before})
             '''----------------------------------------------------------------------------------'''
-            aml_search_date_mat_before = account_mv_ln.search([('date_maturity','=',params.get('date_maturity_before_max_dt')),
-                                           ('payment_id', '!=', ''),
-                                           ('id', 'not in', excluded_ids),
-                                           ('amount_residual','=',params.get('amount'))], limit=1)
-            aml_search_date_mat_after = account_mv_ln.search([('date_maturity','=',params.get('date_maturity_after_max_dt')),
-                                           ('payment_id', '!=', ''),
-                                           ('id', 'not in', excluded_ids),
-                                           ('amount_residual','=',params.get('amount'))], limit=1)
-            if aml_search_date_mat_before.date_maturity:
-                aml_date_mat_before = datetime.strptime(aml_search_date_mat_before.date_maturity, "%Y-%m-%d")
-            if aml_search_date_mat_after.date_maturity:
-                aml_date_mat_after = datetime.strptime(aml_search_date_mat_after.date_maturity, "%Y-%m-%d")
+            """ The below code is commented and can be used for date range first ascending then descending from
+                bank statement line date and search for account move line date
+                ---------------------------------------------------------------------------------"""
+
+#             aml_search_date_mat_before = account_mv_ln.search([('date_maturity','=',params.get('date_maturity_before_max_dt')),
+#                                            ('payment_id', '!=', ''),
+#                                            ('id', 'not in', excluded_ids),
+#                                            ('amount_residual','=',params.get('amount'))], limit=1)
+#             aml_search_date_mat_after = account_mv_ln.search([('date_maturity','=',params.get('date_maturity_after_max_dt')),
+#                                            ('payment_id', '!=', ''),
+#                                            ('id', 'not in', excluded_ids),
+#                                            ('amount_residual','=',params.get('amount'))], limit=1)
+#             if aml_search_date_mat_before.date_maturity:
+#                 aml_date_mat_before = datetime.strptime(aml_search_date_mat_before.date_maturity, "%Y-%m-%d")
+#             if aml_search_date_mat_after.date_maturity:
+#                 aml_date_mat_after = datetime.strptime(aml_search_date_mat_after.date_maturity, "%Y-%m-%d")
+            '''----------------------------------------------------------------------------------'''
         # Look for structured communication match
         if self.name:
             add_to_select = ", CASE WHEN aml.ref = %(ref)s THEN 1 ELSE 2 END as temp_field_order "
@@ -196,21 +205,70 @@ class AccountBankStatementLine(models.Model):
         field = currency and 'amount_residual_currency' or 'amount_residual'
         liquidity_field = currency and 'amount_currency' or amount > 0 and 'debit' or 'credit'
         liquidity_amt_clause = currency and '%(amount)s::numeric' or 'abs(%(amount)s::numeric)'
+        '''count variables for elif condition date_maturity_before_dt_tm_list and date_maturity_after_dt_tm_list'''
+        count_less = 1
+        count_greater = 1
+        loop_count = 1
         if aml_date_maturity and date_maturity == aml_date_maturity:
             sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
                 " AND date_maturity = %(maturity_date)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
                   ORDER BY date_maturity asc, aml.id asc LIMIT 1"
-        elif params.get('date_maturity_before_max_dt') or params.get('date_maturity_after_max_dt'):
-            if (aml_date_mat_after and aml_date_mat_before) or \
-                (aml_date_mat_before and params.get('date_maturity_before_max_dt') ==\
-                 aml_date_mat_before):
-                sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
-                    " AND date_maturity = %(date_maturity_before_max_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
-                      ORDER BY date_maturity asc, aml.id asc LIMIT 1"
-            elif aml_date_mat_after and params.get('date_maturity_after_max_dt') == aml_date_mat_after:
-                sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
-                    " AND date_maturity = %(date_maturity_after_max_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
-                      ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+        elif params.get('date_maturity_before_dt_tm_list') or params.get('date_maturity_after_dt_tm_list'):
+            ls_less = params.get('date_maturity_before_dt_tm_list') or []
+            ls_great = params.get('date_maturity_after_dt_tm_list') or []
+            ls = ls_less + ls_great
+            dt = date_maturity
+            if ls:
+                for l in ls:
+                    if (date_maturity - timedelta(count_less)) in ls_less and len(ls_less) > 1:
+                        date_maturity_before_dt = date_maturity - timedelta(count_less)
+                        params.update({'date_maturity_before_dt': date_maturity_before_dt})
+                        sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
+                        " AND date_maturity = %(date_maturity_before_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                          ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+                        break
+                    elif (date_maturity + timedelta(count_greater)) in ls_great and len(ls_great) > 1:
+                        date_maturity_after_dt = date_maturity + timedelta(count_greater)
+                        params.update({'date_maturity_after_dt': date_maturity_after_dt})
+                        sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
+                        " AND date_maturity = %(date_maturity_after_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                          ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+                        break
+                    elif len(ls_less) <= 1 and len(ls_great) <= 1:
+                        if len(ls_less) == 1:
+                            date_maturity_before_single_dt = ls_less[0]
+                            params.update({'date_maturity_before_single_dt': date_maturity_before_single_dt})
+                            sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
+                            " AND date_maturity = %(date_maturity_before_single_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                              ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+                            break
+                        elif len(ls_great) == 1:
+                            date_maturity_after_single_dt = ls_great[0]
+                            params.update({'date_maturity_after_single_dt': date_maturity_after_single_dt})
+                            sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
+                            " AND date_maturity = %(date_maturity_after_single_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+                              ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+                            break
+                    count_less += 1
+                    count_greater += 1
+                    loop_count +=1
+                    if loop_count == len(ls):
+                        count_less = count_greater = loop_count = 1
+                        break
+            """ Use the below code if you want to revert back to the date before and then date after scenario
+            ----------------------------------------------------------------------------------"""
+#         elif params.get('date_maturity_before_max_dt') or params.get('date_maturity_after_max_dt'):
+#             if (aml_date_mat_after and aml_date_mat_before) or \
+#                 (aml_date_mat_before and params.get('date_maturity_before_max_dt') ==\
+#                  aml_date_mat_before):
+#                 sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
+#                     " AND date_maturity = %(date_maturity_before_max_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+#                       ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+#             elif aml_date_mat_after and params.get('date_maturity_after_max_dt') == aml_date_mat_after:
+#                 sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
+#                     " AND date_maturity = %(date_maturity_after_max_dt)s AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
+#                       ORDER BY date_maturity asc, aml.id asc LIMIT 1"
+            '''----------------------------------------------------------------------------------'''
         else:
             sql_query = self._get_common_sql_query(excluded_ids=excluded_ids) + \
                     " AND aml.payment_id IS NOT NULL AND ("+field+" = %(amount)s::numeric OR (acc.internal_type = 'liquidity' AND "+liquidity_field+" = " + liquidity_amt_clause + ")) \
