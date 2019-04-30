@@ -12,3 +12,7 @@
     -o-transition: all 0.5s ease-out;
     transition: all 0.5s ease-out;
 }
+.oe_product_cart .btn-default.btn-xs {
+    color: #000;
+    border: 1px solid #000;
+}

@@ -35,7 +35,7 @@
                                 <td>
                                     <span t-field="variant_id.default_code"/>
                                 </td>
-                                <td>
+                                <td style="font-weight:600;">
                                     <span t-field="variant_id.website_price"
                                     t-options='{
                                        "widget": "monetary",
