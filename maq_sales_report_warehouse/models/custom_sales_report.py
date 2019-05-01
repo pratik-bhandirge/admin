@@ -150,82 +150,110 @@ class SalesReport(models.Model):
             #     raise ValidationError(_("The Lines are already cleared"))
 
     @api.multi
+    def _get_company_ids(self):
+        company_ids = []
+        sw = self.env['stock.warehouse']
+        for rec in self:
+            for warehouse_id in rec.m_warehouse_id.ids:
+                company_id = sw.browse(warehouse_id).company_id.id
+                if company_id:
+                    company_ids.append(company_id)
+        return list(set(company_ids))
+
+    @api.multi
     def generate_report(self):
         """
         Generates report lines
-        1. gets all the locations from warehouses
-        2. based on the locations, gets warehouse base qty on hand aginst product and prepare a vals
-        3. Fetch exhausted products
-        4. update vals of exhusted product based on warehouse
-        5. Create report line using a vals
+        1. Check the validation base on date and sales report lines
+        2. Get all the products associated agianse company id of selected warehouse
+        3. gets all the locations from warehouses
+        4. based on the locations, gets warehouse base qty on hand aginst product and prepare a vals
+        5. Fetch exhausted products
+        6. update vals of exhusted product based on warehouse
+        7. Create report line using a vals
         """
-        self._check_date()
-        location_list = []
-        if not self.m_sales_report_lines:
-            # 1. gets all the locations from warehouses
-            for rec in self:
-                for wr_house in rec.m_warehouse_id:
-#                     warehouse_location_id = self.env['stock.location'].search([('id', 'child_of', wr_house.code), ('usage', '=', 'internal')])
-                    warehouse_location_id = self.env['stock.location'].search([('m_warehouse_id', '=', wr_house.id)])
-                    location_list.append(warehouse_location_id)
-            locations = []
-            flat_list_locations = []
-            for loc in location_list:
-                locations.append(loc.ids)
-            for locat in locations:
-                for l in locat:
-                    flat_list_locations.append(l)
-            tuple_locations = tuple(flat_list_locations)
-            domain = ' sq.location_id in %s'
-            args = (tuple_locations,)
-
-            # 2. based on the locations, gets warehouse base qty on hand aginst product and prepare a vals
-            vals = []
-            Product = self.env['product.product']
-            # # Empty recordset of products available in stock_quants
-            quant_products = self.env['product.product']
-            # # Empty recordset of products to filter
-            products_to_filter = self.env['product.product']
-
-            self.env.cr.execute("""
-                SELECT product_id, qty_on_hand, warehouse_id
-                FROM
-                (
-                    SELECT sq.product_id as product_id, sum(sq.quantity) as qty_on_hand, sl.m_warehouse_id as warehouse_id
-                    FROM stock_quant sq
-                    LEFT JOIN product_product pp ON pp.id = sq.product_id
-                    LEFT JOIN stock_location sl ON sl.id = sq.location_id
-                    WHERE %s -- AND product_id = 32
-                    GROUP BY product_id, sl.m_warehouse_id
-                ) t
-                WHERE t.warehouse_id is not null
-                """ % domain, args)
-            results = self.env.cr.dictfetchall()
-
-            for product_data in results:
-                if product_data['product_id']:
-                    quant_products |= Product.browse(product_data['product_id'])
-
-            # 3. Fetch exhausted products
-            if self.m_exhausted:
-                exhausted_vals = self._get_exhausted_inventory_line(products_to_filter, quant_products)
-                exhausted_values = []
-                # 4. update vals of exhusted product based on warehouse
-                for exhausted_val in exhausted_vals:
-                    for warehouse_id in self.m_warehouse_id.ids:
-                        temp_val = {}
-                        temp_val.update(exhausted_val)
-                        temp_val.update({'warehouse_id':warehouse_id,'qty_on_hand':0})
-                        exhausted_values.extend([temp_val])
-                results.extend(exhausted_values)
-
-            # 5. Create report line using a vals
-            values = {}
-            for prod_line in self:
-                values.update({'m_sales_report_lines': [(0, False, line_values) for line_values in results]})
-                prod_line.write(values)
-        else:
+        # 1. Check the validation base on date and sales report lines
+        if self.m_sales_report_lines:
             raise ValidationError(_("Please Clear the Lines data first"))
+        self._check_date()
+
+        location_list = []
+        locations = []
+        flat_list_locations = []
+        company_ids = []
+
+        # 2. Get all the products associated agianse company id of selected warehouse
+        # company_ids = self._get_company_ids()
+        company_ids.append(False)
+        prod_list = self.env['product.product'].search([('company_id','in',company_ids)]).ids
+
+        # 3. gets all the locations from warehouses
+        for rec in self:
+            for wr_house in rec.m_warehouse_id:
+#                     warehouse_location_id = self.env['stock.location'].search([('id', 'child_of', wr_house.code), ('usage', '=', 'internal')])
+                warehouse_location_id = self.env['stock.location'].search([('m_warehouse_id', '=', wr_house.id)])
+                location_list.append(warehouse_location_id)
+        for loc in location_list:
+            locations.append(loc.ids)
+        for locat in locations:
+            for l in locat:
+                flat_list_locations.append(l)
+        tuple_locations = tuple(flat_list_locations)
+        domain = ' sq.location_id in %s AND sq.product_id in %s'
+        args = (tuple_locations,tuple(prod_list))
+
+        # 4. based on the locations, gets warehouse base qty on hand aginst product and prepare a vals
+        vals = []
+        Product = self.env['product.product']
+        # # Empty recordset of products available in stock_quants
+        quant_products = self.env['product.product']
+        # # Empty recordset of products to filter
+        products_to_filter = self.env['product.product'].browse(prod_list)
+
+        self.env.cr.execute("""
+            SELECT product_id, qty_on_hand, warehouse_id
+            FROM
+            (
+                SELECT sq.product_id as product_id, sum(sq.quantity) as qty_on_hand, sl.m_warehouse_id as warehouse_id
+                FROM stock_quant sq
+                LEFT JOIN product_product pp ON pp.id = sq.product_id
+                LEFT JOIN stock_location sl ON sl.id = sq.location_id
+                WHERE %s -- AND product_id = 32
+                GROUP BY product_id, sl.m_warehouse_id
+            ) t
+            WHERE t.warehouse_id is not null
+            """ % domain, args)
+        results = self.env.cr.dictfetchall()
+
+        for product_data in results:
+            if product_data['product_id']:
+                quant_products |= Product.browse(product_data['product_id'])
+
+        # 5. Fetch exhausted products
+        if self.m_exhausted:
+            exhausted_vals = self._get_exhausted_inventory_line(products_to_filter, quant_products)
+            exhausted_values = []
+            # 6. update vals of exhusted product based on warehouse
+            for exhausted_val in exhausted_vals:
+                for warehouse_id in self.m_warehouse_id.ids:
+                    temp_val = {}
+                    temp_val.update(exhausted_val)
+                    temp_val.update({'warehouse_id':warehouse_id,'qty_on_hand':0})
+                    exhausted_values.extend([temp_val])
+            results.extend(exhausted_values)
+
+        # 7. Create report line using a vals
+        values = {}
+        for prod_line in self:
+            values.update({'m_sales_report_lines': [(0, False, line_values) for line_values in results]})
+            prod_line.write(values)
+        ####
+        # mcompany_id = []
+        # for sales_report_line in self.m_sales_report_lines:
+        #     if sales_report_line.company_id.id not in mcompany_id:
+        #         mcompany_id.append(sales_report_line.company_id.id)
+        # else:
+        #     raise ValidationError(_("Please Clear the Lines data first"))
 
     def _get_exhausted_inventory_line(self, products, quant_products):
         '''
@@ -260,6 +288,7 @@ class SalesReportLines(models.Model):
     product_id = fields.Many2one("product.product", string="Product")
     default_code = fields.Char(
         related='product_id.default_code', string="Internal Reference")
+    company_id = fields.Many2one(related='product_id.company_id', string="Product Company")
     sales_price = fields.Float(
         related='product_id.lst_price', string="Sale Price")
     delivered_qty = fields.Float(

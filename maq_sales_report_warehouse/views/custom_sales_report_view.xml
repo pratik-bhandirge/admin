@@ -98,6 +98,7 @@
 										</form>
 										<tree create="false" delete="false" edit="false">
 											<field name="default_code"/>
+											<field name="company_id" invisible="1"/>
 											<field name="product_id"/>
 											<field name="sales_price"/>
 											<field name="warehouse_id"/>
