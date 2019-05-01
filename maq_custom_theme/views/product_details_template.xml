@@ -3,12 +3,12 @@
     <template id="custom_product" inherit_id="website_sale.product">
         <xpath expr="//div[@id='wrap']/section[@id='product_detail']/div[@class='row'][2]/div[@class='col-sm-7']" position="attributes">
             <attribute name="class">
-                col-sm-5 col-lg-4
+                col-sm-6 col-lg-6
             </attribute>
         </xpath>
         <xpath expr="//div[@id='wrap']/section[@id='product_detail']/div[@class='row'][2]/div[@class='col-sm-5 col-lg-4 col-lg-offset-1']" position="attributes">
             <attribute name="class">
-                col-sm-7 col-lg-8
+                col-sm-6 col-lg-6
             </attribute>
         </xpath>
     </template>
