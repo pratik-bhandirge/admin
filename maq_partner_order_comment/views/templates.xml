@@ -8,13 +8,13 @@
 			</xpath>
 		</template>
 		<template id="partner_order_comment" inherit_id="website_sale.cart"
-			customize_show="True" name="Partner Order Comment">
+			customize_show="True" name="Customer Order Comment">
 			<xpath expr="//div[@class='clearfix']" position="before">
 				<div id="show_partner_comment"
 					t-if="website_sale_order and website_sale_order.website_order_line"
 					t-attf-class="form-group col-lg-6 partner_textarea_comment">
 					<label t-if="website_sale_order.website_order_line" class="control-label"
-						for="partner_comment">Partner Order Comment</label>
+						for="partner_comment">Customer Order Comment</label>
 					<textarea t-if="website_sale_order.website_order_line"
 						rows="3" id="partner_comment" t-esc="website_sale_order.partner_comment or ''"
 						name="partner_comment_on_website" class="form-control" />
@@ -79,7 +79,7 @@
 				<t t-call='website_sale.total' />
 				<div t-if="website_sale_order.website_order_line" t-attf-class="form-group col-lg-6">
 					<label t-if="website_sale_order.website_order_line" class="control-label"
-						for="partner_comment">Partner Order Comment</label>
+						for="partner_comment">Customer Order Comment</label>
 					<textarea t-if="website_sale_order.website_order_line"
 						rows="3" id="partner_comment" name="partner_comment_on_website"
 						class="form-control" t-esc="website_sale_order.partner_comment"
