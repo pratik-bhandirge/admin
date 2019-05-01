@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
-    "name": "Maq Partner Order Comment",
+    "name": "Maq Website Order Comment",
     "author": "Bista",
     "version": "11.0.1.0.0",
     'license': 'OPL-1',

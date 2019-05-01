@@ -5,5 +5,5 @@ class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
 
-    partner_comment = fields.Text("Partner Order Comment")
+    partner_comment = fields.Text("Customer Order Comment")
 
