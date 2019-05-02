@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# See LICENSE file for full copyright and licensing details.
 
 {
     "name": "Bista website sale options",
@@ -18,6 +18,7 @@
         "sale",
     ],
     "data": [
+        'security/ir.model.access.csv',
         'views/product_sale_view_inherit.xml',
         "views/website_sale_options.xml",
     ],
