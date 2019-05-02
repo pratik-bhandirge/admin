@@ -104,4 +104,42 @@
             </attribute>
         </xpath>
     </template>
+    <template id="custom_product" inherit_id="website_product_page_layout_73lines.product_description_new_style">
+        <xpath expr="//div[@id='product_description_reviews']/ul/t[@t-if='product.attribute_line_ids']" position="attributes">
+            <attribute name="t-if">
+                product.m_product_specification_ids
+            </attribute>
+        </xpath>
+        <xpath expr="//div[@id='product_description_reviews']/div[@class='tab-content']/div[@id='product-additional-info']" position="replace">
+            <div class="tab-pane fade" id="product-additional-info">
+                <div t-if="product.m_product_specification_ids">
+                    <div id="product_attribute_details" class="mt32 mb32">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr t-foreach="product.m_product_specification_ids" t-as="pfl">
+                                    <td class="col-md-4">
+                                        <strong>
+                                            <p t-esc="pfl.attribute_id.name" style="margin: 0 0 0px;" />
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <p style="margin: 0 0 0px;">
+                                            <t t-set="i" t-value="0" />
+                                            <t t-foreach="pfl.value_ids" t-as="pfv">
+                                                <t t-esc="pfv.name" />
+                                                <span t-if="i != len(pfl.value_ids)-1">
+                                                    ,
+                                                </span>
+                                                <t t-set="i" t-value="i+1" />
+                                            </t>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
 </odoo>

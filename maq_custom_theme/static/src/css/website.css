@@ -16,3 +16,13 @@
     color: #000;
     border: 1px solid #000;
 }
+/*02042019 changes*/
+.oe_product_cart .product_grid_qty p {
+    line-height: 15px !important;
+}
+
+.oe_product div.oe_product_cart:hover .product_grid_qty {
+    display: inline-table;
+    visibility: visible;
+    top: 20px;
+}

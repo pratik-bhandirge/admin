@@ -11,11 +11,13 @@ require('website_sale.website_sale');
     .removeClass('b-submit')
     .click(function (event) {
         event.preventDefault();
+
         var $form = $(this).closest('form');
 
         var qty_input = $form.find('input.quantity');
-        console.log(qty_input.length);
+
         var data = [];
+
         for(var i=0; i < qty_input.length; i++){
             console.log(qty_input[i]);
             if(qty_input[i].value != 0){
@@ -36,6 +38,7 @@ require('website_sale.website_sale');
                     var $q = $(".my_cart_quantity");
                     $q.parent().parent().removeClass("hidden", !quantity);
                     $q.html(quantity).hide().fadeIn(600);
+
                 }
             });
         });
