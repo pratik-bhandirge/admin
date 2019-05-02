@@ -11,7 +11,7 @@
     "license": "AGPL-3",
     'description': """In this module customize product details page""",
     'summary': '',
-    "depends": ['website_sale', ],
+    "depends": ['website_sale', 'website_product_page_layout_73lines'],
     "data": [
         "views/templates.xml",
         'views/product_details_template.xml',
