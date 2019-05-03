@@ -49,7 +49,6 @@
                                     </t>
                                     <t t-else="">
                                         <input type="text" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0"/>
-<!--                                        <p style="display:inline-block;"><span style="color:#4286f4;" t-if="variant_id.qty_available &lt; 100" t-field="variant_id.qty_available"/> <span style="color:#4286f4;" t-if="variant_id.qty_available &gt; 100">100+</span> in stock</p>-->
                                     </t>
                                 </td>
                             </tr>
@@ -62,8 +61,6 @@
                 <t t-call="website_sale.variants">
                     <t t-set="ul_class" t-value="'nav-stacked'" />
                 </t>
-<!--                <t t-set="attribute_value_ids" t-value="get_attribute_value_ids(product)"/>-->
-<!--                <ul class="hidden js_add_cart_variants" t-att-data-attribute_value_ids="json.dumps(attribute_value_ids)"/>-->
             </t>
         </xpath>
         <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
