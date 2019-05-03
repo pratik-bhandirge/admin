@@ -67,8 +67,8 @@
             </t>
         </xpath>
         <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
-            <attribute name="t-if">
-                len(product.product_variant_ids) == 1
+            <attribute name='t-if'>
+                product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
             </attribute>
         </xpath>
         <xpath expr="//a[@id='add_to_cart']" position="replace">
@@ -90,11 +90,6 @@
                 Currently Out of Stock<br />
                 </h3>
             </t>
-        </xpath>
-        <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
-            <attribute name='t-if'>
-                product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
-            </attribute>
         </xpath>
     </template>
     <template id="custom_product_price" inherit_id="website_sale.product_price">
