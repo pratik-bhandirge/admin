@@ -104,7 +104,7 @@
             </attribute>
         </xpath>
     </template>
-    <template id="custom_product" inherit_id="website_product_page_layout_73lines.product_description_new_style">
+    <template id="custom_product_description_new_style" inherit_id="website_product_page_layout_73lines.product_description_new_style">
         <xpath expr="//div[@id='product_description_reviews']/ul/t[@t-if='product.attribute_line_ids']" position="attributes">
             <attribute name="t-if">
                 product.m_product_specification_ids
