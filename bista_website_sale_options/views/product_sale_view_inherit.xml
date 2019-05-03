@@ -35,7 +35,7 @@
         </record>
 
         <!-- Added Website comment field field in sale order -->
-        <record id="sale_website_comment_inherit" model="ir.ui.view">
+        <!-- <record id="sale_website_comment_inherit" model="ir.ui.view">
             <field name="name">sale.website.comment.inherit</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
@@ -46,6 +46,6 @@
                     </group>
                 </xpath>
             </field>
-        </record>
+        </record> -->
     </data>
 </odoo>
