@@ -26,7 +26,7 @@
                     </thead>
                     <tbody>
                         <t t-foreach="product.product_variant_ids" t-as="variant_id">
-                            <tr t-att-id="variant_id.id" t-att-name="'attribute-%s-%s' % (product.id, variant_id.id)">
+                            <tr t-att-id="variant_id.id" t-att-name="'attribute-%s-%s' % (product.id, variant_id.id)" class="variant_details">
                                 <td>
                                     <label label-default="label-default">
                                         <span name="product_name" t-esc="product.name + ' ' + variant_id.attribute_value_ids.name"/>
@@ -111,7 +111,7 @@
                                 <tr t-foreach="product.m_product_specification_ids" t-as="pfl">
                                     <td class="col-md-4">
                                         <strong>
-                                            <p t-esc="pfl.attribute_id.name" style="margin: 0 0 0px;" />
+                                            <p t-esc="pfl.product_specification_id.name" style="margin: 0 0 0px;" />
                                         </strong>
                                     </td>
                                     <td>
