@@ -25,8 +25,8 @@
                     <page name="specification" string="Specifications">
                         <field name="m_product_specification_ids" widget="one2many_list" context="{'show_attribute': False}">
                             <tree string="Variants" editable="bottom">
-                                <field name="attribute_id"/>
-                                <field name="value_ids" widget="many2many_tags" options="{'no_create_edit': True}" domain="[('attribute_id', '=', attribute_id)]" context="{'default_attribute_id': attribute_id}"/>
+                                <field name="product_specification_id"/>
+                                <field name="value_ids" widget="many2many_tags" options="{'no_create_edit': True}" domain="[('specification_id', '=', product_specification_id)]" />
                             </tree>
                         </field>
                     </page>
