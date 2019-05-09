@@ -6,7 +6,7 @@
     'summary': 'Keep Sale Order Line editable in all scenarios while creating the sale order and product in sale order lines',
     'description': """
     Following Sale Order features will be added
-    Req Id. 1.44 - Make Sale Order Line edtiable bottom like PO and Invoice lines
+    Req Id. 1.44 - Make Sale Order Line edtiable bottom like PO and Invoice lines. User can edit the Sale order lines just like purchase order lines
     """,
     'depends': ['sale'],
     'category': 'Sale',
