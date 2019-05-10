@@ -26,6 +26,7 @@
                     </thead>
                     <tbody>
                         <t t-foreach="product.product_variant_ids" t-as="variant_id">
+                            <t t-if="variant_id.is_product_variant_publish() == True">
                             <tr t-att-id="variant_id.id" t-att-name="'attribute-%s-%s' % (product.id, variant_id.id)" class="variant_details">
                                 <td>
                                     <label label-default="label-default">
@@ -52,6 +53,7 @@
                                     </t>
                                 </td>
                             </tr>
+                            </t>
                         </t>
                     </tbody>
                 </table>
