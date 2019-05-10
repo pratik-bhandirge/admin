@@ -215,5 +215,34 @@
         </xpath>
     </template>
 
+    <!-- Website Cart lines -->
+    <template id="ecommerce_category.cart_lines_maqabim" inherit_id="website_sale.cart_lines">
+        <xpath expr="//td[@class='td-product_name']" position="replace">
+            <td t-if="line.product_id.product_tmpl_id" class="td-product_name">
+                <div>
+                    <a t-attf-href="/shop/product/#{ slug(line.product_id.product_tmpl_id) }">
+                        <strong t-esc="line.product_id.display_name" />
+                    </a>
+                </div>
+                <t t-if="line.product_id.is_product_variant_publish() == False">
+                    <p style="display:inline-block;" class="text-danger">Currently Out of Stock</p>
+                </t>
+                <div class="text-muted hidden-xs small">
+                    <t t-foreach="line.name.splitlines()[1:]" t-as="name_line">
+                        <span>
+                            <t t-esc="name_line" />
+                        </span>
+                        <br />
+                    </t>
+                </div>
+                <a href="#" class="js_delete_product hidden-xs no-decoration">
+                    <small>
+                        <i class="fa fa-trash-o" /> Remove</small>
+                </a>
+            </td>
+        </xpath>
+    </template>
+
+
 </odoo>
 
