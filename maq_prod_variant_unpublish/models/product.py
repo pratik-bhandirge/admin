@@ -12,8 +12,16 @@ class ProductProduct(models.Model):
         if self.is_website_publish == False:
             self.website_ids = None
 
+    @api.onchange("is_hide_variant")
+    def onchange_is_website_publish(self):
+        if self.is_hide_variant == False:
+            self.product_hide_website_ids = None
+
+
     is_website_publish = fields.Boolean(
-        string="To show on website", default=True)
+        string="To Hide 'Currently Out of Stock' message", default=True)
+    is_hide_variant = fields.Boolean(
+        string='To Hide Product Variant', default=False)
 #         partners = self.env.user.partner_id
 #         active_id = self._context.get('active_id')
 #         if self._context.get('active_model') == 'res.partner' and active_id:
@@ -21,8 +29,14 @@ class ProductProduct(models.Model):
 #                 partners |= self.env['res.partner'].browse(active_id)
 #         return partners
 
-    website_ids = fields.Many2many("website", string="To Show on Website", 
+    website_ids = fields.Many2many("website", relation="product_product_website_rel",
+                                   string="Websites",
                                    help="IF blank, the product variant will be visible in all websites")
+
+    product_hide_website_ids = fields.Many2many("website",
+                                                relation="product_product_hide_website_rel",
+                                                string="Hide Product from Websites")
+
 
     @api.multi
     def is_product_variant_publish(self):
@@ -40,6 +54,25 @@ class ProductProduct(models.Model):
                         return False
             else:
                 return False
+
+
+    @api.multi
+    def is_product_variant_hide(self):
+        for rec in self:
+            if rec.website_published:
+                current_website = rec.env['website'].get_current_website()
+                if not rec.product_hide_website_ids and rec.is_hide_variant:
+                    return True
+                elif not rec.product_hide_website_ids and not rec.is_hide_variant:
+                    return False
+                elif rec.product_hide_website_ids and rec.is_hide_variant:
+                    if current_website in rec.product_hide_website_ids:
+                        return True
+                    else:
+                        return False
+            else:
+                return False
+
 
 #     @api.onchange('is_website_publish')
 #     def _onchange_is_website_publish(self):
