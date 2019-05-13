@@ -19,7 +19,7 @@ class ProductProduct(models.Model):
 
 
     is_website_publish = fields.Boolean(
-        string="To Hide 'Currently Out of Stock' message", default=True)
+        string="To Show 'Currently Out of Stock' message", default=False)
     is_hide_variant = fields.Boolean(
         string='To Hide Product Variant', default=False)
 #         partners = self.env.user.partner_id
@@ -44,14 +44,14 @@ class ProductProduct(models.Model):
             if rec.website_published:
                 current_website = rec.env['website'].get_current_website()
                 if not rec.website_ids and rec.is_website_publish:
-                    return True
-                elif not rec.is_website_publish and not rec.website_ids:
                     return False
+                elif not rec.is_website_publish and not rec.website_ids:
+                    return True
                 elif rec.website_ids and rec.is_website_publish:
                     if current_website.id in rec.website_ids.ids:
-                        return True
-                    else:
                         return False
+                    else:
+                        return True
             else:
                 return False
 
