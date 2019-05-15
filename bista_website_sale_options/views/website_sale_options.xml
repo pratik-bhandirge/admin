@@ -126,16 +126,17 @@
         </xpath>
         <xpath expr="//div[hasclass('product_price')]" position="before">
             <t t-set="filterd_value_ids"
-                t-value="product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)" />
+                t-value="product.product_variant_ids.ids" />
             <t t-if="len(filterd_value_ids) > 1">
                 <div class="product_grid_qty">
                     <p>Multiple options available please select an option on product page
                     </p>
                 </div>
+                <br/>
             </t>
             <div t-if="len(filterd_value_ids) == 1"
                 class="css_quantity input-group oe_website_spinner product_grid_qty"
-                 groups="!ecommerce_category.group_hide_website_price">
+                groups="!ecommerce_category.group_hide_website_price">
                 <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json hidden-xs">
                     <i class="fa fa-minus"></i>
                 </a>
@@ -145,12 +146,12 @@
                     class="mb8 input-group-addon float_left js_add_cart_json hidden-xs">
                     <i class="fa fa-plus"></i>
                 </a>
+                <br/>
             </div>
         </xpath>
         <xpath expr="//section/div[@class='product_price']/b" position='replace'>
             <b>
-                <t
-                    t-if="product.website_price_difference and website.get_current_pricelist().discount_policy=='without_discount'">
+                <t t-if="product.website_price_difference and website.get_current_pricelist().discount_policy=='without_discount'">
                     <del class="text-danger mr8" style="white-space: nowrap;"
                         t-esc="compute_currency(product.website_public_price)"
                         t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id, 'from_currency': website.currency_id}" />
@@ -173,49 +174,23 @@
     <template id="website_sale.products_add_to_cart" inherit_id="website_sale.products_item"
         active="False" customize_show="True" name="Add to Cart">
         <xpath expr="//div[hasclass('product_price')]" position="after">
-            <input name="product_id" t-att-value="product.product_variant_id.id"
-                type="hidden" />
-            <t t-if="len(product.product_variant_ids) == 1">
-                <!-- (=1)>><t t-esc="filterd_product_ids"/> -->
-                <t
-                    t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)">
-                    <a class="btn btn-default btn-xs a-submit">
-                        <span>Add To Cart</span>
-                    </a>
-                </t>
-                <t
-                    t-if="len(product.product_variant_ids) == 1 and product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() == False)">
-                    <a class="btn btn-default btn-xs a-submit hidden">
-                        <span>Add To Cart</span>
-                    </a>
-                </t>
+            <input name="product_id" t-att-value="product.product_variant_id.id" type="hidden" />
+            <t t-set="filterd_value_ids" t-value="product.product_variant_ids.ids" />
+            <t t-if="len(filterd_value_ids) > 1">
+                <a class="btn btn-default btn-xs"
+                    t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
+                    <span>Add To Cart</span>
+                </a>
             </t>
-
-            <t t-if="len(product.product_variant_ids) &gt; 1 and product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)">
-                <t t-set="filterd_product_ids"
-                    t-value="product.product_variant_ids.filtered(lambda x:x.is_product_variant_publish() != False)" />
-                <t t-if="len(filterd_product_ids) == 1">
-                    <a class="btn btn-default btn-xs a-submit">
-                        <span>Add To Cart</span>
-                    </a>
-                </t>
-                <!-- (>1)>><t t-esc="filterd_product_ids"/> -->
-                <t t-if="len(filterd_product_ids) &gt; 1">
-                    <a class="btn btn-default btn-xs"
-                        t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
-                        <span>Add To Cart</span>
-                    </a>
-                </t>
-                <t t-if="len(filterd_product_ids) &lt; 1">
-                    <a class="btn btn-default btn-xs a-submit hidden">
-                        <span>Add To Cart</span>
-                    </a>
-                </t>
+            <t t-if="len(filterd_value_ids) == 1">
+                <a class="btn btn-default btn-xs a-submit">
+                    <span>Add To Cart</span>
+                </a>
             </t>
         </xpath>
     </template>
 
-    <!-- Website Cart lines -->
+    <!-- show message Currently Out of Stock in website Cart lines -->
     <template id="ecommerce_category.cart_lines_maqabim" inherit_id="website_sale.cart_lines">
         <xpath expr="//td[@class='td-product_name']" position="replace">
             <td t-if="line.product_id.product_tmpl_id" class="td-product_name">
@@ -232,17 +207,15 @@
                         <span>
                             <t t-esc="name_line" />
                         </span>
-                        <br />
+                        <br/>
                     </t>
                 </div>
                 <a href="#" class="js_delete_product hidden-xs no-decoration">
-                    <small>
-                        <i class="fa fa-trash-o" /> Remove</small>
+                    <small><i class="fa fa-trash-o" /> Remove</small>
                 </a>
             </td>
         </xpath>
     </template>
-
 
 </odoo>
 
