@@ -17,6 +17,9 @@
         "maq_prod_variant_unpublish",
         "ecommerce_category",
         "sale",
+        'maq_custom_theme',
+        'maqabim_website_sale',
+        'maqabim_website_popup'
     ],
     "data": [
         'security/ir.model.access.csv',
