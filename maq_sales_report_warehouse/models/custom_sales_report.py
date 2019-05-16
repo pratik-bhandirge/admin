@@ -183,9 +183,9 @@ class SalesReport(models.Model):
         company_ids = []
 
         # 2. Get all the products associated agianse company id of selected warehouse
-        # company_ids = self._get_company_ids()
+        company_ids = self._get_company_ids()
         company_ids.append(False)
-        prod_list = self.env['product.product'].search([('company_id','in',company_ids)]).ids
+        prod_list = self.env['product.product'].search([('company_id','in',company_ids),('type', 'not in', ('service', 'consu', 'digital'))]).ids
 
         # 3. gets all the locations from warehouses
         for rec in self:
@@ -262,20 +262,16 @@ class SalesReport(models.Model):
         :param quant_products: products available in stock_quants
         '''
         vals = []
-        exhausted_domain = [
-            ('type', 'not in', ('service', 'consu', 'digital'))]
+        exhausted_domain = [('type', 'not in', ('service', 'consu', 'digital'))]
         if products:
             exhausted_products = products - quant_products
             exhausted_domain += [('id', 'in', exhausted_products.ids)]
         else:
             exhausted_domain += [('id', 'not in', quant_products.ids)]
-        exhausted_products = self.env[
-            'product.product'].search(exhausted_domain)
+        exhausted_products = self.env['product.product'].search(exhausted_domain)
 
         for product in exhausted_products:
-            vals.append({
-                'product_id': product.id,
-            })
+            vals.append({'product_id': product.id,})
         return vals
 
 
