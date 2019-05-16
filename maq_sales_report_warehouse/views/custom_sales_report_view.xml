@@ -144,7 +144,7 @@
     <menuitem id="menu_custom_sales_report"
             name="Sales Report"
             action="action_custom_sales_report"
-            parent="stock.menu_warehouse_report"
+            parent="stock.menu_stock_warehouse_mgmt"
             groups="maq_sales_report_warehouse.group_sales_report_manager"
             sequence="30"/>
 		
