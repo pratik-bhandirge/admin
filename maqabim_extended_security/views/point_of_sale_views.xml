@@ -11,6 +11,9 @@
 	    	<xpath expr="//button[@name='open_existing_session_cb'][2]" position="attributes">
 	    		<attribute name="t-if">_.contains(['opened', 'closing_control'], record.current_session_state.raw_value) &amp;&amp; !record.restrict_closing.raw_value</attribute>
 	    	</xpath>
+	    	<xpath expr="//div[hasclass('o_kanban_manage_button_section')]" position="attributes">
+                <attribute name="groups">point_of_sale.group_pos_manager</attribute>
+            </xpath>
 	    </field>
 	</record>
 	<record id="pos_session_form_inherit_maqabim_extended_security" model="ir.ui.view">

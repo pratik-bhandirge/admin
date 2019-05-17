@@ -155,6 +155,9 @@
 	    <record id="purchase.report_purchase_quotation" model="ir.actions.report">
 	        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
 	    </record>
+	    <record id="maqabim_purchase.action_purchase_label_report" model="ir.actions.report">
+	    	<field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
+	    </record>
 	</data>
 	<record id="purchase_oder_tree_inherit_maqabim_extended_securiy" model="ir.ui.view">
 		<field name="name">Hide price info for Restricted Purchase user</field>
