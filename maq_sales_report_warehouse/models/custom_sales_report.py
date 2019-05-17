@@ -18,9 +18,23 @@ class SalesReport(models.Model):
     product_ids = fields.Many2many("product.product", string="Products", copy=False)
     #TO DO: put domain on partner_ids and show only those vendors who are registred with product.supplierinfo
     partner_ids = fields.Many2many("res.partner", string="Vendor", copy=False)
+    company_ids = fields.Many2many("res.company", string="Company", copy=False, compute="_set_company_ids")
     internal_ref = fields.Char(string="Internal Reference", copy=False)
     is_lock = fields.Boolean("Locked", default=False, copy=False)
     user_id = fields.Many2one('res.users', string='Responsible', required=False, default=lambda self: self.env.user)
+
+
+    @api.multi
+    @api.depends("m_warehouse_id")
+    def _set_company_ids(self):
+        sw = self.env['stock.warehouse']
+        for rec in self:
+            company_ids = []
+            for warehouse_id in rec.m_warehouse_id.ids:
+                company_id = sw.browse(warehouse_id).company_id
+                if company_id:
+                    company_ids.append(company_id.id)
+            rec.company_ids = list(set(company_ids))
 
     @api.multi
     def _check_date(self):

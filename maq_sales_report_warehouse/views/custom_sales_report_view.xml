@@ -27,7 +27,10 @@
 							<group>
 								<field name="m_warehouse_id" widget="many2many_tags"
 									attrs="{'readonly': [('is_lock', '=', True)]}"
-									 options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+								<field name="company_ids" widget="many2many_tags"
+									invisible="1" readonly="1"
+									options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
 								<field name="m_exhausted" attrs="{'readonly': [('is_lock', '=', True)]}"/>
 								<field name="is_lock" invisible="1"/>
 								<field name="user_id" invisible="1"/>
@@ -130,6 +133,7 @@
 					<field name="m_sales_start_date"/>
 					<field name="m_sales_end_date"/>
 					<field name="m_warehouse_id" widget="many2many_tags"/>
+					<field name="company_ids" widget="many2many_tags" invisible="1"/>
 				</tree>
 			</field>
 		</record>
@@ -146,7 +150,7 @@
             name="Sales Report"
             action="action_custom_sales_report"
             parent="stock.menu_stock_warehouse_mgmt"
-            groups="maq_sales_report_warehouse.group_sales_report_manager"
+            groups="maq_sales_report_warehouse.group_sales_report_manager,base.group_system"
             sequence="30"/>
 		
 	</data>
