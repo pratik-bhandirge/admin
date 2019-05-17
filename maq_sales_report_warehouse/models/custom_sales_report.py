@@ -22,6 +22,7 @@ class SalesReport(models.Model):
     internal_ref = fields.Char(string="Internal Reference", copy=False)
     is_lock = fields.Boolean("Locked", default=False, copy=False)
     user_id = fields.Many2one('res.users', string='Responsible', required=False, default=lambda self: self.env.user)
+    active = fields.Boolean(default=True)
 
 
     @api.multi
