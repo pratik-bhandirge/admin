@@ -155,20 +155,6 @@
 	    <record id="purchase.report_purchase_quotation" model="ir.actions.report">
 	        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
 	    </record>
-<!-- 	    <record id="maqabim_purchase.action_purchase_label_report" model="ir.actions.act_window">
-	    	<field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_manager'))]"/>
-	    </record> -->
-	    <act_window id="maqabim_purchase.action_purchase_label_report"
-            multi="False"
-            key2="client_action_multi"
-            name="Print PO-labels"
-            res_model="label.report.wizard"
-            src_model="purchase.order"
-            view_mode="form"
-            context="{'default_label_type': 'purchase'}"
-            target="new"
-            view_type="form" 
-            groups="purchase.group_purchase_user,purchase.group_purchase_manager"/>
 	    <record id="purchase.purchase_form_action" model="ir.actions.act_window">
 	    	<field name="groups_id" eval="[(4, ref('purchase.group_purchase_user')), (4, ref('purchase.group_purchase_user'))]"/>
 	    </record>
