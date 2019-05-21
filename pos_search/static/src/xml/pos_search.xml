@@ -4,8 +4,8 @@
         <t t-jquery=".searchbox" t-operation="before">
             <div class="search_in_ddl_div">
                 <select name="search_in" class="search_in">
-                    <option value="name">Name</option>
                     <option value="internal_reference">Internal Reference</option>
+                    <option value="name">Name</option>
                     <option value="category">Category</option>
                     <option value="barcode">Barcode</option>
                 </select>
