@@ -22,13 +22,7 @@
             <field name="model">pos.session</field>
             <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
             <field name="arch" type="xml">
-                <!-- <xpath expr="//header/button[3]" position="attributes">
-                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
-                </xpath>
-                <xpath expr="//header/button[4]" position="attributes">
-                    <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
-                </xpath>
-                <xpath expr="//header/button[5]" position="attributes">
+                <!--<xpath expr="//header/button[5]" position="attributes">
                     <attribute name='groups'>maq_pos.group_pos_access_manager</attribute>
                 </xpath>
                 <xpath expr="//sheet/div[@class='oe_button_box']/button[@name='%(point_of_sale.action_pos_box_in)d']" position="attributes">
@@ -43,7 +37,13 @@
                 <xpath expr="//sheet/div[@class='oe_button_box']/button[4]" position="attributes">
                     <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
                 </xpath> -->
-
+                <!-- Access Rights for pos session header buttons, End of Session and Validate Closing and Post Entries-->
+                <xpath expr="//header/button[3]" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_session</attribute>
+                </xpath>
+                <xpath expr="//header/button[4]" position="attributes">
+                    <attribute name='groups'>maq_pos.group_pos_access_session</attribute>
+                </xpath>
                 <!-- Access rights to hide and show Amount in Transactions in Summary by Payment Methods in POS Sessions -->
                 <xpath expr="//separator" position="attributes">
                     <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
