@@ -21,7 +21,7 @@
     <!-- Changes in website add to cart modal on modal-title, modal-body and 
         modal-footer
         While adding cart into show following confirmation pop view-->
-    <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
+    <!-- <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
         inherit_id="website_sale_options.modal">
         <xpath
             expr="//div[contains(@class,'modal-dialog')]/div[@class='modal-content']/div[@class='modal-header']/h4[@class='modal-title']"
@@ -60,12 +60,12 @@
                                 </div>
                                 <div>
                                     <b>Quantity:-</b>
-                                    <!-- <span t-esc="quantity"/> -->
-                                    <input style="border: none; border-color: transparent;"
+                                    <span t-esc="quantity"/> -->
+                                    <!-- <input style="border: none; border-color: transparent;"
                                         type="text" data-min="1" name="add_qty" value="1" readonly="readonly" />
                                 </div>
                                 <div groups="!ecommerce_category.group_hide_website_price">
-                                    <b>Total:-</b>
+                                    <b>Total:-</b> -->
                                     <!-- <span class="text-danger oe_default_price oe_optional"
                                         t-field="product.lst_price"
                                         t-options='{
@@ -73,7 +73,7 @@
                                                "from_currency": product.currency_id,
                                                "display_currency": website.currency_id
                                               }' /> -->
-                                    <span class="oe_price" style="white-space: nowrap;"
+                                    <!-- <span class="oe_price" style="white-space: nowrap;"
                                         t-field="product.website_price"
                                         t-options='{
                                          "widget": "monetary",
@@ -100,7 +100,7 @@
                 </a>
             </div>
         </xpath>
-    </template>
+    </template> -->
     <!-- Improved product grid view on hover by showing price, adding message 
         for multiple variants and showing oe_website_spinner for adding quantity 
         and hiding product price on hover -->
