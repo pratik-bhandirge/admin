@@ -91,14 +91,14 @@ odoo.define('pos_search.pos_search', function (require) {
             }
             var results = [];
             for(var i = 0; i < this.limit; i++){
-                if (search_in == 'internal_reference'){
-                    var r = re.exec(this.internal_reference_search_in_string);
+                if (search_in == 'name'){
+                    var r = re.exec(this.name_search_in_string);
                 } else if(search_in == 'category'){
                     var r = re.exec(this.category_search_in_string);
                 } else if(search_in == 'barcode'){
                     var r = re.exec(this.barcode_search_in_string);
                 } else {
-                    var r = re.exec(this.name_search_in_string);
+                    var r = re.exec(this.internal_reference_search_in_string);
                 }
 
                 if(r){
