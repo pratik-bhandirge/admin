@@ -15,4 +15,4 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     m_delivery_customer_ref = fields.Char(
-        related='sale_id.m_customer_ref', string="External Reference", track_visibility='onchange')
+        related='sale_id.client_order_ref', string="External Reference", track_visibility='onchange')
