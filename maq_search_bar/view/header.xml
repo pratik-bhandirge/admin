@@ -31,7 +31,7 @@
             </div>
         </xpath>
     </template>
-    <template id="product_search_inherit" inherit_id="website_sale.product">
+    <template id="product_search_inherit_maq" inherit_id="website_sale.product">
         <xpath expr="//t[@t-call='website_sale.search']" position="replace"/>
         <xpath expr="//div[hasclass('row')]" position="after">
             <div class="row">

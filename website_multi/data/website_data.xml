@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="website.main_menu" model="website.menu">
+            <field name="website_id" eval="False"/>
+        </record>
+        <record id="website.default_website" model="website">
+            <field name="website_template_user_id" ref="auth_signup.default_template_user"/>
+        </record>
+        <record id="website.website2" model="website">
+            <field name="website_template_user_id" ref="auth_signup.default_template_user"/>
+        </record>
+
+        <record id="website.homepage_page" model="website.page">
+            <field name="published_on_website_ids" eval="[(6, 0, [ref('website.default_website')])]"/>
+        </record>
+        <record id="website.contactus_page" model="website.page">
+            <field name="published_on_website_ids" eval="[(6, 0, [ref('website.default_website')])]"/>
+        </record>
+        <record id="website.aboutus_page" model="website.page">
+            <field name="published_on_website_ids" eval="[(6, 0, [ref('website.default_website')])]"/>
+        </record>
+    </data>
+
+    <data>
+        <record model="ir.module.category" id="base.module_category_theme">
+            <field name="exclusive" eval="0"/>
+        </record>
+    </data>
+
+    <delete id="website.website2_main_menu" model="website.menu"/>
+    <delete id="website.website2_menu_homepage" model="website.menu"/>
+    <!-- <delete id="website.website2_menu_contactus" model="website.menu"/> -->
+</odoo>

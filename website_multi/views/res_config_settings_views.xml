@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_inherit_website_multi" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.website</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+            <field name="priority" eval="999"/>
+            <field name="arch" type="xml">
+                <field name="website_id" position="replace"/>  <!-- remove the invisible website_id -->
+
+                <xpath expr="//div[@data-key='website']/h2[1]" position="before">
+                    <h2>Select the Website to Configure</h2>
+                    <div class="row mt16 o_settings_container" id="website_selection_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="website">
+                            <div class="o_setting_right_pane">
+                                <label string="Website"/>
+                                <div class="text-muted">
+                                    Settings on this page will apply to this website
+                                </div>
+                                <field name="website_id"/>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[@data-key='website']//field[@name='auth_signup_uninvited']/.." position="after">
+                    <div class="text-muted">
+                        This user determines the default configuration of users that sign up through this website
+                    </div>
+                    <div class="mt8">
+                        <field name="website_template_user_id" context="{'active_test': False}" required="1"/>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[@data-key='website']//div[@id='languages_setting']" position="before">
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="website_company_setting" groups="base.group_multi_company">
+                        <div class="o_setting_right_pane">
+                            <label for="website_company_id"/>
+                            <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                The company this website belongs to
+                            </div>
+                            <div class="mt8">
+                                <field name="website_company_id" required="1"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="website_user_setting" groups="base.group_multi_company">
+                        <div class="o_setting_right_pane">
+                            <label for="website_user_id"/>
+                            <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Anonymous operations on this website will happen with
+                            </div>
+                            <div class="mt8">
+                                <field name="website_user_id" domain="[('active', '=', False)]" required="1"/>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[@data-key='website']//label[@for='auth_signup_uninvited']" position="attributes">
+                    <attribute name="for">website_auth_signup_uninvited</attribute>
+                </xpath>
+                <xpath expr="//div[@data-key='website']//field[@name='auth_signup_uninvited']" position="attributes">
+                    <attribute name="name">website_auth_signup_uninvited</attribute>
+                </xpath>
+
+                <!-- remove auth_signup_uninvited from sales config -->
+                <xpath expr="//div[@data-key='sale_management']//field[@name='auth_signup_uninvited']/../.." position="replace"/>
+
+                <!-- website-specific icons -->
+                <xpath expr="//div[@data-key='website']//div[@id='domain_setting']/div/label" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </xpath>
+
+                <label for="language_ids" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </label>
+
+                <label for="has_google_analytics" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </label>
+
+                <label for="website_auth_signup_uninvited" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </label>
+
+                <label for="cdn_activated" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </label>
+
+                <xpath expr="//div[@data-key='website']//div[@id='checkout_assignation_setting']/div/label" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </xpath>
+
+                <xpath expr="//div[@id='live_chat_install_setting']/div/label" position="after">
+                    <span class="fa fa-lg fa-window-maximize" title="Values set here are website-specific."/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

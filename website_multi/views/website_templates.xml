@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="layout" inherit_id="website.layout">
+            <t t-foreach="website.menu_id.child_id" t-as="submenu" position="attributes">
+                <attribute name="t-foreach">website.menu_id.most_specific_child_ids</attribute>
+            </t>
+        </template>
+
+        <template id="edit_website_pages" inherit_id="website.edit_website_pages">
+            <!-- Hide generic pages if a specific one exists for this
+                 website. Note that we don't have to check if the page
+                 belongs to the current website because the /website/pages
+                 controller will only return generic pages or pages
+                 belonging to this specific website. -->
+            <t t-foreach="pages" position="attributes">
+                <attribute name="t-foreach">pages.filtered(pages._is_most_specific_page)</attribute>
+            </t>
+            <i t-att-class="'fa fa-check' if page.menu_ids else 'fa fa-times text-muted'" position="attributes">
+                <attribute name="t-att-class">'fa fa-check' if any(menu._is_published_on_current_website() for menu in page.menu_ids) else 'fa fa-times text-muted'</attribute>
+            </i>
+        </template>
+
+        <template id="user_navbar" inherit_id="website.user_navbar">
+            <li id="mobile-menu" position="after">
+                <li class="dropdown">
+                    <a class="dropdown-toggle waves" data-toggle="dropdown" href="#"><t t-esc="multi_website_selected_website['name']"/> <span class="caret"/></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li t-as="multi_website_website" t-foreach="multi_website_websites">
+                            <a href="#">
+                                <t t-if="multi_website_selected_website['id'] != multi_website_website['id']">
+                                    <span class="oe_menu_text js_multi_website_switch" t-att-id="'multi_website_' + str(multi_website_website['id'])">
+                                        <t t-esc="multi_website_website['name']"/>
+                                    </span>
+                                </t>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </li>
+        </template>
+    </data>
+</odoo>

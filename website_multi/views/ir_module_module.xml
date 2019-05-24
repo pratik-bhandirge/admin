@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="theme_view_kanban_inherit_website_multi" model="ir.ui.view">
+            <field name="name">Themes Kanban</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="website_theme_install.theme_view_kanban"/>
+            <field name="arch" type="xml">
+                <templates position="before">
+                    <field name="is_installed_on_current_website"/>
+                </templates>
+                <div t-name="kanban-box" position="attributes">
+                    <attribute name="t-attf-class">
+                        o_theme_preview mb16 mt16 #{record.is_installed_on_current_website.raw_value? 'o_theme_installed' : ''}
+                    </attribute>
+                </div>
+                <i states="installed" position="attributes">
+                    <attribute name="states"/>
+                    <attribute name="t-if">record.is_installed_on_current_website.raw_value</attribute>
+                </i>
+                <div states="uninstalled" position="attributes">
+                    <attribute name="states"/>
+                    <attribute name="t-if">! record.is_installed_on_current_website.raw_value</attribute>
+                </div>
+            </field>
+        </record>
+
+        <!-- themes should be installed through website_theme_install -->
+        <record id="base.open_module_tree" model="ir.actions.act_window">
+            <field name="domain">['|', '!', ('name', '=like', 'theme_%'), ('state', '=', 'installed')]</field>
+        </record>
+
+        <menuitem id="theme_install" name="Themes"
+                  parent="base.menu_management"
+                  sequence="10"
+                  action="website_theme_install.theme_install_kanban_action"/>
+    </data>
+</odoo>
