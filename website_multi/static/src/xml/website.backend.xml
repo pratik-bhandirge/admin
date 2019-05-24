@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="website.DateRangeButtons">
+        <t t-jquery=".o_date_range_buttons" t-operation="after">
+            <div class="btn-group btn-group-sm o_website_buttons pull-right" style="margin-right: 20px;">
+                <t t-foreach="widget.websites" t-as="website">
+                    <button t-attf-class="btn btn-sm btn-default js_website #{website.selected ? 'active' : ''}"
+                            t-att-data-website-id="website.id">
+                        <t t-esc="website.name"/>
+                    </button>
+                </t>
+            </div>
+        </t>
+    </t>
+</templates>
+

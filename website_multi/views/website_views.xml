@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_website_list" model="ir.actions.act_window">
+            <field name="name">Website</field>
+            <field name="res_model">website</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem name="Websites"
+                  id="menu_website_websites_list"
+                  action="action_website_list"
+                  parent="website.menu_website_global_configuration"
+                  sequence="10"
+                  groups="base.group_no_one"/>
+
+        <record id="website.action_website_menu" model="ir.actions.act_window">
+            <field name="context"/>
+        </record>
+
+        <menuitem name="Menus"
+                  id="menu_website_menus_list"
+                  action="website.action_website_menu"
+                  parent="website.menu_website_global_configuration"
+                  sequence="10"
+                  groups="base.group_no_one"/>
+
+        <record id="website_pages_tree_view_inherit_website_multi" model="ir.ui.view">
+            <field name="name">website.page.list</field>
+            <field name="model">website.page</field>
+            <field name="inherit_id" ref="website.website_pages_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="website_ids" widget="many2many_tags"/>  <!-- todo jov: only show when websites > 1 -->
+                </field>
+            </field>
+        </record>
+
+        <record id="website_pages_form_view_inherit_website_multi" model="ir.ui.view">
+            <field name="name">website.page.form</field>
+            <field name="model">website.page</field>
+            <field name="inherit_id" ref="website.website_pages_form_view"/>
+            <field name="arch" type="xml">
+                <field name="website_published" position="attributes">
+                    <attribute name="invisible">1</attribute>  <!-- make this invisible because it's confusing, instead set website_ids -->
+                </field>
+            </field>
+        </record>
+
+        <record id="view_view_form_extend_inherit_multi_website" model="ir.ui.view">
+            <field name="model">ir.ui.view</field>
+            <field name="inherit_id" ref="website.view_view_form_extend"/>
+            <field name="arch" type="xml">
+                <field name="website_id" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_website_form_inherit_website_sale" model="ir.ui.view">
+            <field name="name">website.form</field>
+            <field name="model">website</field>
+            <field name="inherit_id" ref="website.view_website_form"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="salesteam_id"/>
+                    <field name="user_id" context="{'active_test': False}"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

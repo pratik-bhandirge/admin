@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import api, models, SUPERUSER_ID
+from odoo import api, models, fields, _, SUPERUSER_ID
 from odoo.exceptions import AccessDenied
 from odoo.http import request
 
@@ -11,6 +11,15 @@ _logger = logging.getLogger(__name__)
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
+
+    login_website_ids = fields.Many2many(comodel_name='website', relation='user_website_login_check',
+                                            column1='user_id', column2='website_id', string='Website Allowed Login ',
+                                            help='This field must be used for intenral users authetication only and should not be used for portal users.')
+    @api.onchange('company_id', 'company_ids')
+    def onchange_company(self):
+        user_company_websites = self.env['website'].search([('company_id', 'in', self.company_ids.ids)])
+        self.login_website_ids = user_company_websites + self.registered_on_website_id
+
 
     @classmethod
     def _login(cls, db, login, password):
@@ -31,17 +40,40 @@ class ResUsers(models.Model):
             with cls.pool.cursor() as cr:
                 self = api.Environment(cr, SUPERUSER_ID, {})[cls._name]
                 user = self.search([('login', '=', login)])
-                # CUSTOM START
                 if user:
+                    # START====
+                    #TODO: cleanup + better logic
                     current_website_id = self.env['website'].get_current_website()
-                    if current_website_id.company_id.id not in user.company_ids.ids:
-                        user = False
-                # CUSTOM END
-                if user:
-                    user_id = user.id
-                    user.sudo(user_id).check_credentials(password)
-                    user.sudo(user_id)._update_last_login()
+                    if user.id != SUPERUSER_ID:
+                        # Interal user can auth from different website as some company may 
+                        # not have website so auth trough website of other company or
+                        # allowed login website.
+                        # share user auth to their own own website only.
+                        if not user.share:
+                            user_company_websites = self.env['website'].search([('company_id', 'in', user.company_ids.ids)])
+                            auth_allow_website = user.login_website_ids + user_company_websites
+                            print (auth_allow_website)
+                            if current_website_id not in user.login_website_ids:
+                                _logger.info('Multi-website login failed for db:%s login:%s website_id:%s', db, login, current_website_id)
+                                user = False
+                        elif current_website_id.company_id.id not in user.company_ids.ids:
+                            _logger.info('Multi-website company login failed for db:%s login:%s website_id:%s', db, login, current_website_id)
+                            user = False
+                    #  END====
+                    if user and current_website_id:
+                        try:
+                            user_id = user.id
+                            user.sudo(user_id).check_credentials(password)
+                            user.sudo(user_id)._update_last_login()
+                        except AccessDenied:
+                            _logger.info('Multi-website login failed for db:%s login:%s website_id:%s', db, login, current_website_id)
+                            user_id = False
+                    else:
+                        user_id = False
+                else:
+                    user_id = False
         except AccessDenied:
+            _logger.info('login failed for db:%s login:%s', db, login)
             user_id = False
 
         status = "successful" if user_id else "failed"
