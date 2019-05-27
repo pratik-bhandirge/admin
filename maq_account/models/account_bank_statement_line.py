@@ -113,8 +113,8 @@ class AccountBankStatementLine(models.Model):
         if aml_search.date_maturity:
             aml_date_maturity = datetime.strptime(aml_search.date_maturity, "%Y-%m-%d")
         if not aml_search:
-            date_maturity_before_range = 3
-            date_maturity_after_range = 3
+            date_maturity_before_range = 5
+            date_maturity_after_range = 5
             date_maturity_before_range_list = []
             date_maturity_after_range_list = []
             date_maturity_before_date_list = []
