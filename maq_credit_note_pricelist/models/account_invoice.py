@@ -4,7 +4,6 @@ from odoo import models, fields, api
 
 
 class AccountInvoice(models.Model):
-
     _inherit = 'account.invoice'
 
     m_pricelist_id = fields.Many2one("product.pricelist",
