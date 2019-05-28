@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
     <data>
         <!-- Added website description field in notes page of notebook -->
@@ -47,5 +46,7 @@
                 </xpath>
             </field>
         </record> -->
+
     </data>
 </odoo>
+
