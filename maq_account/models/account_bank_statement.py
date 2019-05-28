@@ -1,11 +1,12 @@
+# -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
 from odoo.osv import expression
 from odoo.tools import float_compare, float_round, float_repr
 from datetime import datetime, timedelta
 
-class AccountBankStatement(models.Model):
 
+class AccountBankStatement(models.Model):
     _inherit = 'account.bank.statement'
 
     @api.multi
@@ -30,8 +31,9 @@ class AccountBankStatement(models.Model):
            Previously it was sql_query += ' ORDER BY stl.id' '''
         sql_query += ' ORDER BY stl.date,stl.id'
         self.env.cr.execute(sql_query, params)
-        st_lines_left = self.env['account.bank.statement.line'].browse([line.get('id') for line in self.env.cr.dictfetchall()])
-        #try to assign partner to bank_statement_line
+        st_lines_left = self.env['account.bank.statement.line'].browse(
+            [line.get('id') for line in self.env.cr.dictfetchall()])
+        # try to assign partner to bank_statement_line
         stl_to_assign = st_lines_left.filtered(lambda stl: not stl.partner_id)
         refs = set(stl_to_assign.mapped('name'))
         if stl_to_assign and refs\
@@ -51,7 +53,8 @@ class AccountBankStatement(models.Model):
                                     )
                                 AND aml.ref IN %s
                                 """
-            params = (self.env.user.company_id.id, (st_lines_left[0].journal_id.default_credit_account_id.id, st_lines_left[0].journal_id.default_debit_account_id.id), tuple(refs))
+            params = (self.env.user.company_id.id, (st_lines_left[0].journal_id.default_credit_account_id.id, st_lines_left[
+                      0].journal_id.default_debit_account_id.id), tuple(refs))
             if statements:
                 sql_query += 'AND stl.id IN %s'
                 params += (tuple(stl_to_assign.ids),)
@@ -59,7 +62,8 @@ class AccountBankStatement(models.Model):
             results = self.env.cr.dictfetchall()
             st_line = self.env['account.bank.statement.line']
             for line in results:
-                st_line.browse(line.get('id')).write({'partner_id': line.get('partner_id')})
+                st_line.browse(line.get('id')).write(
+                    {'partner_id': line.get('partner_id')})
         return {
             'st_lines_ids': st_lines_left.ids,
             'notifications': [],
