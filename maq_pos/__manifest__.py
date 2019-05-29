@@ -21,9 +21,7 @@
         'wizards/inherit_pos_box.xml',
         'wizards/inherit_pos_session_view.xml'
     ],
-    'demo': [
-#         'data/res_groups.xml',
-    ],
+    'demo': [],
     'qweb': ['static/src/xml/inherit_pos.xml'],
     'installable': True,
     'application': True,
