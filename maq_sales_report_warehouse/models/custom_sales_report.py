@@ -23,6 +23,7 @@ class SalesReport(models.Model):
     is_lock = fields.Boolean("Locked", default=False, copy=False)
     user_id = fields.Many2one('res.users', string='Responsible', required=False, default=lambda self: self.env.user)
     active = fields.Boolean(default=True)
+    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('sales.report'))
 
 
     @api.multi
@@ -340,16 +341,19 @@ class SalesReportLines(models.Model):
                     [('product_tmpl_id', '=', product_tmpl_id)])
 
             for record in records:
-                vendors += [record.name.id]
-                if not vendor_details:
-                    vendor_details = record.name.name
-                    if record.product_code:
-                        vendor_details += ' - ' + record.product_code
-                else:
-                    if record.name.name not in vendor_details:
-                        vendor_details += ', ' + record.name.name
+                try:
+                    vendors += [record.name.id]
+                    if not vendor_details:
+                        vendor_details = record.name.name
                         if record.product_code:
                             vendor_details += ' - ' + record.product_code
+                    else:
+                        if record.name.name not in vendor_details:
+                            vendor_details += ', ' + record.name.name
+                            if record.product_code:
+                                vendor_details += ' - ' + record.product_code
+                except:
+                    pass
 
             vals.update({
                 'vendor_details':vendor_details,
