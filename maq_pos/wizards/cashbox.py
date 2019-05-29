@@ -3,7 +3,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
-coin_values = [0.05,0.10,0.25,1.00,2.00,5.00,10.00,20.00,50.00,100.00]
+coin_values = [0.05, 0.10, 0.25, 1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00]
+
 
 class AccountCashboxLine(models.Model):
     _inherit = 'account.cashbox.line'
@@ -14,6 +15,7 @@ class AccountCashboxLine(models.Model):
 
 class CustomCashBoxIn(models.Model):
     _name = 'custom.cash.box.in'
+    _description = "Custom Cash Box In"
 
     @api.depends('cashbox_lines_ids.subtotal')
     def _cal_total(self):
@@ -25,7 +27,8 @@ class CustomCashBoxIn(models.Model):
             for line in record.cashbox_lines_ids:
                 total += line.subtotal or 0
             if total <= 0:
-                raise UserError(_("Please enter number of coins. Total should not be 0 or less than 0."))
+                raise UserError(
+                    _("Please enter number of coins. Total should not be 0 or less than 0."))
 
             record.update({
                 'put_money_in': total,
@@ -37,9 +40,9 @@ class CustomCashBoxIn(models.Model):
         Set default cash values combination in Cashboxline
         """
         vals = super(CustomCashBoxIn, self).default_get(fields)
-        vals['cashbox_lines_ids'] = [[0, 0, {'coin_value': cv, 'number': 0, 'subtotal': 0}] for cv in coin_values]
+        vals['cashbox_lines_ids'] = [
+            [0, 0, {'coin_value': cv, 'number': 0, 'subtotal': 0}] for cv in coin_values]
         return vals
-
 
     cashbox_lines_ids = fields.One2many(
         'account.cashbox.line', 'cashbox_in_id', string='Cashbox Lines')
@@ -85,6 +88,7 @@ class CustomCashBoxIn(models.Model):
 
 class CustomCashBoxOut(models.Model):
     _name = 'custom.cash.box.out'
+    _description = "Custom Cash Box Out"
 
     @api.depends('cashbox_lines_ids.subtotal')
     def _cal_total(self):
@@ -96,7 +100,8 @@ class CustomCashBoxOut(models.Model):
             for line in record.cashbox_lines_ids:
                 total += line.subtotal
             if total <= 0:
-                raise UserError(_("Please enter number of coins. Total should not be 0 or less than 0."))
+                raise UserError(
+                    _("Please enter number of coins. Total should not be 0 or less than 0."))
             record.update({
                 'put_money_out': total,
             })
@@ -107,7 +112,8 @@ class CustomCashBoxOut(models.Model):
         Set default cash values combination in Cashboxline
         """
         vals = super(CustomCashBoxOut, self).default_get(fields)
-        vals['cashbox_lines_ids'] = [[0, 0, {'coin_value': cv, 'number': 0, 'subtotal': 0}] for cv in coin_values]
+        vals['cashbox_lines_ids'] = [
+            [0, 0, {'coin_value': cv, 'number': 0, 'subtotal': 0}] for cv in coin_values]
         return vals
 
     cashbox_lines_ids = fields.One2many(

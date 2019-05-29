@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 {
     "name": "Bista Maq Credit Note Pricelist",
     "version": "11.0.1.0.0",

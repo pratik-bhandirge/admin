@@ -9,7 +9,9 @@
     "website": "https://www.bistasolutions.com",
     "category": "Web",
     "license": "AGPL-3",
-    'summary': 'Hide sale options module within 5 second.',
+    'summary': """This module contains following features
+                1. Hide sale options module within 5 second.
+                2. Add product specification master in product view""",
     "depends": [
         "website",
         "website_sale",

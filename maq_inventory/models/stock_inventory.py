@@ -6,15 +6,15 @@ from datetime import datetime, date
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from docutils.nodes import reference
 
+
 class ReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
-    """
-    Inherit default_get method and set to_refund boolean as True
-    """
+
     @api.model
     def default_get(self, fields):
         """
         1.42 In Customer Shipment, Set the To Refund as Ticked by default in Reverse Transfer screen
+        Inherit default_get method and set to_refund boolean as True
         """
         res = super(ReturnPicking, self).default_get(fields)
         return_moves = res.get('product_return_moves')
@@ -28,23 +28,15 @@ class ReturnPicking(models.TransientModel):
             res['product_return_moves'] = ret_move_list
         return res
 
-class Inventory(models.Model):
 
+class Inventory(models.Model):
     _inherit = 'stock.inventory'
 
     """
     Added new states in state field and new fields
     """
-
-    state = fields.Selection(string='Status', selection=[
-        ('draft', 'Draft'),
-        ('cancel', 'Cancelled'),
-        ('confirm', 'In Progress'),
-        ('waiting_approval','Waiting for Approval'),
-        ('approved', 'Approved'),
-        ('done', 'Validated')],
-        copy=False, index=True, readonly=True,
-        default='draft')
+    state = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('cancel', 'Cancelled'), ('confirm', 'In Progress'), ('waiting_approval', 'Waiting for Approval'), ('approved', 'Approved'), ('done', 'Validated')],
+                             copy=False, index=True, readonly=True, default='draft')
 
     approve_id = fields.Many2one("res.partner", "Approved By", readonly=True)
     is_approved = fields.Boolean(default=False, readonly=True)
@@ -53,56 +45,40 @@ class Inventory(models.Model):
     m_internal_reference = fields.Char(string='Internal Reference')
     m_website_category_ids = fields.Many2many(
         'product.public.category', string='Website Category')
-    # 2.00 In Inventory adjustment, Include Exhausted products should be ticked by default
-    exhausted = fields.Boolean('Include Exhausted Products',
-                               readonly=True,
-                               default=True,
-                               states={'draft': [('readonly', False)]})
-
+    # 2.00 In Inventory adjustment, Include Exhausted products should be
+    # ticked by default
+    exhausted = fields.Boolean('Include Exhausted Products', readonly=True, default=True, states={
+                               'draft': [('readonly', False)]})
     approve_date = fields.Date(string='Approved Date', readonly=True)
-
-    line_ids = fields.One2many(
-        'stock.inventory.line', 'inventory_id', string='Inventories',
-        copy=True, readonly=False,
-        states={'done': [('readonly', True)],
-                'approved': [('readonly', True)],
-                'waiting_approval': [('readonly', True)]})
+    line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Inventories', copy=True, readonly=False, states={
+                               'done': [('readonly', True)], 'approved': [('readonly', True)], 'waiting_approval': [('readonly', True)]})
 
     def action_start(self):
-        for inventory in self.\
-            filtered(lambda x: x.state not in ('done','cancel')):
+        for inventory in self.filtered(lambda x: x.state not in ('done', 'cancel')):
             vals = {'state': 'confirm', 'date': fields.Datetime.now()}
             if (inventory.filter != 'partial') and not inventory.line_ids:
-                vals.update(
-                    {'line_ids':\
-                      [(0, 0, line_values) for line_values in\
-                       inventory._get_inventory_lines_values()]})
+                vals.update({'line_ids': [
+                            (0, 0, line_values) for line_values in inventory._get_inventory_lines_values()]})
             inventory.write(vals)
         return True
 
     def action_approval(self):
-        for inventory in self.\
-            filtered(lambda x: x.state not in ('done','cancel')):
+        for inventory in self.filtered(lambda x: x.state not in ('done', 'cancel')):
             vals = {'state': 'waiting_approval', 'date': fields.Datetime.now()}
             if (inventory.filter != 'partial') and not inventory.line_ids:
-                vals.update(
-                    {'line_ids':\
-                      [(0, 0, line_values) for line_values in\
-                       inventory._get_inventory_lines_values()]})
+                vals.update({'line_ids': [
+                            (0, 0, line_values) for line_values in inventory._get_inventory_lines_values()]})
             inventory.write(vals)
         return True
 
     def action_approved(self):
-        for inventory in self.\
-            filtered(lambda x: x.state not in ('done','cancel')):
+        for inventory in self.filtered(lambda x: x.state not in ('done', 'cancel')):
             vals = {'state': 'approved', 'date': fields.Datetime.now(),
-                     'approve_id': self.env.user.partner_id.id,
-                     'approve_date': fields.Datetime.now()}
+                    'approve_id': self.env.user.partner_id.id,
+                    'approve_date': fields.Datetime.now()}
             if (inventory.filter != 'partial') and not inventory.line_ids:
-                vals.update(
-                    {'line_ids':\
-                      [(0, 0, line_values) for line_values in\
-                       inventory._get_inventory_lines_values()]})
+                vals.update({'line_ids': [
+                            (0, 0, line_values) for line_values in inventory._get_inventory_lines_values()]})
             inventory.write(vals)
         return True
 
@@ -142,6 +118,8 @@ class Inventory(models.Model):
         vals = []
         product_obj = self.env['product.product']
         quant_products = self.env['product.product']
+        product_supplierinfo_obj = self.env['product.supplierinfo']
+
         locations = self.env['stock.location'].search(
             [('id', 'child_of', [self.location_id.id])])
 
@@ -150,7 +128,6 @@ class Inventory(models.Model):
         else:
             domain = "location_id in %s " % (tuple(locations.ids),)
 
-        product_supplierinfo_obj = self.env['product.supplierinfo']
         if self.filter in ('suppliers'):
             product_supplier_ids = product_supplierinfo_obj.search([
                 ('name', 'in', self.m_supplier_ids.ids),
@@ -247,11 +224,11 @@ class Inventory(models.Model):
                     ('default_code', 'ilike', reference_list[0]),
                 ])
             elif len(reference_list) > 1:
-#                 ref_list = ''
+                #                 ref_list = ''
                 prod_ref_id = []
                 for ref in reference_list:
                     prod_ref_id += self.env['product.product'].search([
-                    ('default_code', 'ilike', ref),]).ids
+                        ('default_code', 'ilike', ref), ]).ids
                 product_reference_id = self.env['product.product'].search([
                     ('id', 'in', prod_ref_id),
                 ])
@@ -303,6 +280,4 @@ class Inventory(models.Model):
                 return vals
             else:
                 raise ValidationError(_('There are some incorrect Internal reference entered. Please enter exact internal reference!'))
-#                 raise ValidationError(_('There is no product available whose Internal Reference is "%s"!') % (
-#                     self.m_internal_reference))
         return super(Inventory, self)._get_inventory_lines_values()
