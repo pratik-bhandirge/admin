@@ -29,6 +29,10 @@
                     <field name="m_created_by" groups="maq_purchase.group_po_joint"
                         attrs="{'readonly': [('state', 'not in', ('draft'))]}"/>
                 </xpath>
+                <xpath expr="//field[@name='company_id']" position="attributes">
+                    <attribute name="context">{'allowed_companies_only': True}</attribute>
+                    <attribute name="options">{'no_create': True,'no_create_edit': True, 'no_open': True}</attribute>
+                </xpath>
             </field>
         </record>
         
