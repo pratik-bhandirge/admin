@@ -18,17 +18,14 @@
             <t t-if="product.display_name">
                 <t t-esc="product.display_name"/>
             </t>
-            <br/>
             <t t-if="product.default_code">
-                <t t-esc="product.default_code"/>
+                <br/><t t-esc="product.default_code"/>
             </t>
-            <br/>
-            <t t-if="product.categ and product.categ.name">
-                <t t-esc="product.categ and product.categ.name"/>
+            <t t-if="product.pos_categ_id and product.pos_categ_id[1]">
+                <br/><t t-esc="product.pos_categ_id[1]"/>
             </t>
-            <br/>
             <t t-if="product.barcode">
-                <t t-esc="product.barcode"/>
+                <br/><t t-esc="product.barcode"/>
             </t>
         </t>
     </t>
