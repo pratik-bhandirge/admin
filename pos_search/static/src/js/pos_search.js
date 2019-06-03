@@ -34,10 +34,10 @@ odoo.define('pos_search.pos_search', function (require) {
             return str;
         },
         _product_category_search_in_string: function(product){
-            if (!product.categ){
+            if (!product.pos_categ_id){
                 return '';
             }
-            var str = product.categ.name;
+            var str = product.pos_categ_id[1];
             str  = product.id + ':' + str.replace(/:/g,'') + '\n';
             return str;
         },
@@ -114,8 +114,8 @@ odoo.define('pos_search.pos_search', function (require) {
 
     screens.ProductCategoriesWidget.include({
         init: function(parent, options){
+        	var self = this;
             this._super(parent, options);
-            var self = this;
             this.search_in_handler = function(event){
                 self.seach_in(this.value);
                 self.clear_search();
@@ -123,7 +123,7 @@ odoo.define('pos_search.pos_search', function (require) {
         },
         renderElement: function(){
             this._super();
-            this.el.querySelector('.search_in').addEventListener('click', this.search_in_handler);
+            this.el.querySelector('.search_in').addEventListener('change', this.search_in_handler);
         },
         seach_in : function(search_in){
             var db = this.pos.db;
