@@ -51,7 +51,7 @@ class Inventory(models.Model):
                                'draft': [('readonly', False)]})
     approve_date = fields.Date(string='Approved Date', readonly=True)
     line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Inventories', copy=True, readonly=False, states={
-                               'done': [('readonly', True)], 'approved': [('readonly', True)], 'waiting_approval': [('readonly', True)]})
+                               'done': [('readonly', True)], 'approved': [('readonly', True)]})
 
     def action_start(self):
         for inventory in self.filtered(lambda x: x.state not in ('done', 'cancel')):
