@@ -6,6 +6,42 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='statement_ids']" position="after">
+                <separator string="Cash Box Summary"
+                    attrs="{'invisible' : ['|',('cash_control', '=', False),('state', '=', 'opening_control')]}"/>
+                <field name="m_cashbox_summary_ids" attrs="{'invisible' : ['|',('cash_control', '=', False),('state', '=', 'opening_control')]}">
+                    <tree create="1" edit="1" delete="1">
+                        <field name="balance_type" string="Type"/>
+                        <field name="create_date" string="Date"/>
+                        <field name="total" sum="Total" groups="maq_pos.group_pos_access_manager"/>
+                    </tree>
+                    <form create="1" edit="1" delete="1">
+                        <group>
+                            <group>
+                                <field name="balance_type" string="Type"/>
+                                <field name="create_date" string="Date"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="cashbox_lines_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="coin_value"/>
+                                    <field name="number"/>
+                                    <field name="subtotal" sum="Total" groups="maq_pos.group_pos_access_manager"/>
+                                </tree>
+                                <form create="1" edit="1" delete="1">
+                                    <group>
+                                        <field name="coin_value"/>
+                                        <field name="number"/>
+                                        <field name="subtotal" sum="Total" groups="maq_pos.group_pos_access_manager"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                    </form>
+                </field>
+
                 <separator string="Summary by Put Money In" attrs="{'invisible' : ['|',('cash_control', '=', False),('state', '=', 'opening_control')]}"/>
                 <field name="m_cashbox_in_ids" attrs="{'invisible' : ['|',('cash_control', '=', False),('state', '=', 'opening_control')]}">
                     <tree create="1" edit="1" delete="1">
@@ -28,6 +64,13 @@
                                     <field name="number"/>
                                     <field name="subtotal" sum="Total" groups="maq_pos.group_pos_access_manager"/>
                                 </tree>
+                                <form create="1" edit="1" delete="1">
+                                    <group>
+                                        <field name="coin_value"/>
+                                        <field name="number"/>
+                                        <field name="subtotal" sum="Total" groups="maq_pos.group_pos_access_manager"/>
+                                    </group>
+                                </form>
                             </field>
                         </group>
                     </form>
@@ -56,6 +99,13 @@
                                     <field name="number"/>
                                     <field name="subtotal" sum="Total" groups="maq_pos.group_pos_access_manager"/>
                                 </tree>
+                                <form create="1" edit="1" delete="1">
+                                    <group>
+                                        <field name="coin_value"/>
+                                        <field name="number"/>
+                                        <field name="subtotal" sum="Total" groups="maq_pos.group_pos_access_manager"/>
+                                    </group>
+                                </form>
                             </field>
                         </group>
                     </form>

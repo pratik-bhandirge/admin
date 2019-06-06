@@ -9,8 +9,9 @@ coin_values = [0.05, 0.10, 0.25, 1.00, 2.00, 5.00, 10.00, 20.00, 50.00, 100.00]
 class AccountCashboxLine(models.Model):
     _inherit = 'account.cashbox.line'
 
-    cashbox_in_id = fields.Many2one('custom.cash.box.in', string="Cashbox")
-    cashbox_out_id = fields.Many2one('custom.cash.box.out', string="Cashbox")
+    cashbox_in_id = fields.Many2one('custom.cash.box.in', string="Cashbox In")
+    cashbox_out_id = fields.Many2one('custom.cash.box.out', string="Cashbox Out")
+    cashbox_out_id = fields.Many2one('custom.cash.box.out', string="Cashbox Out")
 
 
 class CustomCashBoxIn(models.Model):
