@@ -64,8 +64,24 @@
                     <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
                 </xpath>
 
-                <xpath expr="//sheet/group/div[1]" position="attributes">
-                    <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
+                <xpath expr="//sheet/group/div[1]" position="replace">
+                    <div attrs="{'invisible' : [('cash_control', '=', False)]}">
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="cash_register_balance_start" readonly="1" string="Opening Balance" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <label groups="maq_pos.group_pos_access_manager" for="cash_register_total_entry_encoding" attrs="{'invisible' : [('state', '=', 'opening_control')]}" string="+ Transactions" class="oe_force_bold oe_opening_total"/>
+                            <field groups="maq_pos.group_pos_access_manager" name="cash_register_total_entry_encoding" nolabel="1" attrs="{'invisible' : [('state', '=', 'opening_control')]}" class="oe_bold oe_pos_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <label groups="maq_pos.group_pos_access_manager" for="cash_register_balance_end" attrs="{'invisible' : [('state', '=', 'opening_control')]}" string="= Theoretical Closing Balance" class="oe_force_bold oe_opening_total"/>
+                            <field groups="maq_pos.group_pos_access_manager" name="cash_register_balance_end" nolabel="1" attrs="{'invisible' : [('state', '=', 'opening_control')]}" class="oe_bold oe_pos_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <div class="oe_clear"/>
+                        <div attrs="{'invisible' : ['|', ('cash_journal_id', '=', False), ('state', '!=', 'opening_control')]}" class="oe_view_nocontent" groups="point_of_sale.group_pos_manager,maq_pos.group_pos_access_manager">
+                            <p class="oe_view_nocontent_create">
+                            You can define another list of available currencies on the
+                            <i>Cash Registers</i> tab of the <b><field name="cash_journal_id" class="oe_inline"/></b>
+                            payment method.
+                            </p>
+                        </div>
+                    </div>
                 </xpath>
                 <xpath expr="//sheet/group/div[2]" position="attributes">
                     <attribute name="groups">maq_pos.group_pos_access_manager</attribute>
