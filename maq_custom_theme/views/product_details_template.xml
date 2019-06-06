@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_product" inherit_id="website_sale.product">
-        <xpath expr="//div[@id='wrap']/section[@id='product_detail']/div[@class='row'][2]/div[@class='col-sm-7']" position="attributes">
-            <attribute name="class">
-                col-sm-6 col-lg-6
-            </attribute>
-        </xpath>
-        <xpath expr="//div[@id='wrap']/section[@id='product_detail']/div[@class='row'][2]/div[@class='col-sm-5 col-lg-4 col-lg-offset-1']" position="attributes">
-            <attribute name="class">
-                col-sm-6 col-lg-6
+    <template id="custom_product_quantity" inherit_id="website_sale.product_quantity">
+        <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
+            <attribute name='t-if'>
+                product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
             </attribute>
         </xpath>
     </template>
-    <template id="custom_product_variants" inherit_id="website_sale.product">
+    <template id="custom_product" inherit_id="theme_loftspace_sale.product">
+        <xpath expr="//div[@class='col-sm-7']" position="attributes">
+            <attribute name="class">col-sm-6 col-lg-6</attribute>
+        </xpath>
+        <xpath expr="//div[@id='product_details']" position="attributes">
+            <attribute name="class">col-sm-6 col-lg-6</attribute>
+        </xpath>
+    </template>
+    <template id="custom_product_variants" inherit_id="theme_loftspace_sale.product">
         <xpath expr="//t[@t-placeholder='select']" position="replace">
             <t t-if="len(product.product_variant_ids) &gt; 1">
                 <table class="table table-responsive">
@@ -65,11 +68,7 @@
                 </t>
             </t>
         </xpath>
-        <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
-            <attribute name='t-if'>
-                product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
-            </attribute>
-        </xpath>
+
         <xpath expr="//a[@id='add_to_cart']" position="replace">
             <t t-if="len(product.product_variant_ids) &gt; 1">
                 <a id="add_to_cart_b" class="btn btn-success pull-right btn-lg mt8 js_check_product b-submit center-block" href="#">Add to Cart</a>

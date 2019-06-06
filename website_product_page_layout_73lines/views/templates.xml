@@ -5,7 +5,7 @@
 
     <!-- Give Space besides Add to Cart button -->
     <template id="product_side_block" inherit_id="website_sale.product"
-        name="Product Side Block" active="False" customize_show="True">
+              name="Product Side Block" active="False" customize_show="True">
         <xpath expr="//div[hasclass('col-sm-7')]" position="attributes">
             <attribute name="class">col-sm-5</attribute>
         </xpath>
@@ -15,7 +15,7 @@
         </xpath>
         <xpath expr="//section[@id='product_detail']/div[2]" position="inside">
             <div class="col-sm-2 col-lg-3 oe_structure">
-                <h4> Put Your Content Here Like Images,Carousel,Ecommerce Terms
+                <h4>Put Your Content Here Like Images,Carousel,Ecommerce Terms
                     etc...
                 </h4>
             </div>
@@ -23,10 +23,10 @@
     </template>
 
     <!-- Remove Default Product Description & Added again with Some Style :D -->
-    <template id="product_description_new_style" inherit_id="website_sale.product"
-        name="Product Info Tabs">
+    <template id="product_description_new_style" inherit_id="theme_loftspace_sale.product"
+              name="Product Info Tabs">
         <xpath expr="//div[@t-field='product.website_description']"
-            position="replace"></xpath>
+               position="replace"></xpath>
         <xpath expr="//div[@id='product_details']" position="attributes">
             <attribute name="data-name">product_details</attribute>
         </xpath>
@@ -41,7 +41,7 @@
                     <t t-if="product.attribute_line_ids">
                         <li role="presentation" class="" id="product_specification_tab">
                             <a href="#product-additional-info" aria-controls="full" role="tab"
-                                data-toggle="tab" aria-expanded="true">
+                               data-toggle="tab" aria-expanded="true">
                                 <strong>Specifications</strong>
                             </a>
                         </li>
@@ -50,7 +50,7 @@
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="full-desc">
                         <div itemprop="description" t-field="product.website_description"
-                            class="oe_structure mt16" id="product_full_description" />
+                             class="oe_structure mt16" id="product_full_description"/>
                     </div>
                     <div class="tab-pane fade" id="product-additional-info">
                         <div t-if="product.attribute_line_ids">
@@ -60,18 +60,19 @@
                                         <tr t-foreach="product.attribute_line_ids" t-as="pfl">
                                             <td class="col-md-4">
                                                 <strong>
-                                                    <p t-esc="pfl.attribute_id.name" style="margin: 0 0 0px;" />
+                                                    <p t-esc="pfl.product_specification_id.name"
+                                                       style="margin: 0 0 0px;"/>
                                                 </strong>
                                             </td>
                                             <td>
                                                 <p style="margin: 0 0 0px;">
-                                                    <t t-set="i" t-value="0" />
+                                                    <t t-set="i" t-value="0"/>
                                                     <t t-foreach="pfl.value_ids" t-as="pfv">
-                                                        <t t-esc="pfv.name" />
+                                                        <t t-esc="pfv.name"/>
                                                         <span t-if="i != len(pfl.value_ids)-1">
                                                             ,
                                                         </span>
-                                                        <t t-set="i" t-value="i+1" />
+                                                        <t t-set="i" t-value="i+1"/>
                                                     </t>
                                                 </p>
                                             </td>
@@ -88,14 +89,14 @@
 
     <!-- Remove Default Product Discussion & Rating -->
     <template id="website_sale.product_comment" inherit_id="website_sale.product"
-        active="False" customize_show="False" name="Discussion and Rating">
+              active="True" customize_show="True" name="Discussion and Rating">
     </template>
 
     <!-- Added Discussion & Rating Option in Customize & Display it in Tabs
         Style -->
     <template id="product_comment_new"
-        inherit_id="website_product_page_layout_73lines.product_description_new_style"
-        active="False" customize_show="True" name="Discussion and Rating">
+              inherit_id="website_product_page_layout_73lines.product_description_new_style"
+              active="False" customize_show="True" name="Discussion and Rating">
         <xpath expr="//li[@id='li-full-desc']" position="after">
             <li id="li-comment">
                 <a href="#full-comment" data-toggle="tab">
