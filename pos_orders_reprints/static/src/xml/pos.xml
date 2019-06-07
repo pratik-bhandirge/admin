@@ -37,11 +37,11 @@
         </div>
     </t>
     <t t-name="XmlReceiptWrappedProductNameLinesCopy">
-        <t t-foreach="line.product_id.slice(1)" t-as="wrapped_line">
+        <!-- <t t-foreach="line.product_id.slice(1)" t-as="wrapped_line">
             <line>
                 <left><t t-esc="wrapped_line"/></left>
             </line>
-        </t>
+        </t> -->
     </t>
 
     <t t-name="XmlReceiptCopy">
