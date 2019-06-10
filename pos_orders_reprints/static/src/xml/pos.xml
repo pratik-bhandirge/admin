@@ -140,6 +140,12 @@
                     <left>Total Taxes</left>
                     <right><value><t t-esc='order.amount_tax'/></value></right>
                 </line>
+                <!-- <t t-foreach='receipt.tax_details' t-as='tax'>
+                    <line>
+                        <left><t t-esc='tax.name' /></left>
+                        <right><value><t t-esc='tax.amount' /></value></right>
+                    </line>
+                </t> -->
             </t>
 
             <!-- Total -->
@@ -175,18 +181,18 @@
                     <right><value><t t-esc='discount_total'/></value></right>
                 </line>
             </t>
-            <t t-if='taxincluded'>
-                <t t-foreach='tax_lines' t-as='tax'>
+ <!--            <t t-if='taxincluded'>
+                <t t-foreach='receipt.tax_details' t-as='tax'>
                     <line>
                         <left><t t-esc='tax.name' /></left>
-                        <right><value><t t-esc='tax.tax_amount' /></value></right>
+                        <right><value><t t-esc='tax.amount' /></value></right>
                     </line>
                 </t>
                 <line>
                     <left>Total Taxes</left>
-                    <right><value><t t-esc='order.amount_tax'/></value></right>
+                    <right><value><t t-esc='receipt.total_tax'/></value></right>
                 </line>
-            </t>
+            </t> -->
 
             <div class='before-footer' />
 

@@ -50,10 +50,11 @@ odoo.define('pos_orders_reprints.pos_orders_reprints', function (require) {
                         order: result.order,
                         change: result.change,
                         orderlines: result.order_line,
+                        amount_subtotal:result.amount_subtotal,
                         discount_total: result.discount,
                         paymentlines: result.payment_lines,
-                        tax_lines:result.tax_lines,
                         receipt: order.export_for_printing(),
+                        tax_lines:result.tax_lines,
                     });
                     self.gui.show_screen('wv-orders-receipt');
                 });
@@ -71,10 +72,11 @@ odoo.define('pos_orders_reprints.pos_orders_reprints', function (require) {
                         receipt: self.pos.get_order().export_for_printing(),
                         order: result.order,
                         orderlines: result.order_line,
+                        amount_subtotal:result.amount_subtotal,
                         change: result.change,
                         discount_total: result.discount,
-                        tax_lines:result.tax_lines,
                         paymentlines: result.payment_lines,
+                        tax_lines:result.tax_lines,
                     };
                     var receipt = QWeb.render('XmlReceiptCopy',env);
                     self.pos.proxy.print_receipt(receipt);
