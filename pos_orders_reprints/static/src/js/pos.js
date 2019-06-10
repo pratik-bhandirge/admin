@@ -1,8 +1,8 @@
 odoo.define('pos_orders_reprints.pos_orders_reprints', function (require) {
 "use strict";
 
-	var module = require('point_of_sale.models');
-	var screens = require('point_of_sale.screens');
+    var module = require('point_of_sale.models');
+    var screens = require('point_of_sale.screens');
     var gui = require('point_of_sale.gui');
     var PosPopWidget = require('point_of_sale.popups');
     var core = require('web.core');
@@ -11,7 +11,7 @@ odoo.define('pos_orders_reprints.pos_orders_reprints', function (require) {
     var QWeb = core.qweb;
     var _t = core._t;
 
-	var OrdersReceiptScreenWidget = screens.ReceiptScreenWidget.extend({
+    var OrdersReceiptScreenWidget = screens.ReceiptScreenWidget.extend({
         template: 'OrdersReceiptScreenWidget',
         click_next: function(){
             this.gui.show_screen('products');
@@ -44,39 +44,41 @@ odoo.define('pos_orders_reprints.pos_orders_reprints', function (require) {
                     method: 'get_order_detail',
                     args: [order_id],
                 }).then(function(result){
-	                var order = self.pos.get_order();
-	                order.receipt_reprint_val = QWeb.render('PosTicketReprint',{
-	                    widget:self,
-	                    order: result.order,
-	                    change: result.change,
-	                    orderlines: result.order_line,
-	                    discount_total: result.discount,
-	                    paymentlines: result.payment_lines,
-	                    receipt: order.export_for_printing(),
-	                });
-	                self.gui.show_screen('wv-orders-receipt');
-	            });
+                    var order = self.pos.get_order();
+                    order.receipt_reprint_val = QWeb.render('PosTicketReprint',{
+                        widget:self,
+                        order: result.order,
+                        change: result.change,
+                        orderlines: result.order_line,
+                        discount_total: result.discount,
+                        paymentlines: result.payment_lines,
+                        tax_lines:result.tax_lines,
+                        receipt: order.export_for_printing(),
+                    });
+                    self.gui.show_screen('wv-orders-receipt');
+                });
             }); 
             $(".print_thermal_printer").click(function(){
-            	var order_id = $(this).data('id');
+                var order_id = $(this).data('id');
                 rpc.query({
                     model: 'pos.config',
                     method: 'get_order_detail',
                     args: [order_id],
                 }).then(function(result){
-	                var order = self.pos.get_order();
-	                var env = {
-			            widget:  self,
-			            receipt: self.pos.get_order().export_for_printing(),
-			            order: result.order,
-			            orderlines: result.order_line,
-			            change: result.change,
-			            discount_total: result.discount,
-			            paymentlines: result.payment_lines,
-			        };
-			        var receipt = QWeb.render('XmlReceiptCopy',env);
-			        self.pos.proxy.print_receipt(receipt);
-	            });
+                    var order = self.pos.get_order();
+                    var env = {
+                        widget:  self,
+                        receipt: self.pos.get_order().export_for_printing(),
+                        order: result.order,
+                        orderlines: result.order_line,
+                        change: result.change,
+                        discount_total: result.discount,
+                        tax_lines:result.tax_lines,
+                        paymentlines: result.payment_lines,
+                    };
+                    var receipt = QWeb.render('XmlReceiptCopy',env);
+                    self.pos.proxy.print_receipt(receipt);
+                });
             });
         },
     });    

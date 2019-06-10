@@ -117,7 +117,7 @@
                                 </value>
                             </left>
                             <right>
-                                <value><t t-esc='line.price_unit' /></value>
+                                <value><t t-esc='line.price_subtotal' /></value>
                             </right>
                         </line>
                     </t>
@@ -129,13 +129,17 @@
             <t t-set='taxincluded' t-value='Math.abs(order.amount_total - order.amount_tax) &lt;= 0.000001' />
             <t t-if='!taxincluded'>
                 <line><right>--------</right></line>
-                <line><left>Subtotal</left><right> <value><t t-esc="order.amount_total" /></value></right></line>
-                <!-- <t t-foreach='receipt.tax_details' t-as='tax'>
+                <line><left>Subtotal</left><right> <value><t t-esc="order.amount_subtotal" /></value></right></line>
+                <t t-foreach='tax_lines' t-as='tax'>
                     <line>
                         <left><t t-esc='tax.name' /></left>
-                        <right><value><t t-esc='tax.amount' /></value></right>
+                        <right><value><t t-esc='tax.tax_amount' /></value></right>
                     </line>
-                </t> -->
+                </t>
+                <line>
+                    <left>Total Taxes</left>
+                    <right><value><t t-esc='order.amount_tax'/></value></right>
+                </line>
             </t>
 
             <!-- Total -->
@@ -171,18 +175,18 @@
                     <right><value><t t-esc='discount_total'/></value></right>
                 </line>
             </t>
- <!--            <t t-if='taxincluded'>
-                <t t-foreach='receipt.tax_details' t-as='tax'>
+            <t t-if='taxincluded'>
+                <t t-foreach='tax_lines' t-as='tax'>
                     <line>
                         <left><t t-esc='tax.name' /></left>
-                        <right><value><t t-esc='tax.amount' /></value></right>
+                        <right><value><t t-esc='tax.tax_amount' /></value></right>
                     </line>
                 </t>
                 <line>
                     <left>Total Taxes</left>
-                    <right><value><t t-esc='receipt.total_tax'/></value></right>
+                    <right><value><t t-esc='order.amount_tax'/></value></right>
                 </line>
-            </t> -->
+            </t>
 
             <div class='before-footer' />
 
