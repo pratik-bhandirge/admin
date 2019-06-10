@@ -71,21 +71,18 @@
                t-value="p_categ.parent_id"/>
             <t t-call="maq_search_bar.parent_category_name"/>
         </t>
-        <span t-esc="p_categ.name"/>/
+        <span t-esc="p_categ.name" style="color:#000;"/>/
     </template>
     <template id="website_search_result">
         <div class="autocomplete-wrapper">
-            <div
-                    class="col-md-9 col-md-push-3 col-sm-12 col-xs-12 mb8 mt16 left-border">
+            <div class="col-md-9 col-md-push-3 col-sm-12 col-xs-12 mb8 mt16 left-border">
                 <t t-if="product_count &gt; 0">
                     <div class="row">
                         <div class="aa-dataset-products col-md-6"
-                             style="min-height: 0px;" t-foreach="product_ids"
-                             t-as="prod_id">
+                             style="min-height: 0px;" t-foreach="product_ids" t-as="prod_id">
                             <a class="row search_product"
-                               t-att-href="'/shop/product/%s' % slug(prod_id)">
-                                <div
-                                        class="col-md-3 col-sm-3 col-xs-3 mb8 mt8">
+                               t-att-href="'/shop/product/%s' % slug(prod_id)" style="color:#000;">
+                                <div class="col-md-3 col-sm-3 col-xs-3 mb8 mt8">
                                     <!--<a itemprop="url"-->
                                     <!--t-att-href="'/wholesale/product/%s' % slug(prod_id)">-->
                                     <span itemprop="image"
@@ -95,12 +92,11 @@
                                           t-att-alt="prod_id.name"/>
                                     <!--</a>-->
                                 </div>
-                                <div
-                                        class="col-md-9 col-sm-9 col-xs-9 mb8 mt8 prod_detail">
+                                <div class="col-md-9 col-sm-9 col-xs-9 mb8 mt8 prod_detail">
                                     <!--<a itemprop="url"-->
                                     <!--t-att-href="'/wholesale/product/%s' % slug(prod_id)">-->
                                     <strong>
-                                        <span t-esc="prod_id.name"/>
+                                        <span t-esc="prod_id.name" style="color:#000;"/>
                                     </strong>
                                     <!--</a>-->
                                     <!--<div class="description">
@@ -111,8 +107,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div
-                                class="col-md-12 col-sm-12 col-xs-12 search_block_right_footer text-center mt16 mb16">
+                        <div class="col-md-12 col-sm-12 col-xs-12 search_block_right_footer text-center mt16 mb16">
                             <strong>See product in
                                 <a class="text-primary"
                                    t-att-href="'/shop?search=' + search_keyword">
@@ -150,12 +145,11 @@
                 <ul class="other-sections"
                     style="min-height: 0px;">
                     <li class="mt8" t-foreach="category_ids" t-as="category">
-                        <a t-att-href="'/shop/category/' + slug(category)">
+                        <a t-att-href="'/shop/category/' + slug(category)" style="color:#000;">
                             <t t-if="category.parent_id">
                                 <t t-set="p_categ"
                                    t-value="category.parent_id"/>
-                                <t
-                                        t-call="maq_search_bar.parent_category_name"/>
+                                <t t-call="maq_search_bar.parent_category_name"/>
                             </t>
                             <span t-esc="category.name"/>
                         </a>
@@ -166,7 +160,6 @@
                     </li>
                 </ul>
             </div>
-
         </div>
     </template>
 </odoo>

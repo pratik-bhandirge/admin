@@ -13,7 +13,8 @@
     'summary': '',
     "depends": ['website_sale', 'website_product_page_layout_73lines'],
     "data": [
-        "views/templates.xml",
+        "views/products_template.xml",
+        "views/assets.xml",
         'views/product_details_template.xml',
     ],
     "installable": True,
