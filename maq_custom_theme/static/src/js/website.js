@@ -1,51 +1,71 @@
 odoo.define('maq_website_sale.add_to_cart_b', function (require) {
-'use strict';
+    'use strict';
 
-var ajax = require('web.ajax');
-require('web.dom_ready');
-var weContext = require("web_editor.context");
-require('website_sale.website_sale');
+    var ajax = require('web.ajax');
+    require('web.dom_ready');
+    var weContext = require("web_editor.context");
+    require('website_sale.website_sale');
 
     $('.oe_website_sale #add_to_cart_b')
-    .off('click')
-    .removeClass('b-submit')
-    .click(function (event) {
-        event.preventDefault();
+        .off('click')
+        .removeClass('b-submit')
+        .click(function (event) {
+            event.preventDefault();
 
-        var $form = $(this).closest('form');
+            var $form = $(this).closest('form');
 
-        var qty_input = $form.find('input.quantity');
+            var qty_input = $form.find('input.quantity');
 
-        var data = [];
+            var data = [];
+            var $modal = "<div id=\"modal_products_notification\" class=\"modal fade\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\">\n" +
+                "            <div class=\"modal-dialog modal-md\">\n" +
+                "                <div class=\"modal-content\">\n" +
+                "                    <div class=\"modal-header\">\n" +
+                "                        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">x</button>\n" +
+                "                        <h2 class=\"modal-title\" id=\"myModalLabel\">Add to Cart Update</h2>\n" +
+                "                    </div>\n" +
+                "                    <div class=\"modal-body\">\n" +
+                "                        <h3>Product Successfully Added to Cart.</h3>\n" +
+                "                    </div>\n" +
+                "                </div>\n" +
+                "            </div>\n" +
+                "        </div>\n";
 
-        for(var i=0; i < qty_input.length; i++){
-            console.log(qty_input[i]);
-            if(qty_input[i].value != 0){
-                data.push({
-                    'product_id' : qty_input[i].name,
-                    'quantity' : qty_input[i].value
-                });
-            }
-        }
 
-        $.each(data, function(i, val){
-            var quantity = parseFloat(val['quantity']);
-            var product_id = parseInt(val['product_id'], 10);
-            $form.ajaxSubmit({
-                url:  '/shop/cart/update_option',
-                data: {lang: weContext.get().lang, product_id: product_id, add_qty:quantity},
-                success: function (quantity) {
-                    var $q = $(".my_cart_quantity");
-                    $q.parent().parent().removeClass("hidden", !quantity);
-                    $q.html(quantity).hide().fadeIn(600);
-
+            for (var i = 0; i < qty_input.length; i++) {
+                if (qty_input[i].value != 0) {
+                    data.push({
+                        'product_id': qty_input[i].name,
+                        'quantity': qty_input[i].value
+                    });
                 }
-            });
-        });
-		
-		$form[0].reset();
+            }
+            if (data.length > 0) {
+                $($modal).appendTo($form)
+                    .modal()
+                    .on('hide.bs.modal', function () {
+                        $form.removeClass('css_options'); // possibly reactivate opacity (see above)
+                        $(this).remove();
+                    });
+            }
+            $.each(data, function (i, val) {
+                var quantity = parseFloat(val['quantity']);
+                var product_id = parseInt(val['product_id'], 10);
+                $form.ajaxSubmit({
+                    url: '/shop/cart/update_option',
+                    data: {lang: weContext.get().lang, product_id: product_id, add_qty: quantity},
+                    success: function (quantity) {
+                        var $q = $(".my_cart_quantity");
+                        $q.parent().parent().removeClass("hidden", !quantity);
+                        $q.html(quantity).hide().fadeIn(600);
 
-    });
+                    }
+                });
+            });
+
+            $form[0].reset();
+
+        });
 
     $('.oe_website_sale').on('click', 'tr.variant_details label[label-default="label-default"]', function (ev) {
         var product_id = $(ev.target).closest('tr.variant_details')[0].id;
@@ -72,8 +92,7 @@ require('website_sale.website_sale');
                 $thumbnail.attr("src", "/web/image/product.product/" + product_id + "/image/90x90");
                 $('.carousel').carousel(0);
             }
-        }
-        else {
+        } else {
             $img = $(event_source).closest('tr.js_product, .oe_website_sale').find('span[data-oe-model^="product."][data-oe-type="image"] img:first, img.product_detail_img');
             $img.attr("src", "/web/image/product.product/" + product_id + "/image");
             $img.parent().attr('data-oe-model', 'product.product').attr('data-oe-id', product_id)
