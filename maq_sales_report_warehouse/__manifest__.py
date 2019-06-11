@@ -7,6 +7,9 @@
     'description': """
     1.45 Report to show the On hand qty, Forecasted qty, Delivered qty based on provided by warehouse and vendor and date filter.
     """,
+    "author": "Bista Solutions Pvt. Ltd.",
+    "maintainer": "Bista Solutions Pvt. Ltd.",
+    "website": "https://www.bistasolutions.com",
     'depends': ['stock'],
     'category': 'Warehouse',
     'data': [
