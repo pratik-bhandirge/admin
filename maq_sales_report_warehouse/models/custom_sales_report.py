@@ -18,11 +18,12 @@ class SalesReport(models.Model):
     m_warehouse_id = fields.Many2many("stock.warehouse", string="Warehouse", required=True)
     m_exhausted = fields.Boolean("Include Exhausted Products", default=True)
     m_sales_report_lines = fields.One2many("sales.report.lines", "sales_report_id", "Sales Report Lines", copy=False)
-    product_ids = fields.Many2many("product.product", string="Products", copy=False)
     #TO DO: put domain on partner_ids and show only those vendors who are registred with product.supplierinfo
-    partner_ids = fields.Many2many("res.partner", string="Vendor", copy=False)
     company_ids = fields.Many2many("res.company", string="Company", copy=False)
-    internal_ref = fields.Char(string="Internal Reference", copy=False)
+    product_ids = fields.Many2many("product.product", string="Products in Filter", copy=False)
+    partner_ids = fields.Many2many("res.partner", string="Vendors in Filter", copy=False)
+    internal_ref = fields.Char(string="Internal Reference in Filter", copy=False)
+    prod_ref = fields.Char(string="Product Reference in Filter", copy=False)
     is_lock = fields.Boolean("Locked", default=False, copy=False)
     user_id = fields.Many2one('res.users', string='Responsible', required=False, default=lambda self: self.env.user)
     active = fields.Boolean(default=True)
@@ -118,16 +119,30 @@ class SalesReport(models.Model):
                 internal_ref = self.internal_ref
                 reference_list = [ref.strip() for ref in internal_ref.split(',')]
                 if len(reference_list) == 1:
-                    prod_ids = self.env['product.product'].search([
+                    prod_ids += self.env['product.product'].search([
                         ('default_code', 'ilike', reference_list[0]),
                     ]).ids
                 elif len(reference_list) > 1:
                     for ref in reference_list:
                         prod_ids += self.env['product.product'].search([
                         ('default_code', 'ilike', ref),]).ids
+                _logger.info("Len prod_ids in internal_ref************%s"%(len(prod_ids)))
+            if rec.prod_ref:
+                prod_ref = self.prod_ref
+                reference_list = [ref.strip() for ref in prod_ref.split(',')]
+                if len(reference_list) == 1:
+                    prod_ids += self.env['product.product'].search([
+                        ('default_code', 'ilike', reference_list[0]),
+                    ]).ids
+                elif len(reference_list) > 1:
+                    for ref in reference_list:
+                        prod_ids += self.env['product.product'].search([
+                        ('default_code', 'ilike', ref),]).ids
+                _logger.info("Len prod_ids in prod_ref************%s"%(len(prod_ids)))
             if rec.product_ids:
                 prod_ids += rec.product_ids.ids
                 prod_ids = list(set(prod_ids))
+                _logger.info("Len prod_ids in product_ids************%s"%(len(prod_ids)))
             if prod_ids:
                 domain = [('product_id','in',prod_ids)]
             if rec.partner_ids:
@@ -176,7 +191,7 @@ class SalesReport(models.Model):
         """
         Clear all the lines as well as fields related filters
         """
-        self.update({'product_ids':'', 'partner_ids':'', 'internal_ref':''})
+#         self.update({'product_ids':'', 'partner_ids':'', 'internal_ref':''})
         for rec in self:
             self._cr.execute("""DELETE FROM sales_report_lines
                 WHERE sales_report_id = %s"""% rec.id)
@@ -345,6 +360,72 @@ class SalesReport(models.Model):
                         forecasted_qty = result['quantity']
             return forecasted_qty
 
+
+
+    def _get_filter_prod(self,prod_list):
+        prod_ids = []
+        if self.internal_ref:
+            internal_ref = self.internal_ref
+            reference_list = [ref.strip() for ref in internal_ref.split(',')]
+            if len(reference_list) == 1:
+                prod_ids += self.env['product.product'].search([('id','in',prod_list),
+                    ('default_code', 'ilike', reference_list[0]),
+                ]).ids
+            elif len(reference_list) > 1:
+                for ref in reference_list:
+                    prod_ids += self.env['product.product'].search([('id','in',prod_list),
+                    ('default_code', 'ilike', ref),]).ids
+        if self.prod_ref:
+            prod_ref = self.prod_ref
+            reference_list = [ref.strip() for ref in prod_ref.split(',')]
+            if len(reference_list) == 1:
+                prod_ids += self.env['product.product'].search([('id','in',prod_list),
+                    ('default_code', 'ilike', reference_list[0]),
+                ]).ids
+            elif len(reference_list) > 1:
+                for ref in reference_list:
+                    prod_ids += self.env['product.product'].search([('id','in',prod_list),
+                    ('default_code', 'ilike', ref),]).ids
+        if self.product_ids:
+            prod_ids += self.product_ids.ids
+        if self.partner_ids:
+            prod_data = prod_ids if prod_ids else prod_list
+            vendors_ids = self.partner_ids.ids
+            records = []
+
+            if len(vendors_ids) == 1:
+                domain = "name = %s " % vendors_ids[0]
+            else:
+                domain = "name in %s " % (tuple(vendors_ids),)
+
+            self.env.cr.execute("""
+            SELECT product_tmpl_id
+            FROM product_supplierinfo
+            WHERE  %s AND product_id is null
+            Order BY product_tmpl_id""" % domain)
+            tmpl_records = self.env.cr.fetchall()
+            tmpl_ids = [res[0] for res in tmpl_records]
+            if tmpl_ids:
+                records += self.env['product.product'].search([('id','in',prod_data),
+                    ('product_tmpl_id', 'in', tmpl_ids),]).ids
+
+            if len(prod_data) == 1:
+                domain += " AND product_id = %s " % prod_data[0]
+            else:
+                domain += " AND product_id in %s " % (tuple(prod_data),)
+
+            self.env.cr.execute("""
+            SELECT product_id
+            FROM product_supplierinfo
+            WHERE  %s AND product_id is not null
+            Order BY product_tmpl_id""" % domain)
+            pro_records = self.env.cr.fetchall()
+            pro_records = [res[0] for res in pro_records]
+            if pro_records:
+                records += pro_records
+            prod_ids = list(set(records))
+        _logger.info("After filter number of prod_ids***********%s"%len(prod_ids))
+        return list(set(prod_ids))
     
     @api.multi
     def generate_report(self):
@@ -381,7 +462,12 @@ class SalesReport(models.Model):
                 flat_list_locations = []
                 company_ids = [wr_house.company_id.id] if wr_house.company_id else []
                 company_ids.append(False)
-                prod_list = self.env['product.product'].search([('company_id','in',company_ids),('type', 'not in', ('service', 'consu', 'digital'))]).ids
+                prod_list = self.env['product.product'].sudo().search([('company_id','in',company_ids),('type', 'not in', ('service', 'consu', 'digital'))]).ids
+                _logger.info("Number of product ids associated with warehouse %s******************%s"%(wr_house.name,len(prod_list)))
+                if rec.internal_ref or rec.prod_ref or rec.product_ids or rec.partner_ids:
+                    prod_list = rec._get_filter_prod(prod_list)
+                    if not prod_list:
+                        continue
                 # prod_list = [46106]
                 warehouse_location_id = self.env['stock.location'].search([('m_warehouse_id', '=', wr_house.id)])
                 location_list.append(warehouse_location_id)
@@ -390,9 +476,19 @@ class SalesReport(models.Model):
                 for locat in locations:
                     for l in locat:
                         flat_list_locations.append(l)
-                tuple_locations = tuple(flat_list_locations)
-                domain = ' sq.location_id in %s AND sq.product_id in %s'
-                args = (tuple_locations,tuple(prod_list))
+#                 tuple_locations = tuple(flat_list_locations)
+#                 domain = ' sq.location_id in %s AND sq.product_id in %s'
+#                 args = (tuple_locations,tuple(prod_list))
+
+                if len(flat_list_locations) == 1:
+                    domain = "sq.location_id = %s " % flat_list_locations[0]
+                else:
+                    domain = "sq.location_id in %s " % (tuple(flat_list_locations),)
+
+                if len(prod_list) == 1:
+                    domain += " AND sq.product_id = %s " % prod_list[0]
+                else:
+                    domain += " AND sq.product_id in %s " % (tuple(prod_list),)
 
                 # 4. based on the locations, gets warehouse base qty on hand aginst product and prepare a vals
                 vals = []
@@ -414,7 +510,7 @@ class SalesReport(models.Model):
                         GROUP BY product_id, sl.m_warehouse_id
                     ) t
                     WHERE t.warehouse_id is not null
-                    """ % domain, args)
+                    """ % domain)
                 results = self.env.cr.dictfetchall()
                 if results:
                     wr_house_data.extend(results)

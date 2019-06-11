@@ -29,38 +29,21 @@
 									attrs="{'readonly': [('is_lock', '=', True)]}"
 									options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
 								<field name="company_ids" widget="many2many_tags"
-									invisible="1" readonly="1"
+									invisible="0" readonly="1"
 									options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
 								<field name="m_exhausted" attrs="{'readonly': [('is_lock', '=', True)]}"/>
 								<field name="is_lock" invisible="1"/>
 								<field name="user_id" invisible="1"/>
 								<field name="active" invisible="1"/>
-								<field name="company_ids" widget="many2many_tags" readonly="1" invisible="0"/>
 							</group>
 							<group>
 								<field name="m_sales_start_date" attrs="{'readonly': [('is_lock', '=', True)]}"/>
 								<field name="m_sales_end_date" attrs="{'readonly': [('is_lock', '=', True)]}"/>
 							</group>
 						</group>
-						<!-- <group attrs="{'readonly': [('is_lock', '=', True)]}">
-							<field name="partner_ids" widget="many2many_tags"/>
-							<label string="AND" />
-							<label string="(" />
-							<field name="product_ids" string="Products" widget="many2many_tags"/>
-						    <label string="OR" />
-						    <field name="internal_ref" string="Internal Reference" />
-							<label string=")" />
-						</group> -->
 						<notebook>
 							<page name="filters" string="Filter">
 								<group attrs="{'readonly': [('is_lock', '=', True)]}" col="6" colspan="3">
-									<field name="partner_ids" widget="many2many_tags" nolabel="1"
-										help="Add vendors here which you would like to filter"
-										placeholder="Vendors" attrs="{'readonly': [('is_lock', '=', True)]}"
-										options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-										domain="[('supplier','=',True)]"
-										context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0}"/>
-									<label for="product_ids" string="AND" />
 									<field name="product_ids" string="Products" widget="many2many_tags" nolabel="1"
 										help="Add product here which you would like to filter"
 										placeholder="Products" attrs="{'readonly': [('is_lock', '=', True)]}"
@@ -68,7 +51,21 @@
 									<label for="internal_ref" string="OR" />
 								    <field name="internal_ref" string="Internal Reference"  nolabel="1"
 										help="Add internal ref here which you would like to filter"
-										placeholder="Internal Reference" attrs="{'readonly': [('is_lock', '=', True)]}"/>
+										placeholder="Reference1,Reference2,..." attrs="{'readonly': [('is_lock', '=', True)]}"/>
+									<label for="prod_ref" string="OR" />
+								    <field name="prod_ref" string="Products Reference"  nolabel="1"
+										help="Add product name here which you would like to filter"
+										placeholder="Prod1,Prod2,..." attrs="{'readonly': [('is_lock', '=', True)]}"/>
+								</group>
+								<group string="AND">
+								</group>
+								<group attrs="{'readonly': [('is_lock', '=', True)]}">
+									<field name="partner_ids" widget="many2many_tags" nolabel="1"
+										help="Add vendors here which you would like to filter"
+										placeholder="Vendors" attrs="{'readonly': [('is_lock', '=', True)]}"
+										options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
+										domain="[('supplier','=',True)]"
+										context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0}"/>
 								</group>
 								<group attrs="{'invisible': [('is_lock', '=', True)]}" col="6" colspan="3">
 									<button name="add_filter" string="Filter" type="object" class="oe_highlight"/>
