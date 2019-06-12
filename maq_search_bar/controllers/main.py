@@ -12,6 +12,7 @@ class WebsiteSaleCustom(WebsiteSale):
         prod_obj = request.env['product.template']
         category_obj = request.env['product.public.category']
         if search_keyword:
+            current_website = request.env['website'].get_current_website()
             product_count = prod_obj.search_count([
                 '|',('name', 'ilike', search_keyword),
                 ('default_code', 'ilike', search_keyword),
@@ -25,7 +26,7 @@ class WebsiteSaleCustom(WebsiteSale):
                 # ('website_discontinued','=',False),
                 ], limit=8)
             category_ids = category_obj.search(
-                [('name', 'ilike', search_keyword)], limit=8)
+                ['|',('website_id','=',current_website.id),('website_id','in',[False,'']),('name', 'ilike', search_keyword)], limit=8)
             return request.env['ir.ui.view'].render_template(
                 'maq_search_bar.website_search_result', {
                     'product_ids': product_ids,
