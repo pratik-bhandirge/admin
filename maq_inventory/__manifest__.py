@@ -4,11 +4,7 @@
     'name': 'MAQ Inventory Adjustment',
     'version': '1.0',
     'summary': 'Extra filters added for Inventory adjustment',
-    'description': """In Inventory adjustment add following filters
-    1. Select suppliers
-    2. Product Reference
-    3. Website Product Category
-    Following features will be added
+    'description': """Following features will be added
     Req Id. 1.42 - Reverse Shipment information for processing
     Req Id. 1.98 - Approval process for inventory adjustment
     Req Id. 2.00 - Set the checkbox ticked by default
