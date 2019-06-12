@@ -128,7 +128,7 @@
                         <div class="col-md-12 col-sm-12 col-xs-12 search_block_right_footer mt16 mb16">
                             <strong>
                                 <a class="text-primary"
-                                   href="'/shop">
+                                   href="/shop">
                                     See All product
                                 </a>
                             </strong>
@@ -157,6 +157,7 @@
                     </li>
                     <li class="mt16" t-if="not category_ids">
                         <span>No Results.</span>
+                        <a class="text-primary" href="/shop">See All product</a>
                     </li>
                 </ul>
             </div>
