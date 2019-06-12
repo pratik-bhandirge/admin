@@ -219,11 +219,16 @@ class SalesReport(models.Model):
         product_id = self.env['product.product'].browse(vals.get('product_id'))
         if product_id:
             product_tmpl_id = product_id.product_tmpl_id.id
-            records = self.env['product.supplierinfo'].search([('product_id', '=', product_id.id),
+            company_ids = ['',False]
+            if vals.get('warehouse_id'):
+                c_id = self.env['stock.warehouse'].browse(vals.get('warehouse_id')).company_id
+                if c_id:
+                    company_ids.append(c_id.id)
+            records = self.env['product.supplierinfo'].search([('product_id', '=', product_id.id),('company_id','in',company_ids),
                                                                ('product_tmpl_id', '=', product_tmpl_id)])
             if not records:
                 records = self.env['product.supplierinfo'].search(
-                    [('product_tmpl_id', '=', product_tmpl_id)])
+                    [('product_tmpl_id', '=', product_tmpl_id),('product_id', 'in',['',False]),('company_id','in',company_ids)])
 
             for record in records:
                 try:
@@ -362,8 +367,13 @@ class SalesReport(models.Model):
 
 
 
-    def _get_filter_prod(self,prod_list):
+    def _get_filter_prod(self,prod_list,company_ids):
         prod_ids = []
+        comp_ids = []
+        for company_id in company_ids:
+            if company_id:
+                comp_ids.append(company_id)
+
         if self.internal_ref:
             internal_ref = self.internal_ref
             reference_list = [ref.strip() for ref in internal_ref.split(',')]
@@ -398,12 +408,18 @@ class SalesReport(models.Model):
             else:
                 domain = "name in %s " % (tuple(vendors_ids),)
 
+            if len(comp_ids) == 1:
+                domain += " AND (company_id = %s or company_id is null)" % comp_ids[0]
+            else:
+                domain += " AND (company_id in %s or company_id is null) " % (tuple(comp_ids),)
+
             self.env.cr.execute("""
             SELECT product_tmpl_id
             FROM product_supplierinfo
             WHERE  %s AND product_id is null
             Order BY product_tmpl_id""" % domain)
             tmpl_records = self.env.cr.fetchall()
+            _logger.info("tmpl_records----------%s",tmpl_records)
             tmpl_ids = [res[0] for res in tmpl_records]
             if tmpl_ids:
                 records += self.env['product.product'].search([('id','in',prod_data),
@@ -465,7 +481,7 @@ class SalesReport(models.Model):
                 prod_list = self.env['product.product'].sudo().search([('company_id','in',company_ids),('type', 'not in', ('service', 'consu', 'digital'))]).ids
                 _logger.info("Number of product ids associated with warehouse %s******************%s"%(wr_house.name,len(prod_list)))
                 if rec.internal_ref or rec.prod_ref or rec.product_ids or rec.partner_ids:
-                    prod_list = rec._get_filter_prod(prod_list)
+                    prod_list = rec._get_filter_prod(prod_list,company_ids)
                     if not prod_list:
                         continue
                 # prod_list = [46106]
@@ -512,6 +528,7 @@ class SalesReport(models.Model):
                     WHERE t.warehouse_id is not null
                     """ % domain)
                 results = self.env.cr.dictfetchall()
+                _logger.info("stock quants records ------%s"%len(results))
                 if results:
                     wr_house_data.extend(results)
 
