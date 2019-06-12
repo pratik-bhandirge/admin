@@ -43,7 +43,7 @@ class pos_config(models.Model):
                 'discount': line.discount,
                 'price_subtotal':line.price_subtotal
                 })
-            amount_subtotal = line.price_subtotal if line.price_subtotal else 0.0
+            amount_subtotal += line.price_subtotal if line.price_subtotal else 0.0
             if line.tax_ids_after_fiscal_position and line.product_id:
                 line_taxes = line.tax_ids_after_fiscal_position.compute_all(line.price_unit * (1-(line.discount or 0.0)/100.0), currency, line.qty, product=line.product_id, partner=line.order_id.partner_id or False)
                 for tax in line_taxes['taxes']:
