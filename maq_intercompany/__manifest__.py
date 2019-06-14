@@ -15,6 +15,7 @@
         'stock'
     ],
     'data': [
+        'views/delivery_slip_report_view_inherit.xml',
     ],
     'installable': True,
     'application': True,
