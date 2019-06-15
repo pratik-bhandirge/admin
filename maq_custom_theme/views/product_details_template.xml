@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="custom_product_quantity" inherit_id="website_sale.product_quantity">
-        <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
+        <xpath expr="//div[hasclass('css_quantity','input-group','oe_website_spinner')]" position="attributes">
             <attribute name='t-if'>
                 product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
             </attribute>
         </xpath>
     </template>
     <template id="custom_product" inherit_id="theme_loftspace_sale.product">
-        <xpath expr="//div[@class='col-sm-7']" position="attributes">
+        <xpath expr="//div[hasclass('col-sm-7')]" position="attributes">
             <attribute name="class">col-sm-6 col-lg-6</attribute>
         </xpath>
         <xpath expr="//div[@id='product_details']" position="attributes">
@@ -91,7 +91,7 @@
         </xpath>
     </template>
     <template id="custom_product_price" inherit_id="website_sale.product_price">
-        <xpath expr="//div[@class='product_price mt16']" position="attributes">
+        <xpath expr="//div[hasclass('product_price','mt16')]" position="attributes">
             <attribute name="t-if">
                 len(product.product_variant_ids) == 1
             </attribute>
@@ -103,7 +103,7 @@
                 product.m_product_specification_ids
             </attribute>
         </xpath>
-        <xpath expr="//div[@id='product_description_reviews']/div[@class='tab-content']/div[@id='product-additional-info']" position="replace">
+        <xpath expr="//div[@id='product_description_reviews']/div[hasclass('tab-content')]/div[@id='product-additional-info']" position="replace">
             <div class="tab-pane fade" id="product-additional-info">
                 <div t-if="product.m_product_specification_ids">
                     <div id="product_attribute_details" class="mt32 mb32">
