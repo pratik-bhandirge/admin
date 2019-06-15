@@ -23,7 +23,7 @@
     </template>
 
     <!-- Remove Default Product Description & Added again with Some Style :D -->
-    <template id="product_description_new_style" inherit_id="theme_loftspace_sale.product"
+    <template id="product_description_new_style" inherit_id="website_sale.product"
               name="Product Info Tabs">
         <xpath expr="//div[@t-field='product.website_description']"
                position="replace"></xpath>
