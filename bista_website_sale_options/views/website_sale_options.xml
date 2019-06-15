@@ -24,13 +24,13 @@
      <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
         inherit_id="website_sale_options.modal">
         <xpath
-            expr="//div[contains(@class,'modal-dialog')]/div[@class='modal-content']/div[@class='modal-header']/h4[@class='modal-title']"
+            expr="//div[contains(@class,'modal-dialog')]/div[hasclass('modal-content')]/div[hasclass('modal-header')]/h4[hasclass('modal-title')]"
             position="replace">
             <h4 class="modal-title" id="myModalLabel">Product successfully added to your
                 shopping cart
             </h4>
         </xpath>
-        <xpath expr="//div[@class='modal-body']" position='replace'>
+        <xpath expr="//div[hasclass('modal-body')]" position='replace'>
             <div class="modal-body">
                 <table>
                     <thead>
@@ -86,7 +86,7 @@
                 </table>
             </div>
         </xpath>
-        <xpath expr="//div[@class='modal-footer']" position='replace'>
+        <xpath expr="//div[hasclass('modal-footer')]" position='replace'>
             <div class="modal-footer">
                 <a class="btn btn-default a-submit js_goto_shop invisible">
                     <i class="fa fa-chevron-left"></i>
@@ -106,7 +106,7 @@
         and hiding product price on hover -->
     <template id="maq_products_item_inherit" name="MAQ Product Items"
         inherit_id="website_sale.products_item">
-        <xpath expr="//div[@class='oe_product_image']" position="replace">
+        <xpath expr="//div[hasclass('oe_product_image')]" position="replace">
             <div class="oe_product_image">
                 <a itemprop="url"
                     t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
@@ -149,7 +149,7 @@
                 <br/>
             </div>
         </xpath>
-        <xpath expr="//section/div[@class='product_price']/b" position='replace'>
+        <xpath expr="//section/div[hasclass('product_price')]/b" position='replace'>
             <b>
                 <t t-if="product.website_price_difference and website.get_current_pricelist().discount_policy=='without_discount'">
                     <del class="text-danger mr8" style="white-space: nowrap;"
@@ -192,7 +192,7 @@
 
     <!-- show message Currently Out of Stock in website Cart lines -->
     <template id="ecommerce_category.cart_lines_maqabim" inherit_id="website_sale.cart_lines">
-        <xpath expr="//td[@class='td-product_name']" position="replace">
+        <xpath expr="//td[hasclass('td-product_name')]" position="replace">
             <td t-if="line.product_id.product_tmpl_id" class="td-product_name">
                 <div>
                     <a t-attf-href="/shop/product/#{ slug(line.product_id.product_tmpl_id) }">
