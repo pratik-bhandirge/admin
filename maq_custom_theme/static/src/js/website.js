@@ -47,6 +47,7 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
                         $form.removeClass('css_options'); // possibly reactivate opacity (see above)
                         $(this).remove();
                     });
+                setTimeout(function(){ $modal.modal('hide');}, 3000);
             }
             $.each(data, function (i, val) {
                 var quantity = parseFloat(val['quantity']);

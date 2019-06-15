@@ -24,7 +24,7 @@
      <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
         inherit_id="website_sale_options.modal">
         <xpath
-            expr="//div[contains(@class,'modal-dialog')]/div[hasclass('modal-content')]/div[hasclass('modal-header')]/h4[hasclass('modal-title')]"
+            expr="//div[hasclass('modal-dialog')]/div[hasclass('modal-content')]/div[hasclass('modal-header')]/h4[hasclass('modal-title')]"
             position="replace">
             <h4 class="modal-title" id="myModalLabel">Product successfully added to your
                 shopping cart

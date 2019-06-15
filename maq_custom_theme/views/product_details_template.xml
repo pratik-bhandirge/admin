@@ -7,7 +7,7 @@
             </attribute>
         </xpath>
     </template>
-    <template id="custom_product" inherit_id="theme_loftspace_sale.product">
+    <template id="custom_product" inherit_id="website_sale.product">
         <xpath expr="//div[hasclass('col-sm-7')]" position="attributes">
             <attribute name="class">col-sm-6 col-lg-6</attribute>
         </xpath>
@@ -15,7 +15,7 @@
             <attribute name="class">col-sm-6 col-lg-6</attribute>
         </xpath>
     </template>
-    <template id="custom_product_variants" inherit_id="theme_loftspace_sale.product">
+    <template id="custom_product_variants" inherit_id="website_sale.product">
         <xpath expr="//t[@t-placeholder='select']" position="replace">
             <t t-if="len(product.product_variant_ids) &gt; 1">
                 <table class="table table-responsive">
