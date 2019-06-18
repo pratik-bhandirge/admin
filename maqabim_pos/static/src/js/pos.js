@@ -4,6 +4,7 @@ odoo.define('maqabim.pos', function (require) {
 var models = require('point_of_sale.models');
 var screens = require('point_of_sale.screens');
 var core = require('web.core');
+var session = require('web.session');
 
 var QWeb = core.qweb;
 
@@ -12,6 +13,48 @@ var QWeb = core.qweb;
 models.load_fields('account.tax','tax_group_id');
 
 var _super_order = models.Order.prototype;
+
+var pmodels = models.PosModel.prototype.models;
+for (var i = 0; i < pmodels.length; i++) {
+    var model = pmodels[i];
+    if (model.label === 'pictures') {
+        model.loaded = function(self) {
+            self.company_logo = new Image();
+            var logo_loaded = new $.Deferred();
+            self.company_logo.onload = function() {
+                var img = self.company_logo;
+                var ratio = 1;
+                var targetwidth = 300;
+                var maxheight = 150;
+                if (img.width !== targetwidth) {
+                    ratio = targetwidth / img.width;
+                }
+                if (img.height * ratio > maxheight) {
+                    ratio = maxheight / img.height;
+                }
+                var width = Math.floor(img.width * ratio);
+                var height = Math.floor(img.height * ratio);
+                var c = document.createElement('canvas');
+                c.width = width;
+                c.height = height;
+                var ctx = c.getContext('2d');
+                ctx.drawImage(self.company_logo, 0, 0, width, height);
+
+                self.company_logo_base64 = c.toDataURL();
+                logo_loaded.resolve();
+            };
+            self.company_logo.onerror = function() {
+                logo_loaded.reject();
+            };
+            //crossOrigin attribute clear the session information on safari browser, hence we are not getting an image of current user's company,
+            //instead it alwasy return the admin user's company logo, so to get the correct company logo, we pass the company through query string, to get extact logo of the current pos company
+            self.company_logo.crossOrigin = "anonymous";
+            self.company_logo.src = '/web/binary/company_logo' + '?dbname=' + session.db + '&company=' + self.company.id + '&_' + Math.random();
+            return logo_loaded;
+        }
+        break;
+    }
+}
 
 models.Order = models.Order.extend({
 
