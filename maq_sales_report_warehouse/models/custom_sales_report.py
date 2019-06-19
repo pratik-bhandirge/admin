@@ -27,9 +27,10 @@ class SalesReport(models.Model):
     prod_ref = fields.Char(string="Product Reference in Filter", copy=False, track_visibility='onchange')
     is_lock = fields.Boolean("Locked", default=False, copy=False, track_visibility='onchange')
     user_id = fields.Many2one('res.users', string='Responsible', required=False, default=lambda self: self.env.user)
-    active = fields.Boolean(default=True, track_visibility='onchange')
+    active = fields.Boolean(default=True, copy=False, track_visibility='onchange')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('sales.report'))
     event_description = fields.Char(string="Event", copy=False, track_visibility='onchange')
+    is_update_total_qty = fields.Boolean(default=False, copy=False, track_visibility='onchange')
 
     @api.model
     def create(self, vals):
@@ -136,12 +137,12 @@ class SalesReport(models.Model):
                 reference_list = [ref.strip() for ref in prod_ref.split(',')]
                 if len(reference_list) == 1:
                     prod_ids += self.env['product.product'].search([
-                        ('default_code', 'ilike', reference_list[0]),
+                        ('name', 'ilike', reference_list[0]),
                     ]).ids
                 elif len(reference_list) > 1:
                     for ref in reference_list:
                         prod_ids += self.env['product.product'].search([
-                        ('default_code', 'ilike', ref),]).ids
+                        ('name', 'ilike', ref),]).ids
                 _logger.info("Len prod_ids in prod_ref************%s"%(len(prod_ids)))
             if rec.product_ids:
                 prod_ids += rec.product_ids.ids
@@ -441,12 +442,12 @@ class SalesReport(models.Model):
             reference_list = [ref.strip() for ref in prod_ref.split(',')]
             if len(reference_list) == 1:
                 prod_ids += self.env['product.product'].search([('id','in',prod_list),
-                    ('default_code', 'ilike', reference_list[0]),
+                    ('name', 'ilike', reference_list[0]),
                 ]).ids
             elif len(reference_list) > 1:
                 for ref in reference_list:
                     prod_ids += self.env['product.product'].search([('id','in',prod_list),
-                    ('default_code', 'ilike', ref),]).ids
+                    ('name', 'ilike', ref),]).ids
         if self.product_ids:
             prod_ids += self.product_ids.ids
         if self.partner_ids:
@@ -653,22 +654,23 @@ class SalesReport(models.Model):
                     _logger.info("Start creating sales report lines")
                     rec.update({'m_sales_report_lines':values})
                     _logger.info("sales report lines created sucessfully")
-            query = """
-                UPDATE sales_report_lines srl
-                SET total_qty_on_hand = (SELECT SUM(qty_on_hand)
-                                        FROM sales_report_lines
-                                        WHERE sales_report_id = '"""+str(rec.id)+"""'
-                                        AND product_id = srl.product_id)
-                , total_delivered_qty = (SELECT SUM(actual_delivered_qty)
-                                        FROM sales_report_lines
-                                        WHERE sales_report_id = '"""+str(rec.id)+"""'
-                                        AND product_id = srl.product_id)
-                , total_forecasted_qty = (SELECT SUM(forecasted_qty)
-                                        FROM sales_report_lines
-                                        WHERE sales_report_id = '"""+str(rec.id)+"""'
-                                        AND product_id = srl.product_id) 
-                WHERE sales_report_id = '"""+str(rec.id)+"'";
-            results = self.env.cr.execute(query)
+            if rec.is_update_total_qty:
+                query = """
+                    UPDATE sales_report_lines srl
+                    SET total_qty_on_hand = (SELECT SUM(qty_on_hand)
+                                            FROM sales_report_lines
+                                            WHERE sales_report_id = '"""+str(rec.id)+"""'
+                                            AND product_id = srl.product_id)
+                    , total_delivered_qty = (SELECT SUM(actual_delivered_qty)
+                                            FROM sales_report_lines
+                                            WHERE sales_report_id = '"""+str(rec.id)+"""'
+                                            AND product_id = srl.product_id)
+                    , total_forecasted_qty = (SELECT SUM(forecasted_qty)
+                                            FROM sales_report_lines
+                                            WHERE sales_report_id = '"""+str(rec.id)+"""'
+                                            AND product_id = srl.product_id)
+                    WHERE sales_report_id = '"""+str(rec.id)+"'";
+                results = self.env.cr.execute(query)
         _logger.info("End generate report function")
 
 #     @api.multi
