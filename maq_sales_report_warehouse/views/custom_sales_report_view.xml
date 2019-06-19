@@ -32,6 +32,7 @@
                                     invisible="0" readonly="1"
                                     options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                 <field name="m_exhausted" attrs="{'readonly': [('is_lock', '=', True)]}"/>
+                                <field name="is_update_total_qty" attrs="{'readonly': [('is_lock', '=', True)]}"/>
                                 <field name="is_lock" invisible="1"/>
                                 <field name="user_id" invisible="1"/>
                                 <field name="active" invisible="1"/>
