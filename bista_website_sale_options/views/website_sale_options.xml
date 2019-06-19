@@ -125,16 +125,14 @@
             </div>
         </xpath>
         <xpath expr="//div[hasclass('product_price')]" position="before">
-            <t t-set="filterd_value_ids"
-                t-value="product.product_variant_ids.ids" />
+            <t t-set="filterd_value_ids" t-value="product.product_variant_ids.ids" />
             <t t-if="len(filterd_value_ids) > 1">
                 <div class="product_grid_qty">
-                    <p>Multiple options available please select an option on product page
-                    </p>
+                    <p>Multiple options available please select an option on product page</p>
                 </div>
                 <br/>
             </t>
-            <div t-if="product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1"
+            <div t-if="len(filterd_value_ids) == 1"
                 class="css_quantity input-group oe_website_spinner product_grid_qty"
                 groups="!ecommerce_category.group_hide_website_price">
                 <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json hidden-xs">
@@ -171,22 +169,21 @@
     <!-- Override products_add_to_cart from website sale
     Replace add to cart icon with add to cart button in product sale section
     -->
-    <template id="website_sale.products_add_to_cart" inherit_id="website_sale.products_item"
-        active="False" customize_show="True" name="Add to Cart">
+    <template id="products_add_to_cart_inherit" inherit_id="website_sale.products_add_to_cart">
         <xpath expr="//div[hasclass('product_price')]" position="after">
             <input name="product_id" t-att-value="product.product_variant_id.id" type="hidden" />
             <t t-set="filterd_value_ids" t-value="product.product_variant_ids.ids" />
-            <t t-if="len(filterd_value_ids) > 1">
+            <!--<t t-if="len(filterd_value_ids) > 1">
                 <a class="btn btn-default btn-xs"
                     t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
                     <span>Add To Cart</span>
                 </a>
+            </t>-->
+            <t t-if="len(filterd_value_ids) == 1">
+                <a class="btn btn-default btn-xs a-submit">
+                    <span>Add To Cart</span>
+                </a>
             </t>
-<!--            <t t-if="len(filterd_value_ids) == 1">-->
-<!--                <a class="btn btn-default btn-xs a-submit">-->
-<!--                    <span>Add To Cart</span>-->
-<!--                </a>-->
-<!--            </t>-->
         </xpath>
     </template>
 
