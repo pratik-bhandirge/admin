@@ -28,6 +28,7 @@
         'views/product_sale_view_inherit.xml',
         'views/product_specification_views.xml',
         "views/website_sale_options.xml",
+        "data/data.xml"
     ],
     #    "qweb": [
     #        "static/src/xml/website_sale.xml",

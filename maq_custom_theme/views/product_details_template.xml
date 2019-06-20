@@ -3,7 +3,7 @@
     <template id="custom_product_quantity" inherit_id="website_sale.product_quantity">
         <xpath expr="//div[hasclass('css_quantity','input-group','oe_website_spinner')]" position="attributes">
             <attribute name='t-if'>
-                product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
+                len(product.product_variant_ids) == 1
             </attribute>
         </xpath>
     </template>
@@ -66,11 +66,23 @@
         </xpath>
 
         <xpath expr="//a[@id='add_to_cart']" position="replace">
-            <t t-if="len(product._get_published_product_ids()) &gt; 1">
+            <t t-if="len(product.product_variant_ids) == 1">
+                <div class="css_quantity input-group oe_website_spinner" contenteditable="false">
+                    <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <input type="text" class="form-control quantity" data-min="1" name="add_qty" value="1"/>
+                    <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+                <a id="add_to_cart" class="btn btn-success btn-lg mt8 js_check_product a-submit center-block" href="#" t-if="product.product_variant_id.is_product_variant_publish() == True">Add to Cart</a>
+            </t>
+            <t t-elif="len(product._get_published_product_ids()) &gt; 1">
                 <a id="add_to_cart_b" class="btn btn-success pull-right btn-lg mt8 js_check_product b-submit center-block" href="#">Add to Cart</a>
             </t>
             <t t-else="">
-                <a id="add_to_cart" class="btn btn-success btn-lg mt8 js_check_product a-submit center-block" href="#" t-if="product.product_variant_id.is_product_variant_publish() == True">Add to Cart</a>
+                <a id="add_to_cart_b" class="btn btn-success pull-right btn-lg mt8 js_check_product b-submit center-block" href="#">Add to Cart</a>
             </t>
         </xpath>
         <xpath expr="//div[@id='product_details']/hr[last()]" position="attributes">

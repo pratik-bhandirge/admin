@@ -14,7 +14,7 @@ class ProductTemplate(models.Model):
             values = []
             for product_variant_id in rec.product_variant_ids:
                 if not product_variant_id.is_website_publish:
-                    values += [product_variant_id.id]
+                    values += [str(product_variant_id.id)]
             return values
 
 
