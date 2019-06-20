@@ -13,6 +13,7 @@
     'depends': ['website_sale'],
     'data': [
         'views/templates.xml',
+        "data/data.xml"
     ],
     'images': [
         'static/description/website_product_page_layout_73lines.png',
