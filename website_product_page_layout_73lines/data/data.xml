@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- <record id="bista_website_sale_options.bista_website_sale_modal" model="ir.ui.view">
+        <record id="website_product_page_layout_73lines.product_description_new_style" model="ir.ui.view">
             <field name="website_id" eval="1"/>
-        </record> -->
+        </record>
+        <record id="website_product_page_layout_73lines.product_comment_new" model="ir.ui.view">
+            <field name="website_id" eval="1"/>
+        </record>
     </data>
 </odoo>
