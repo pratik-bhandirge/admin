@@ -9,6 +9,14 @@ class ProductTemplate(models.Model):
     m_product_specification_ids = fields.One2many(
         "product.specification.line", "product_tmpl_id", "Product Specifications")
 
+    def _get_published_product_ids(self):
+        for rec in self:
+            values = []
+            for product_variant_id in rec.product_variant_ids:
+                if not product_variant_id.is_website_publish:
+                    values += [product_variant_id.id]
+            return values
+
 
 # Following specifiaction masters conatins a value to show in website
 # specification section
@@ -69,14 +77,14 @@ class ProductSpecificationAttributevalue(models.Model):
     specification_id = fields.Many2one(
         'product.specification.attribute', 'Specification Attribute', ondelete='cascade', required=True)
     html_color = fields.Char(string='HTML Color Index', oldname='color', help="Here you can set a "
-                             "specific HTML color index (e.g. #ff0000) to display the color on the website if the "
-                             "attibute type is 'Color'.")
-#     product_ids = fields.Many2many('product.product', string='Variants', readonly=True)
-#     price_extra = fields.Float(
-#         'Attribute Price Extra', compute='_compute_price_extra', inverse='_set_price_extra',
-#         default=0.0, digits=dp.get_precision('Product Price'),
-#         help="Price Extra: Extra price for the variant with this attribute value on sale price. eg. 200 price extra, 1000 + 200 = 1200.")
-#     price_ids = fields.One2many('product.attribute.price', 'value_id', 'Attribute Prices', readonly=True)
+                                                                              "specific HTML color index (e.g. #ff0000) to display the color on the website if the "
+                                                                              "attibute type is 'Color'.")
+    #     product_ids = fields.Many2many('product.product', string='Variants', readonly=True)
+    #     price_extra = fields.Float(
+    #         'Attribute Price Extra', compute='_compute_price_extra', inverse='_set_price_extra',
+    #         default=0.0, digits=dp.get_precision('Product Price'),
+    #         help="Price Extra: Extra price for the variant with this attribute value on sale price. eg. 200 price extra, 1000 + 200 = 1200.")
+    #     price_ids = fields.One2many('product.attribute.price', 'value_id', 'Attribute Prices', readonly=True)
 
     _sql_constraints = [
         ('value_company_uniq', 'unique (name,specification_id)',

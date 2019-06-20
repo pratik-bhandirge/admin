@@ -16,7 +16,7 @@
         </xpath>
     </template>
     <template id="custom_product_variants" inherit_id="website_sale.product">
-        <xpath expr="//t[@t-placeholder='select']" position="replace">
+         <xpath expr="//t[@t-placeholder='select']" position="replace">
             <t t-if="len(product.product_variant_ids) &gt; 1">
                 <table class="table table-responsive">
                     <thead>
@@ -40,11 +40,7 @@
                                     <span t-field="variant_id.default_code"/>
                                 </td>
                                 <td style="font-weight:600;">
-                                    <span t-field="variant_id.website_price"
-                                    t-options='{
-                                       "widget": "monetary",
-                                       "display_currency": product.currency_id,
-                                    }'/>
+                                    <span t-field="variant_id.website_price" t-options="{                                        &quot;widget&quot;: &quot;monetary&quot;,                                        &quot;display_currency&quot;: product.currency_id,                                     }"/>
                                 </td>
                                 <td>
                                     <t t-if="variant_id.is_product_variant_publish() == False">
@@ -62,15 +58,15 @@
                 </table>
             </t>
             <t t-else="">
-                <input type="hidden" class="product_id" name="product_id" t-att-value="product.product_variant_id.id if len(product.product_variant_ids) == 1 else '0'" />
+                <input type="hidden" class="product_id" name="product_id" t-att-value="product.product_variant_id.id if len(product.product_variant_ids) == 1 else '0'"/>
                 <t t-call="website_sale.variants">
-                    <t t-set="ul_class" t-value="'nav-stacked'" />
+                    <t t-set="ul_class" t-value="'nav-stacked'"/>
                 </t>
             </t>
         </xpath>
 
         <xpath expr="//a[@id='add_to_cart']" position="replace">
-            <t t-if="len(product.product_variant_ids) &gt; 1">
+            <t t-if="len(product._get_published_product_ids()) &gt; 1">
                 <a id="add_to_cart_b" class="btn btn-success pull-right btn-lg mt8 js_check_product b-submit center-block" href="#">Add to Cart</a>
             </t>
             <t t-else="">
@@ -85,7 +81,7 @@
         <xpath expr="//div[@id='product_details']/hr[last()]" position="after">
             <t t-if="product.product_variant_id.is_product_variant_publish() == False and len(product.product_variant_ids) == 1">
                 <h3 class="text-danger">
-                Currently Out of Stock<br />
+                Currently Out of Stock<br/>
                 </h3>
             </t>
         </xpath>
