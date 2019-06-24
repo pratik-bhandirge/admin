@@ -15,13 +15,13 @@ class WebsiteSaleCustom(WebsiteSale):
             current_website = request.env['website'].get_current_website()
             product_count = prod_obj.search_count([
                 '|',('name', 'ilike', search_keyword),
-                ('default_code', 'ilike', search_keyword),
+                ('product_variant_ids.default_code', 'ilike', search_keyword),
                 ('website_published','=',True),
                 # ('website_discontinued','=',False),
                  ])
             product_ids = prod_obj.search([
                 '|',('name', 'ilike', search_keyword),
-                ('default_code', 'ilike', search_keyword),
+                ('product_variant_ids.default_code', 'ilike', search_keyword),
                 ('website_published','=',True),
                 # ('website_discontinued','=',False),
                 ], limit=8)
