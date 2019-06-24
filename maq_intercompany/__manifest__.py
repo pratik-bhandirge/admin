@@ -12,9 +12,13 @@
     Stock move line record action update to keep move lines discrete company wise
         """,
     'depends': [
-        'stock'
+        'stock','product', 'website_multi', 'website_sale', 'ecommerce_category'
     ],
     'data': [
+        'security/intercompany_security.xml',
+        'views/delivery_slip_report_view_inherit.xml',
+        'views/product_public_categ_view.xml',
+        'views/product_template_inherit.xml',
     ],
     'installable': True,
     'application': True,
