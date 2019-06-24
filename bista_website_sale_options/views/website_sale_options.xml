@@ -24,8 +24,8 @@
     <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
               inherit_id="website_sale_options.modal">
         <xpath expr="//div[hasclass('modal-dialog')]/div[hasclass('modal-content')]/div[hasclass('modal-header')]/h4[hasclass('modal-title')]"
-                position="replace">
-            <input type="text" class="quantity hidden" />
+               position="replace">
+            <input type="text" class="quantity hidden"/>
             <div class="css_quantity hidden"/>
             <h4 class="modal-title" id="myModalLabel">Product successfully added to your
                 shopping cart
@@ -58,9 +58,9 @@
                                     <span style='font-size: 20px;'>]</span>
                                     <span style='font-size: 20px;' t-field="product.name"/>
                                 </div>
-<!--                                 <div>
-                                    <span t-esc="product.description_sale"/>
-                                </div> -->
+                                <!--                                 <div>
+                                                                    <span t-esc="product.description_sale"/>
+                                                                </div> -->
                                 <div>
                                     <b>Quantity:-</b>
                                     <span t-esc="quantity"/>
@@ -110,7 +110,7 @@
     <template id="maq_products_item_inherit" name="MAQ Product Items"
               inherit_id="website_sale.products_item">
         <xpath expr="//div[hasclass('oe_product_image')]" position="replace">
-            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
             <div class="oe_product_image">
                 <a itemprop="url"
                    t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
@@ -134,18 +134,25 @@
                 <div class="product_grid_qty">
                     <p>Multiple options available please select an option on product page</p>
                 </div>
-                <br/>
             </t>
-            <div t-if="len(filterd_value_ids) == 1" class="css_quantity input-group oe_website_spinner product_grid_qty" groups="!ecommerce_category.group_hide_website_price">
+            <div t-if="len(filterd_value_ids) == 1" class="css_quantity input-group oe_website_spinner product_grid_qty"
+                 groups="!ecommerce_category.group_hide_website_price">
                 <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json hidden-xs">
                     <i class="fa fa-minus"/>
                 </a>
-                <input type="text" class="js_quantity form-control quantity" data-min="1" name="add_qty" value="1"/>
+                <input type="text" class="js_quantity form-control quantity" data-min="1" min="1" name="add_qty"
+                       value="1"/>
                 <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json hidden-xs">
                     <i class="fa fa-plus"/>
                 </a>
                 <br/>
             </div>
+            <t t-elif="len(filterd_value_ids) &lt; 1">
+                <div class="product_grid_qty">
+                    <p class="invisible">No options available please go to product page by click add to cart</p>
+                </div>
+            </t>
+
         </xpath>
         <xpath expr="//section/div[hasclass('product_price')]/b" position="replace">
             <b>
@@ -190,6 +197,12 @@
                position="replace">
             <t t-if="len(filterd_value_ids) == 1">
                 <a class="btn btn-default btn-xs a-submit">
+                    <span>Add To Cart</span>
+                </a>
+            </t>
+            <t t-elif="len(filterd_value_ids) &lt; 1">
+                <a class="btn btn-default btn-xs"
+                   t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
                     <span>Add To Cart</span>
                 </a>
             </t>
