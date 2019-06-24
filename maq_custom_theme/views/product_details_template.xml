@@ -22,7 +22,7 @@
                     <thead>
                         <tr>
                           <th scope="col">Product Name</th>
-                          <th scope="col">Sku</th>
+                          <th scope="col">SKU</th>
                           <th scope="col">Price</th>
                           <th scope="col">Qty</th>
                         </tr>
@@ -40,15 +40,15 @@
                                     <span t-field="variant_id.default_code"/>
                                 </td>
                                 <td style="font-weight:600;">
-                                    <span t-field="variant_id.website_price" t-options="{                                        &quot;widget&quot;: &quot;monetary&quot;,                                        &quot;display_currency&quot;: product.currency_id,                                     }"/>
+                                    <span t-field="variant_id.website_price" t-options="{'widget': 'monetary','display_currency': product.currency_id,}"/>
                                 </td>
                                 <td>
                                     <t t-if="variant_id.is_product_variant_publish() == False">
-                                        <input type="text" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0" disabled="disabled"/>
+                                        <input type="number" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0" min="0" disabled="disabled"/>
                                         <p style="display:inline-block;" class="text-danger">Currently Out of Stock</p>
                                     </t>
                                     <t t-else="">
-                                        <input type="text" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0"/>
+                                        <input type="number" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0" min="0"/>
                                     </t>
                                 </td>
                             </tr>

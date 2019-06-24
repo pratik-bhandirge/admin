@@ -14,7 +14,7 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
 
             var $form = $(this).closest('form');
 
-            var qty_input = $form.find('input.quantity');
+            var qty_input = $form.find('input.quantity:not([disabled])');
 
             var data = [];
             var $modal = "<div id=\"modal_products_notification\" class=\"modal fade\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\">\n" +
@@ -25,7 +25,8 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
                 "                        <h2 class=\"modal-title\" id=\"myModalLabel\">Add to Cart Update</h2>\n" +
                 "                    </div>\n" +
                 "                    <div class=\"modal-body\">\n" +
-                "                        <h3>Product Successfully Added to Cart.</h3>\n" +
+                "                        <p id='product-detail-model'/>\n" +
+                "                        <h3>THE SELECTED PRODUCTS HAVE BEEN ADDED TO CART</h3>\n" +
                 "                    </div>\n" +
                 "                </div>\n" +
                 "            </div>\n" +
@@ -33,13 +34,16 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
 
 
             for (var i = 0; i < qty_input.length; i++) {
-                if (qty_input[i].value != 0) {
+                if (qty_input[i].value <= 0) {
+                    continue;
+                } else {
                     data.push({
                         'product_id': qty_input[i].name,
                         'quantity': qty_input[i].value
                     });
                 }
             }
+            console.log(data.length);
             if (data.length > 0) {
                 $($modal).appendTo($form)
                     .modal()
@@ -47,7 +51,15 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
                         $form.removeClass('css_options'); // possibly reactivate opacity (see above)
                         $(this).remove();
                     });
-                setTimeout(function(){ $modal.modal('hide');}, 3000);
+                setTimeout(function () {
+                    $("#modal_products_notification").remove()
+                }, 3000);
+                setTimeout(function () {
+                    $(".modal-backdrop.fade.in").hide()
+                }, 3000);
+                setTimeout(function () {
+                    $("body.modal-open").removeClass('modal-open')
+                }, 3000);
             }
             $.each(data, function (i, val) {
                 var quantity = parseFloat(val['quantity']);
