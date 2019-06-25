@@ -29,5 +29,38 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+        <!-- Record rule for cost_history -->
+        <record id="product_cost_history_rule" model="ir.rule">
+            <field name="name">Product Price History Rule</field>
+            <field ref="product.model_product_price_history" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('company_id','in',user.company_ids.ids),('company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Record rule for promotion and coupon program -->
+        <record id="sales_promotions_program_rule" model="ir.rule">
+            <field name="name">Sales Promotions Program Rule</field>
+            <field ref="sale_coupon.model_sale_coupon_program" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('company_id','in',user.company_ids.ids),('company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Record rule for crm lead object to see record according to allowed companies -->
+        <record id="crm_lead_intercompany_rule" model="ir.rule">
+            <field name="name">CRM Lead Intercompany Rule</field>
+            <field ref="crm.model_crm_lead" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('company_id','in',user.company_ids.ids),('company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
     </data>
 </odoo>
