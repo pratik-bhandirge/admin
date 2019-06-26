@@ -91,7 +91,7 @@
             </attribute>
         </xpath>
         <xpath expr="//div[@id='product_details']/hr[last()]" position="after">
-            <t t-if="product.product_variant_id.is_product_variant_publish() == False and len(product.product_variant_ids) == 1">
+            <t t-if="product.product_variant_id.is_product_variant_publish() == False and len(product.product_variant_ids) == 1 and product.product_variant_id.website_published">
                 <h3 class="text-danger">
                 Currently Out of Stock<br/>
                 </h3>
