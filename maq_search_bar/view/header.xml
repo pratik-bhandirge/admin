@@ -74,7 +74,7 @@
         <span t-esc="p_categ.name" style="color:#000;"/>/
     </template>
     <template id="website_search_result">
-        <div class="autocomplete-wrapper">
+        <div class="autocomplete-wrapper row">
             <div class="col-md-9 col-md-push-3 col-sm-12 col-xs-12 mb8 mt16 left-border">
                 <t t-if="product_count &gt; 0">
                     <div class="row">
