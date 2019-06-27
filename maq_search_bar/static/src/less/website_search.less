@@ -1,17 +1,13 @@
-.aa-dropdown-menu {
-  margin-top: -1px;
-  right: 0;
-  z-index: 1000 !important;
-  border: 1px solid #bbb;
-  border-top: 3px solid #bbb;
+.aa-dropdown-menu .autocomplete-wrapper {
+  border: 1px solid #ddd;
   border-radius: 1px;
   background: #fff;
-  top: -8px;
-  position: absolute;
-  left: auto;
-  display: block;
-  right: 0px;
-  width: 80%;
+}
+
+.aa-dropdown-menu {
+  z-index: 1000 !important;
+  border-radius: 1px;
+  background: #fff;
 
   .left-border {
     border-left: 1px solid darken(#bbb, 6%);
@@ -58,21 +54,24 @@
 }
 
 .other-sections li > a {
-    color: #000 !important;
-    &:hover, &:focus {
-        color: #555;
-    }
+  color: #000 !important;
+
+  &:hover, &:focus {
+    color: #555;
+  }
 }
+
 a.row.search_product {
-    color:#000 !important;
-    &:hover, &:focus {
-        color: #555;
-    }
+  color: #000 !important;
+
+  &:hover, &:focus {
+    color: #555;
+  }
 }
+
 .as-search {
   position: relative;
   top: 2px;
-  padding-right: 20px;
 
   .form-control {
     box-shadow: none;
@@ -86,14 +85,13 @@ a.row.search_product {
   }
 
   .btn {
-    right: 30px;
-    top: 6px;
+    top: 14px;
     box-shadow: none;
     background: none;
     color: #000;
     padding: 0;
     opacity: 0.6;
-    border: 0;
+    border-bottom: 1px solid;
 
     .fa {
       width: 34px;
@@ -134,6 +132,5 @@ a.row.search_product {
 @media (max-width: 767px) {
   .aa-dropdown-menu {
     right: 10%;
-    top: -60px;
   }
 }
