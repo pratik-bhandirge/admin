@@ -36,3 +36,4 @@ odoo.define('maq_partner_order_comment.cart', function(require) {
     });
     
 });
+

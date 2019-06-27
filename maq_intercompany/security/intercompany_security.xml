@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Write ir.rule so user can view it's own created record -->
+        <!-- <record id="publish_product_view_rule" model="ir.rule">
+            <field name="name">Show Publish record according to user's company</field>
+            <field ref="website_multi.model_website_url" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">[('website_id.company_id.id','in',user.company_ids.ids)]</field>
+        </record> -->
+
+        <!-- <record id="module_category_intercompany_management" model="ir.module.category">
+            <field name="name">Maq Intercompany</field>
+            <field name="sequence">200</field>
+        </record> -->
+
+        <record id="maq_product_chatter_manager" model="res.groups">
+            <field name="name">Product Chatter Manager</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+        </record>
+
+        <record id="ecommerce_category_product_rule" model="ir.rule">
+            <field name="name">Ecommerce Category Product Rule</field>
+            <field ref="website_sale.model_product_public_category" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('m_company_id','=',user.company_id.id),('m_company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Record rule for cost_history -->
+        <record id="product_cost_history_rule" model="ir.rule">
+            <field name="name">Product Price History Rule</field>
+            <field ref="product.model_product_price_history" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('company_id','in',user.company_ids.ids),('company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Record rule for promotion and coupon program -->
+        <record id="sales_promotions_program_rule" model="ir.rule">
+            <field name="name">Sales Promotions Program Rule</field>
+            <field ref="sale_coupon.model_sale_coupon_program" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('company_id','in',user.company_ids.ids),('company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Record rule for crm lead object to see record according to allowed companies -->
+        <record id="crm_lead_intercompany_rule" model="ir.rule">
+            <field name="name">CRM Lead Intercompany Rule</field>
+            <field ref="crm.model_crm_lead" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('company_id','in',user.company_ids.ids),('company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>
