@@ -7,3 +7,4 @@ access_group_sales_report_admin,sales.group.report.admin,model_sales_report,base
 access_sales_report_lines_manager,sales.report.lines.manager,model_sales_report_lines,stock.group_stock_manager,1,1,1,1
 access_sales_report_lines_user,sales.report.lines.user,model_sales_report_lines,base.group_user,1,0,0,0
 access_group_sales_report_lines_manager,sales.group.report.lines.manager,model_sales_report_lines,maq_sales_report_warehouse.group_sales_report_manager,1,1,1,1
+
