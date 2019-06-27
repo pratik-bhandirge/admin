@@ -21,7 +21,7 @@
                     </form>
                 </div>
             </div>
-            <div class="container">
+            <div class="col-md-12">
                 <div id="algolia-autocomplete-container"
                      style="position: relative;">
                     <span class="aa-dropdown-menu aa-with-products aa-with-0 hide"
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
+            <div class="col-md-12">
                 <div id="algolia-autocomplete-container"
                      style="position: relative;">
                     <span class="aa-dropdown-menu aa-with-products aa-with-0 hide"
