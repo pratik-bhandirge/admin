@@ -2,7 +2,7 @@
 <odoo>
     <template id="products_inherit_search" inherit_id="theme_loftspace_sale.products">
         <xpath expr="//t[@t-call='theme_loftspace_sale.search']" position="replace">
-            <div class="col-md-12 mb32">
+            <div class="col-md-12">
                 <div class="as-search">
                     <form action='/shop' method="get">
                         <div class="input-group">
@@ -35,7 +35,7 @@
         <xpath expr="//t[@t-call='website_sale.search']" position="replace"/>
         <xpath expr="//div[hasclass('row')]" position="before">
             <div class="row">
-                <div class="col-md-12 mb32">
+                <div class="col-md-12">
                     <div class="as-search">
                         <form action='/shop' method="get">
                             <div class="input-group">
