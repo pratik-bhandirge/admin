@@ -23,3 +23,4 @@ class WebsiteSale(WebsiteSale):
                 order.write({'partner_comment': post.get('comment')})
 
         return True
+

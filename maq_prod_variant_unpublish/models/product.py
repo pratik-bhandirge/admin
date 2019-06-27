@@ -118,3 +118,4 @@ class ProductProduct(models.Model):
 #                     'message': _('You can unpublish the product variant instead of hiding it. There is only one variant for this product ! '),
 #                 }
 #                 return {'warning': warning_mess}
+
