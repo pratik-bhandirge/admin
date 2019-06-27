@@ -11,7 +11,7 @@ $('.oe_website_sale #add_to_cart, .oe_website_sale #products_grid .a-submit')
     .removeClass('a-submit')
     .click(function (event) {
         var $form = $(this).closest('form');
-        var quantity = parseFloat($form.find('input[name="add_qty"]').val() || 1);
+        var quantity = parseFloat($form.find('input[name="add_qty"]').val() || 0);
         var product_id = parseInt($form.find('input[type="hidden"][name="product_id"], input[type="radio"][name="product_id"]:checked').first().val(),10);
         event.preventDefault();
         ajax.jsonRpc("/shop/modal", 'call', {
