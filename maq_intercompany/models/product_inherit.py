@@ -56,6 +56,7 @@ class ProductTemplate(models.Model):
                                 company_dependent=True, default=True)
 #     type = fields.Selection(selection_add=[('product', 'Stockable Product')], company_dependent=True)
     available_in_pos = fields.Boolean(string='Available in Point of Sale', company_dependent=True, help='Check if you want this product to appear in the Point of Sale', default=True)
+#     m_available_pos = fields.Boolean(string="POS Available", compute="_get_pos_toggle", company_dependent=True, store=True)
     purchase_method = fields.Selection([
         ('purchase', 'On ordered quantities'),
         ('receive', 'On received quantities'),
@@ -119,19 +120,27 @@ class ProductTemplate(models.Model):
         default='order')
 
 
-    def action_view_stock_move_lines(self):
-        '''This method inherits the default odoo method and updates the domain
-           for the stock move lines related to the product company wise'''
-        res = super(ProductTemplate, self).action_view_stock_move_lines()
-        res.update({'domain': ['&',
-                               ('product_id.product_tmpl_id', 'in', self.ids),
-                               '|', '|', ('location_id.company_id.id', 'in',
-                                          self.env.user.company_ids.ids),
-                               ('location_id.company_id.id', '=', None),
-                               '|', ('location_dest_id.company_id.id', 'in',
-                                     self.env.user.company_ids.ids),
-                               ('location_dest_id.company_id.id', '=', None)]})
-        return res
+#     def action_view_stock_move_lines(self):
+#         '''This method inherits the default odoo method and updates the domain
+#            for the stock move lines related to the product company wise'''
+#         res = super(ProductTemplate, self).action_view_stock_move_lines()
+#         res.update({'domain': ['&',
+#                                ('product_id.product_tmpl_id', 'in', self.ids),
+#                                '|', '|', ('location_id.company_id.id', 'in',
+#                                           self.env.user.company_ids.ids),
+#                                ('location_id.company_id.id', '=', None),
+#                                '|', ('location_dest_id.company_id.id', 'in',
+#                                      self.env.user.company_ids.ids),
+#                                ('location_dest_id.company_id.id', '=', None)]})
+#         return res
+#     @api.depends('available_in_pos')
+#     def _get_pos_toggle(self):
+#         for rec in self:
+#             current_company = rec.env['res.users']._get_company()
+#             if rec.available_in_pos and current_company:
+#                 rec.m_available_pos = True
+#             elif not rec.available_in_pos:
+#                 rec.m_available_pos = False
 
     def action_view_routes(self):
         '''This method inherits the default odoo method and updates the domain
