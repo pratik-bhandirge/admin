@@ -11,7 +11,7 @@ Maqabim Distributors: Multi Company PriceList Fixed
     'website': "https://www.odoo.com",
     'category': 'Custom Development',
     'version': '0.1',
-    'depends': ['product'],
+    'depends': ['website_sale'],
     'data': [
     ],
 }
