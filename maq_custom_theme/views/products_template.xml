@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="products_inherit" inherit_id="website_sale.products">
+        <xpath expr="//table" position="replace">
+            <table width="100%"/>
+            <t t-foreach="bins" t-as="tr_product">
+                <t t-foreach="tr_product" t-as="td_product">
+                    <t t-if="td_product">
+                        <t t-set="product" t-value="td_product['product']"/>
+                        <div t-attf-class="oe_grid oe_product col-lg-3 col-md-4 col-sm-6">
+                            <div class="oe_product_cart"
+                                 t-att-data-publish="product.website_published and 'on' or 'off'">
+                                <t t-call="website_sale.products_item"/>
+                            </div>
+                        </div>
+                    </t>
+                    <div t-if="not td_product" class="oe-height-2"/>
+                </t>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="confirmation_inherit" inherit_id="website_sale.confirmation">
+        <xpath expr="//t[@t-call='website_sale.payment_confirmation_status']" position="replace"/>
+        <xpath expr="//div[hasclass('thanks_msg')]" position="after">
+            <div class="mt16">
+                <t t-call="website_sale.payment_confirmation_status"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
+

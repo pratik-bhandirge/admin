@@ -9,8 +9,8 @@
     'category': 'Sale',
     'data': [
         'views/product_view.xml',
-        'wizards/variant_on_website_false_view.xml',
-        'wizards/variant_on_website_true_view.xml',
+        #         'wizards/variant_on_website_false_view.xml',
+        #         'wizards/variant_on_website_true_view.xml',
     ],
     'installable': True,
     'application': True,
