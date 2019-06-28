@@ -29,5 +29,5 @@ class SaleOrder(models.Model):
         order_line_vals = super(SaleOrder, self)._cart_update(product_id=product_id, line_id=line_id, add_qty=add_qty, set_qty=set_qty, attributes=attributes, **kwargs)
         SaleOrderLineSudo = self.env['sale.order.line'].sudo()
         order_line = SaleOrderLineSudo.browse(order_line_vals['line_id'])
-        order_line.write({'print_qty': order_line_vals['quantity']})
+        order_line.print_qty = order_line_vals['quantity']
         return order_line_vals
