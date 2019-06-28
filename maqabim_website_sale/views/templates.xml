@@ -14,7 +14,7 @@
     </template>
 
     <template id="cart_lines_maqabim" inherit_id="website_sale.cart_lines">
-        <xpath expr="//td[hasclass('td-product_name')]" position="replace">
+        <xpath expr="//td[@class='td-product_name']" position="replace">
             <td t-if="line.product_id.product_tmpl_id" class="td-product_name">
                 <div>
                     <a t-attf-href="/shop/product/#{ slug(line.product_id.product_tmpl_id) }">
@@ -32,7 +32,7 @@
     </template>
 
     <template id="payment_maqabim" inherit_id="website_sale.payment">
-        <xpath expr="//td[hasclass('td-product_name')]" position="replace">
+        <xpath expr="//td[@class='td-product_name']" position="replace">
             <td class="td-product_name" t-if="line.product_id.product_tmpl_id">
                 <div>
                     <strong t-field="line.product_id.display_name"/>
@@ -47,7 +47,7 @@
     </template>
 
     <template id="confirmation_maqabim" inherit_id="website_sale.confirmation">
-        <xpath expr="//td[hasclass('td-product_name')]" position="replace">
+        <xpath expr="//td[@class='td-product_name']" position="replace">
             <td class="td-product_name">
                 <div>
                     <a t-attf-href="/shop/product/#{ slug(line.product_id.product_tmpl_id) }">
