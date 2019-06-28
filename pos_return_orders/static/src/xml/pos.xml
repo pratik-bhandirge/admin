@@ -72,9 +72,9 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <div class="button return_all_order_button" t-att-data-order_id="widget.options.order_id"  t-att-data-order_name="widget.options.order_name">
+                    <!-- <div class="button return_all_order_button" t-att-data-order_id="widget.options.order_id"  t-att-data-order_name="widget.options.order_name">
                         Return All
-                    </div>
+                    </div> -->
                     <div class="button return_order_button" t-att-data-order_id="widget.options.order_id"  t-att-data-order_name="widget.options.order_name">
                         Return
                     </div>
