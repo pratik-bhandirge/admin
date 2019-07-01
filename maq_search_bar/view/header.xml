@@ -2,7 +2,7 @@
 <odoo>
     <template id="products_inherit_search" inherit_id="theme_loftspace_sale.products">
         <xpath expr="//t[@t-call='theme_loftspace_sale.search']" position="replace">
-            <div class="col-md-12 mb32">
+            <div class="col-md-12">
                 <div class="as-search">
                     <form action='/shop' method="get">
                         <div class="input-group">
@@ -21,7 +21,7 @@
                     </form>
                 </div>
             </div>
-            <div class="container">
+            <div class="col-md-12">
                 <div id="algolia-autocomplete-container"
                      style="position: relative;">
                     <span class="aa-dropdown-menu aa-with-products aa-with-0 hide"
@@ -31,11 +31,11 @@
             </div>
         </xpath>
     </template>
-    <template id="product_search_inherit" inherit_id="theme_loftspace_sale.product">
-        <xpath expr="//t[@t-call='theme_loftspace_sale.search']" position="replace"/>
+    <template id="product_search_inherit" inherit_id="website_sale.product">
+        <xpath expr="//t[@t-call='website_sale.search']" position="replace"/>
         <xpath expr="//div[hasclass('row')]" position="before">
             <div class="row">
-                <div class="col-md-12 mb32">
+                <div class="col-md-12">
                     <div class="as-search">
                         <form action='/shop' method="get">
                             <div class="input-group">
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
+            <div class="col-md-12">
                 <div id="algolia-autocomplete-container"
                      style="position: relative;">
                     <span class="aa-dropdown-menu aa-with-products aa-with-0 hide"
@@ -74,7 +74,7 @@
         <span t-esc="p_categ.name" style="color:#000;"/>/
     </template>
     <template id="website_search_result">
-        <div class="autocomplete-wrapper">
+        <div class="autocomplete-wrapper row">
             <div class="col-md-9 col-md-push-3 col-sm-12 col-xs-12 mb8 mt16 left-border">
                 <t t-if="product_count &gt; 0">
                     <div class="row">

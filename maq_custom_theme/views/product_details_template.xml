@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="custom_product_quantity" inherit_id="website_sale.product_quantity">
-        <xpath expr="//div[@class='css_quantity input-group oe_website_spinner']" position="attributes">
+        <xpath expr="//div[hasclass('css_quantity','input-group','oe_website_spinner')]" position="attributes">
             <attribute name='t-if'>
-                product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1
+                len(product.product_variant_ids) == 1
             </attribute>
         </xpath>
     </template>
-    <template id="custom_product" inherit_id="theme_loftspace_sale.product">
-        <xpath expr="//div[@class='col-sm-7']" position="attributes">
+    <template id="custom_product" inherit_id="website_sale.product">
+        <xpath expr="//div[hasclass('col-sm-7')]" position="attributes">
             <attribute name="class">col-sm-6 col-lg-6</attribute>
         </xpath>
         <xpath expr="//div[@id='product_details']" position="attributes">
             <attribute name="class">col-sm-6 col-lg-6</attribute>
         </xpath>
     </template>
-    <template id="custom_product_variants" inherit_id="theme_loftspace_sale.product">
-        <xpath expr="//t[@t-placeholder='select']" position="replace">
+    <template id="custom_product_variants" inherit_id="website_sale.product">
+         <xpath expr="//t[@t-placeholder='select']" position="replace">
             <t t-if="len(product.product_variant_ids) &gt; 1">
                 <table class="table table-responsive">
                     <thead>
                         <tr>
                           <th scope="col">Product Name</th>
-                          <th scope="col">Sku</th>
+                          <th scope="col">SKU</th>
                           <th scope="col">Price</th>
                           <th scope="col">Qty</th>
                         </tr>
@@ -40,19 +40,15 @@
                                     <span t-field="variant_id.default_code"/>
                                 </td>
                                 <td style="font-weight:600;">
-                                    <span t-field="variant_id.website_price"
-                                    t-options='{
-                                       "widget": "monetary",
-                                       "display_currency": product.currency_id,
-                                    }'/>
+                                    <span t-field="variant_id.website_price" t-options="{'widget': 'monetary','display_currency': product.currency_id,}"/>
                                 </td>
                                 <td>
                                     <t t-if="variant_id.is_product_variant_publish() == False">
-                                        <input type="text" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0" disabled="disabled"/>
+                                        <input type="number" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0" min="0" disabled="disabled"/>
                                         <p style="display:inline-block;" class="text-danger">Currently Out of Stock</p>
                                     </t>
                                     <t t-else="">
-                                        <input type="text" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0"/>
+                                        <input type="number" class="form-control quantity" style="display:inline-block;width:50px;text-align:center;" data-min="0" t-att-name="variant_id.id" value="0" min="0"/>
                                     </t>
                                 </td>
                             </tr>
@@ -62,19 +58,31 @@
                 </table>
             </t>
             <t t-else="">
-                <input type="hidden" class="product_id" name="product_id" t-att-value="product.product_variant_id.id if len(product.product_variant_ids) == 1 else '0'" />
+                <input type="hidden" class="product_id" name="product_id" t-att-value="product.product_variant_id.id if len(product.product_variant_ids) == 1 else '0'"/>
                 <t t-call="website_sale.variants">
-                    <t t-set="ul_class" t-value="'nav-stacked'" />
+                    <t t-set="ul_class" t-value="'nav-stacked'"/>
                 </t>
             </t>
         </xpath>
 
         <xpath expr="//a[@id='add_to_cart']" position="replace">
-            <t t-if="len(product.product_variant_ids) &gt; 1">
+            <t t-if="len(product.product_variant_ids) == 1">
+                <div class="css_quantity input-group oe_website_spinner" contenteditable="false">
+                    <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <input type="text" class="form-control quantity" data-min="1" name="add_qty" value="1"/>
+                    <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+                <a id="add_to_cart" class="btn btn-success btn-lg mt8 js_check_product a-submit center-block" href="#" t-if="product.product_variant_id.is_product_variant_publish() == True">Add to Cart</a>
+            </t>
+            <t t-elif="len(product._get_published_product_ids()) &gt; 1">
                 <a id="add_to_cart_b" class="btn btn-success pull-right btn-lg mt8 js_check_product b-submit center-block" href="#">Add to Cart</a>
             </t>
             <t t-else="">
-                <a id="add_to_cart" class="btn btn-success btn-lg mt8 js_check_product a-submit center-block" href="#" t-if="product.product_variant_id.is_product_variant_publish() == True">Add to Cart</a>
+                <a id="add_to_cart_b" class="btn btn-success pull-right btn-lg mt8 js_check_product b-submit center-block" href="#">Add to Cart</a>
             </t>
         </xpath>
         <xpath expr="//div[@id='product_details']/hr[last()]" position="attributes">
@@ -83,15 +91,15 @@
             </attribute>
         </xpath>
         <xpath expr="//div[@id='product_details']/hr[last()]" position="after">
-            <t t-if="product.product_variant_id.is_product_variant_publish() == False and len(product.product_variant_ids) == 1">
+            <t t-if="product.product_variant_id.is_product_variant_publish() == False and len(product.product_variant_ids) == 1 and product.product_variant_id.website_published">
                 <h3 class="text-danger">
-                Currently Out of Stock<br />
+                Currently Out of Stock<br/>
                 </h3>
             </t>
         </xpath>
     </template>
     <template id="custom_product_price" inherit_id="website_sale.product_price">
-        <xpath expr="//div[@class='product_price mt16']" position="attributes">
+        <xpath expr="//div[hasclass('product_price','mt16')]" position="attributes">
             <attribute name="t-if">
                 len(product.product_variant_ids) == 1
             </attribute>
@@ -103,7 +111,7 @@
                 product.m_product_specification_ids
             </attribute>
         </xpath>
-        <xpath expr="//div[@id='product_description_reviews']/div[@class='tab-content']/div[@id='product-additional-info']" position="replace">
+        <xpath expr="//div[@id='product_description_reviews']/div[hasclass('tab-content')]/div[@id='product-additional-info']" position="replace">
             <div class="tab-pane fade" id="product-additional-info">
                 <div t-if="product.m_product_specification_ids">
                     <div id="product_attribute_details" class="mt32 mb32">
@@ -136,3 +144,4 @@
         </xpath>
     </template>
 </odoo>
+

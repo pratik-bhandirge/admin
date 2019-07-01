@@ -11,23 +11,26 @@ _logger = logging.getLogger(__name__)
 class SalesReport(models.Model):
     _name = 'sales.report'
     _description = 'Sales Report'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
 
-    m_sales_start_date = fields.Datetime(string="Start Date", default=datetime.today().replace(day=1), required=True)
-    m_sales_end_date = fields.Datetime(string="End Date", default=datetime.today(), required=True)
-    m_warehouse_id = fields.Many2many("stock.warehouse", string="Warehouse", required=True)
-    m_exhausted = fields.Boolean("Include Exhausted Products", default=True)
+    m_sales_start_date = fields.Datetime(string="Start Date", default=datetime.today().replace(day=1), required=True, track_visibility='onchange')
+    m_sales_end_date = fields.Datetime(string="End Date", default=datetime.today(), required=True, track_visibility='onchange')
+    m_warehouse_id = fields.Many2many("stock.warehouse", string="Warehouse", required=True, track_visibility='onchange')
+    m_exhausted = fields.Boolean("Include Exhausted Products", default=True, track_visibility='onchange')
     m_sales_report_lines = fields.One2many("sales.report.lines", "sales_report_id", "Sales Report Lines", copy=False)
     #TO DO: put domain on partner_ids and show only those vendors who are registred with product.supplierinfo
-    company_ids = fields.Many2many("res.company", string="Company", copy=False)
-    product_ids = fields.Many2many("product.product", string="Products in Filter", copy=False)
-    partner_ids = fields.Many2many("res.partner", string="Vendors in Filter", copy=False)
-    internal_ref = fields.Char(string="Internal Reference in Filter", copy=False)
-    prod_ref = fields.Char(string="Product Reference in Filter", copy=False)
-    is_lock = fields.Boolean("Locked", default=False, copy=False)
+    company_ids = fields.Many2many("res.company", string="Company", copy=False, track_visibility='onchange')
+    product_ids = fields.Many2many("product.product", string="Products in Filter", copy=False, track_visibility='onchange')
+    partner_ids = fields.Many2many("res.partner", string="Vendors in Filter", copy=False, track_visibility='onchange')
+    internal_ref = fields.Char(string="Internal Reference in Filter", copy=False, track_visibility='onchange')
+    prod_ref = fields.Char(string="Product Reference in Filter", copy=False, track_visibility='onchange')
+    is_lock = fields.Boolean("Locked", default=False, copy=False, track_visibility='onchange')
     user_id = fields.Many2one('res.users', string='Responsible', required=False, default=lambda self: self.env.user)
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(default=True, copy=False, track_visibility='onchange')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('sales.report'))
+    event_description = fields.Char(string="Event", copy=False, track_visibility='onchange')
+    is_update_total_qty = fields.Boolean(default=False, copy=False, track_visibility='onchange')
 
     @api.model
     def create(self, vals):
@@ -84,14 +87,16 @@ class SalesReport(models.Model):
         """
         Clear all fields related filters
         """
-        self.is_lock = True
+        self.update({'is_lock':True,
+        'event_description':'Lock the record'})
 
     @api.multi
     def unlock_record(self):
         """
         Clear all fields related filters
         """
-        self.is_lock = False
+        self.update({'is_lock':False,
+        'event_description':'Unock the record'})
 
     @api.multi
     def add_filter(self):
@@ -104,7 +109,7 @@ class SalesReport(models.Model):
         5. Make inactive to rest of the records
         """
         for rec in self:
-            if not rec.product_ids and not rec.partner_ids and not rec.internal_ref:
+            if not rec.product_ids and not rec.partner_ids and not rec.internal_ref and not rec.prod_ref:
                 raise ValidationError(_("Please add product or vendor details."))
             inactive_records = self.env['sales.report.lines'].sudo().search_count([('active','=',False),
                 ('sales_report_id','=',rec.id)])
@@ -132,12 +137,12 @@ class SalesReport(models.Model):
                 reference_list = [ref.strip() for ref in prod_ref.split(',')]
                 if len(reference_list) == 1:
                     prod_ids += self.env['product.product'].search([
-                        ('default_code', 'ilike', reference_list[0]),
+                        ('name', 'ilike', reference_list[0]),
                     ]).ids
                 elif len(reference_list) > 1:
                     for ref in reference_list:
                         prod_ids += self.env['product.product'].search([
-                        ('default_code', 'ilike', ref),]).ids
+                        ('name', 'ilike', ref),]).ids
                 _logger.info("Len prod_ids in prod_ref************%s"%(len(prod_ids)))
             if rec.product_ids:
                 prod_ids += rec.product_ids.ids
@@ -157,7 +162,9 @@ class SalesReport(models.Model):
 
             if domain:
                 domain += [('sales_report_id','=',rec.id)]
+                _logger.info("domain************%s"%(domain))
                 records = self.env['sales.report.lines'].sudo().search(domain)
+                _logger.info("records************%s"%(records))
                 if records:
                     records = records.ids
                     if len(records) > 1:
@@ -172,6 +179,7 @@ class SalesReport(models.Model):
                     self.env.cr.execute("""UPDATE  sales_report_lines
                                             SET active = FALSE
                                             WHERE sales_report_id = %s"""%rec.id)
+        self.update({'event_description':'Clicked on add filter'})
 
 
     @api.multi
@@ -184,6 +192,7 @@ class SalesReport(models.Model):
             self.env.cr.execute("""UPDATE  sales_report_lines
                             SET active = TRUE
                             WHERE sales_report_id = %s"""% rec.id)
+        self.update({'event_description':'Clicked on clear filter'})
 
 
     @api.multi
@@ -200,6 +209,7 @@ class SalesReport(models.Model):
                 # rec.m_sales_report_lines.unlink()
             # else:
             #     raise ValidationError(_("The Lines are already cleared"))
+        self.update({'event_description':'Clicked on clear data'})
 
     # @api.multi
     # def _get_company_ids(self):
@@ -252,6 +262,8 @@ class SalesReport(models.Model):
         """
         for rec in self:
             delivered_qty = 0
+            scrap_qty = 0
+            return_qty = 0
             if vals.get('warehouse_id') and vals.get('product_id') and vals.get('start_date') and vals.get('end_date'):
                 warehouse_id = vals.get('warehouse_id')
                 product_id = vals.get('product_id')
@@ -276,7 +288,47 @@ class SalesReport(models.Model):
                     for res in result:
                         if warehouse_id == res['warehouse_id']:
                             delivered_qty = res['delivered_qty']
-            return delivered_qty
+
+                qry = """SELECT pp.id as product_id
+                               ,sm.m_warehouse_id as warehouse_id
+                               ,SUM(sm.qty_done) as return_qty
+                        FROM product_product pp
+                        LEFT JOIN stock_move_line sm ON (sm.product_id = pp.id)
+                        LEFT JOIN stock_location sl ON (sm.location_id = sl.id)
+                        WHERE sl.usage in ('customer')
+                              AND sm.state = 'done'
+                              AND sm.date BETWEEN '%s' and '%s'
+                              AND pp.id = %s
+                              AND sm.m_warehouse_id = %s
+                        GROUP BY 1,2""" % (start_date, end_date, product_id, warehouse_id)
+                self.env.cr.execute(qry)
+                result = self.env.cr.dictfetchall()
+
+                if result:
+                    for res in result:
+                        if warehouse_id == res['warehouse_id']:
+                            return_qty = res['return_qty']
+
+                qry = """SELECT pp.id as product_id
+                               ,sm.m_warehouse_id as warehouse_id
+                               ,SUM(sm.qty_done) as scrap_qty
+                        FROM product_product pp
+                        LEFT JOIN stock_move_line sm ON (sm.product_id = pp.id)
+                        LEFT JOIN stock_location sl ON (sm.location_dest_id = sl.id)
+                        WHERE sl.scrap_location = True
+                              AND sm.state = 'done'
+                              AND sm.date BETWEEN '%s' and '%s'
+                              AND pp.id = %s
+                              AND sm.m_warehouse_id = %s
+                        GROUP BY 1,2""" % (start_date, end_date, product_id, warehouse_id)
+                self.env.cr.execute(qry)
+                result = self.env.cr.dictfetchall()
+
+                if result:
+                    for res in result:
+                        if warehouse_id == res['warehouse_id']:
+                            scrap_qty = res['scrap_qty']
+            return delivered_qty, return_qty, scrap_qty
 
 
     def _get_forecasted_qty(self,vals):
@@ -390,12 +442,12 @@ class SalesReport(models.Model):
             reference_list = [ref.strip() for ref in prod_ref.split(',')]
             if len(reference_list) == 1:
                 prod_ids += self.env['product.product'].search([('id','in',prod_list),
-                    ('default_code', 'ilike', reference_list[0]),
+                    ('name', 'ilike', reference_list[0]),
                 ]).ids
             elif len(reference_list) > 1:
                 for ref in reference_list:
                     prod_ids += self.env['product.product'].search([('id','in',prod_list),
-                    ('default_code', 'ilike', ref),]).ids
+                    ('name', 'ilike', ref),]).ids
         if self.product_ids:
             prod_ids += self.product_ids.ids
         if self.partner_ids:
@@ -468,6 +520,7 @@ class SalesReport(models.Model):
         # prod_list = self.env['product.product'].search([('company_id','in',company_ids),('type', 'not in', ('service', 'consu', 'digital'))]).ids
 
         # 3. gets all the locations from warehouses
+        self.update({'event_description':'Clicked on generate report'})
         for rec in self:
             wr_house_data = []
             start_date = rec.m_sales_start_date
@@ -582,8 +635,12 @@ class SalesReport(models.Model):
 #                     _logger.info("End Calculating product fields")
 
 #                     _logger.info("Start Calculating delivered_qty")
-                    delivered_qty = self._get_delivered_qty(line_values)
-                    line_values.update({'delivered_qty':delivered_qty})
+#                     delivered_qty = self._get_delivered_qty(line_values)
+                    delivered_qty, return_qty, scrap_qty = self._get_delivered_qty(line_values)
+                    actual_delivered_qty = delivered_qty + scrap_qty - return_qty
+                    line_values.update({'delivered_qty':delivered_qty,
+                                        'return_qty':return_qty, 'scrap_qty':scrap_qty,
+                                        'actual_delivered_qty':actual_delivered_qty})
 #                     _logger.info("End Calculating delivered_qty")
 
 #                     _logger.info("Start Calculating forecasted_qty")
@@ -597,22 +654,23 @@ class SalesReport(models.Model):
                     _logger.info("Start creating sales report lines")
                     rec.update({'m_sales_report_lines':values})
                     _logger.info("sales report lines created sucessfully")
-            query = """
-                UPDATE sales_report_lines srl
-                SET total_qty_on_hand = (SELECT SUM(qty_on_hand)
-                                        FROM sales_report_lines
-                                        WHERE sales_report_id = '"""+str(rec.id)+"""'
-                                        AND product_id = srl.product_id)
-                , total_delivered_qty = (SELECT SUM(delivered_qty)
-                                        FROM sales_report_lines
-                                        WHERE sales_report_id = '"""+str(rec.id)+"""'
-                                        AND product_id = srl.product_id)
-                , total_forecasted_qty = (SELECT SUM(forecasted_qty)
-                                        FROM sales_report_lines
-                                        WHERE sales_report_id = '"""+str(rec.id)+"""'
-                                        AND product_id = srl.product_id) 
-                WHERE sales_report_id = '"""+str(rec.id)+"'";
-            results = self.env.cr.execute(query)
+            if rec.is_update_total_qty:
+                query = """
+                    UPDATE sales_report_lines srl
+                    SET total_qty_on_hand = (SELECT SUM(qty_on_hand)
+                                            FROM sales_report_lines
+                                            WHERE sales_report_id = '"""+str(rec.id)+"""'
+                                            AND product_id = srl.product_id)
+                    , total_delivered_qty = (SELECT SUM(actual_delivered_qty)
+                                            FROM sales_report_lines
+                                            WHERE sales_report_id = '"""+str(rec.id)+"""'
+                                            AND product_id = srl.product_id)
+                    , total_forecasted_qty = (SELECT SUM(forecasted_qty)
+                                            FROM sales_report_lines
+                                            WHERE sales_report_id = '"""+str(rec.id)+"""'
+                                            AND product_id = srl.product_id)
+                    WHERE sales_report_id = '"""+str(rec.id)+"'";
+                results = self.env.cr.execute(query)
         _logger.info("End generate report function")
 
 #     @api.multi
@@ -744,6 +802,9 @@ class SalesReportLines(models.Model):
     sales_price = fields.Float(string="Sale Price")
 #     delivered_qty = fields.Float(string="Delivered Quantity", compute="_get_delivered_qty")
     delivered_qty = fields.Float(string="Delivered Quantity")
+    scrap_qty = fields.Float(string="Scrap Quantity")
+    return_qty = fields.Float(string="Return Quantity")
+    actual_delivered_qty = fields.Float(string="Actual Delivered Quantity")
     total_delivered_qty = fields.Float(string="Total Delivered Quantity")
     qty_on_hand = fields.Float(string="Quantity on Hand")
     total_qty_on_hand = fields.Float(string="Total Quantity on Hand")

@@ -2,35 +2,36 @@
 <odoo>
     <!-- Replace the website_sale.js file with custom js file -->
     <template id="assets_backend" name="website_sale_expand assets"
-        inherit_id="website_sale_options.assets_frontend">
+              inherit_id="website_sale_options.assets_frontend">
         <xpath
-            expr="//script[contains(@src,'/website_sale_options/static/src/js/website_sale.js')]"
-            position="replace">
+                expr="//script[contains(@src,'/website_sale_options/static/src/js/website_sale.js')]"
+                position="replace">
             <script type="text/javascript"
-                src="/bista_website_sale_options/static/src/js/website_sale.js" />
+                    src="/bista_website_sale_options/static/src/js/website_sale.js"/>
         </xpath>
     </template>
     <!-- Load custom less file of the module -->
     <template id="assets_maq_website_frontend" inherit_id="web.assets_frontend"
-        name="MAQ Website Assets">
+              name="MAQ Website Assets">
         <xpath expr="//link[last()]" position="after">
             <link rel="stylesheet" type="text/less"
-                href="/bista_website_sale_options/static/src/less/maq_website.ui.component.less" />
+                  href="/bista_website_sale_options/static/src/less/maq_website.ui.component.less"/>
         </xpath>
     </template>
     <!-- Changes in website add to cart modal on modal-title, modal-body and 
         modal-footer
         While adding cart into show following confirmation pop view-->
-     <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
-        inherit_id="website_sale_options.modal">
-        <xpath
-            expr="//div[contains(@class,'modal-dialog')]/div[@class='modal-content']/div[@class='modal-header']/h4[@class='modal-title']"
-            position="replace">
+    <template id="bista_website_sale_modal" name="Bista Website Sale Modal"
+              inherit_id="website_sale_options.modal">
+        <xpath expr="//div[hasclass('modal-dialog')]/div[hasclass('modal-content')]/div[hasclass('modal-header')]/h4[hasclass('modal-title')]"
+               position="replace">
+            <input type="text" class="quantity hidden"/>
+            <div class="css_quantity hidden"/>
             <h4 class="modal-title" id="myModalLabel">Product successfully added to your
                 shopping cart
             </h4>
         </xpath>
-        <xpath expr="//div[@class='modal-body']" position='replace'>
+        <xpath expr="//div[hasclass('modal-body')]" position='replace'>
             <div class="modal-body">
                 <table>
                     <thead>
@@ -40,7 +41,7 @@
                             <td>
                                 <div>
                                     <span t-field="product.image_medium"
-                                        t-options='{"widget": "image" }' />
+                                          t-options='{"widget": "image" }'/>
                                 </div>
                             </td>
                             <td>&#160;</td>
@@ -52,33 +53,35 @@
                             <td>&#160;</td>
                             <td>
                                 <div>
-                                    <span style='font-size: 20px;' t-field="product.name" /><span style='font-size: 20px;'>[</span><span style='font-size: 20px;' t-esc="product.default_code" /><span style='font-size: 20px;'>]</span>
-                                    <span style='font-size: 20px;' t-field="product.name" />
+                                    <span style='font-size: 20px;'>[</span>
+                                    <span style='font-size: 20px;' t-esc="product.default_code"/>
+                                    <span style='font-size: 20px;'>]</span>
+                                    <span style='font-size: 20px;' t-field="product.name"/>
                                 </div>
-                                <div>
-                                    <span t-esc="product.description_sale" />
-                                </div>
+                                <!--                                 <div>
+                                                                    <span t-esc="product.description_sale"/>
+                                                                </div> -->
                                 <div>
                                     <b>Quantity:-</b>
                                     <span t-esc="quantity"/>
-                                     <input style="border: none; border-color: transparent;"
-                                        type="text" data-min="1" name="add_qty" value="1" readonly="readonly" />
+                                    <input style="border: none; border-color: transparent;"
+                                           type="hidden" data-min="1" name="add_qty" value="1" readonly="readonly"/>
                                 </div>
                                 <div groups="!ecommerce_category.group_hide_website_price">
                                     <b>Total:-</b>
-                                     <span class="text-danger oe_default_price oe_optional"
-                                        t-field="product.lst_price"
-                                        t-options='{
+                                    <!-- <span class="text-danger oe_default_price oe_optional"
+                                          t-field="product.lst_price"
+                                          t-options='{
                                                "widget": "monetary",
                                                "from_currency": product.currency_id,
                                                "display_currency": website.currency_id
-                                              }' />
-                                     <span class="oe_price" style="white-space: nowrap;"
-                                        t-field="product.website_price"
-                                        t-options='{
+                                              }'/> -->
+                                    <span class="oe_price" style="white-space: nowrap;"
+                                          t-field="product.website_price"
+                                          t-options='{
                                          "widget": "monetary",
                                          "display_currency": website.currency_id
-                                      }' />
+                                      }'/>
                                 </div>
                             </td>
                         </tr>
@@ -86,7 +89,7 @@
                 </table>
             </div>
         </xpath>
-        <xpath expr="//div[@class='modal-footer']" position='replace'>
+        <xpath expr="//div[hasclass('modal-footer')]" position='replace'>
             <div class="modal-footer">
                 <a class="btn btn-default a-submit js_goto_shop invisible">
                     <i class="fa fa-chevron-left"></i>
@@ -105,64 +108,52 @@
         for multiple variants and showing oe_website_spinner for adding quantity 
         and hiding product price on hover -->
     <template id="maq_products_item_inherit" name="MAQ Product Items"
-        inherit_id="website_sale.products_item">
-        <xpath expr="//div[@class='oe_product_image']" position="replace">
+              inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('oe_product_image')]" position="replace">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
             <div class="oe_product_image">
                 <a itemprop="url"
-                    t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
+                   t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
                     <span itemprop="image"
-                        t-attf-content="{{request.httprequest.url_root}}web/image/product.template/{{product.id}}/image"
-                        t-field="product.image"
-                        t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image'}"
-                        t-att-alt="product.name" />
-                    <div class='maq_middle'>
+                          t-attf-content="{{request.httprequest.url_root}}web/image/product.template/{{product.id}}/image"
+                          t-field="product.image"
+                          t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image'}"
+                          t-att-alt="product.name"/>
+                    <div class="maq_middle">
                         <div class="maq_text" groups="!ecommerce_category.group_hide_website_price">
                             <span t-esc="product.website_price"
-                            t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                                  t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
                         </div>
                     </div>
                 </a>
             </div>
         </xpath>
         <xpath expr="//div[hasclass('product_price')]" position="before">
-            <t t-set="filterd_value_ids"
-                t-value="product.product_variant_ids.ids" />
-            <t t-if="len(filterd_value_ids) > 1">
+            <t t-set="filterd_value_ids" t-value="product._get_published_product_ids()"/>
+            <t t-if="len(filterd_value_ids) &gt; 1">
                 <div class="product_grid_qty">
-                    <p>Multiple options available please select an option on product page
-                    </p>
+                    <p>Multiple options available please select an option on product page</p>
                 </div>
-                <br/>
             </t>
-            <div t-if="product.product_variant_id.is_product_variant_publish() == True and len(product.product_variant_ids) == 1"
-                class="css_quantity input-group oe_website_spinner product_grid_qty"
-                groups="!ecommerce_category.group_hide_website_price">
-                <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json hidden-xs">
-                    <i class="fa fa-minus"></i>
-                </a>
-                <input type="text" class="js_quantity form-control quantity"
-                    data-min="1" name="add_qty" value="1" />
-                <a t-attf-href="#"
-                    class="mb8 input-group-addon float_left js_add_cart_json hidden-xs">
-                    <i class="fa fa-plus"></i>
-                </a>
-                <br/>
-            </div>
+            <t t-elif="len(filterd_value_ids) &lt; 1">
+                <div class="product_grid_qty">
+                    <p class="invisible">No options available please go to product page by click add to cart</p>
+                </div>
+            </t>
+
         </xpath>
-        <xpath expr="//section/div[@class='product_price']/b" position='replace'>
+        <xpath expr="//section/div[hasclass('product_price')]/b" position="replace">
             <b>
                 <t t-if="product.website_price_difference and website.get_current_pricelist().discount_policy=='without_discount'">
                     <del class="text-danger mr8" style="white-space: nowrap;"
-                        t-esc="compute_currency(product.website_public_price)"
-                        t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id, 'from_currency': website.currency_id}" />
+                         t-esc="compute_currency(product.website_public_price)"
+                         t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id, 'from_currency': website.currency_id}"/>
                 </t>
-
-                <span class='maq_hide_span' t-esc="product.website_price"
-                    t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
-                <span class='maq_hide_span' itemprop="price" style="display:none;"
-                    t-esc="product.website_price" />
-                <span class='maq_hide_span' itemprop="priceCurrency" style="display:none;"
-                    t-esc="website.currency_id.name" />
+                <span class="maq_hide_span" t-esc="product.website_price"
+                      t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                <span class="maq_hide_span" itemprop="price" style="display:none;" t-esc="product.website_price"/>
+                <span class="maq_hide_span" itemprop="priceCurrency" style="display:none;"
+                      t-esc="website.currency_id.name"/>
             </b>
             <br/>
         </xpath>
@@ -171,32 +162,48 @@
     <!-- Override products_add_to_cart from website sale
     Replace add to cart icon with add to cart button in product sale section
     -->
-    <template id="website_sale.products_add_to_cart" inherit_id="website_sale.products_item"
-        active="False" customize_show="True" name="Add to Cart">
-        <xpath expr="//div[hasclass('product_price')]" position="after">
-            <input name="product_id" t-att-value="product.product_variant_id.id" type="hidden" />
-            <t t-set="filterd_value_ids" t-value="product.product_variant_ids.ids" />
-            <t t-if="len(filterd_value_ids) > 1">
+    <template id="products_add_to_cart_inherit" inherit_id="website_sale.products_add_to_cart">
+        <xpath expr="//input" position="replace">
+            <t t-if="len(product._get_published_product_ids()) &gt; 0">
+                <input name="product_id" t-att-value="product._get_published_product_ids()[0]" type="hidden"/>
+            </t>
+            <t t-if="len(product._get_published_product_ids()) == 0">
+                <input name="product_id" t-att-value="'0'" type="hidden"/>
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('product_price')]/t[@t-if='len(product.product_variant_ids) &gt; 1']"
+               position="replace">
+            <t t-set="filterd_value_ids" t-value="product._get_published_product_ids()"/>
+            <t t-if="len(filterd_value_ids) &gt; 1">
                 <a class="btn btn-default btn-xs"
-                    t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
+                   t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
                     <span>Add To Cart</span>
                 </a>
             </t>
-<!--            <t t-if="len(filterd_value_ids) == 1">-->
-<!--                <a class="btn btn-default btn-xs a-submit">-->
-<!--                    <span>Add To Cart</span>-->
-<!--                </a>-->
-<!--            </t>-->
+        </xpath>
+        <xpath expr="//div[hasclass('product_price')]/t[@t-if='len(product.product_variant_ids) == 1']"
+               position="replace">
+            <t t-if="len(filterd_value_ids) == 1">
+                <a class="btn btn-default btn-xs a-submit">
+                    <span>Add To Cart</span>
+                </a>
+            </t>
+            <t t-elif="len(filterd_value_ids) &lt; 1">
+                <a class="btn btn-default btn-xs"
+                   t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']&gt;1 else None))">
+                    <span>Currently Out Of Stock</span>
+                </a>
+            </t>
         </xpath>
     </template>
 
     <!-- show message Currently Out of Stock in website Cart lines -->
     <template id="ecommerce_category.cart_lines_maqabim" inherit_id="website_sale.cart_lines">
-        <xpath expr="//td[@class='td-product_name']" position="replace">
+        <xpath expr="//td[hasclass('td-product_name')]" position="replace">
             <td t-if="line.product_id.product_tmpl_id" class="td-product_name">
                 <div>
                     <a t-attf-href="/shop/product/#{ slug(line.product_id.product_tmpl_id) }">
-                        <strong t-esc="line.product_id.display_name" />
+                        <strong t-esc="line.product_id.display_name"/>
                     </a>
                 </div>
                 <t t-if="line.product_id.is_product_variant_publish() == False">
@@ -205,13 +212,16 @@
                 <div class="text-muted hidden-xs small">
                     <t t-foreach="line.name.splitlines()[1:]" t-as="name_line">
                         <span>
-                            <t t-esc="name_line" />
+                            <t t-esc="name_line"/>
                         </span>
                         <br/>
                     </t>
                 </div>
                 <a href="#" class="js_delete_product hidden-xs no-decoration">
-                    <small><i class="fa fa-trash-o" /> Remove</small>
+                    <small>
+                        <i class="fa fa-trash-o"/>
+                        Remove
+                    </small>
                 </a>
             </td>
         </xpath>

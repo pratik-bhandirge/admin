@@ -11,3 +11,10 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('product_qty')
     def onchange_quantity(self):
         self.print_qty = int(self.product_qty)
+
+    @api.model
+    def create(self, vals):
+        if vals.get('product_qty') and 'print_qty' not in vals:
+            vals['print_qty'] = int(vals['product_qty'])
+        res = super(PurchaseOrderLine, self).create(vals)
+        return res

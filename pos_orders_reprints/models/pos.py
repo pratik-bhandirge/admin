@@ -9,8 +9,8 @@ from odoo.exceptions import UserError
 
 
 class pos_config(models.Model):
-    _inherit = 'pos.config' 
-    
+    _inherit = 'pos.config'
+
     pos_order_reprint = fields.Boolean("Allow Order Reprint",default=True)
 
 
@@ -32,7 +32,7 @@ class pos_config(models.Model):
         order_line = []
         taxes = {}
         amount_subtotal = 0
-        currency = pos_order.session_id.currency_id    
+        currency = pos_order.session_id.currency_id
         for line in pos_order.lines:
             discount += (line.price_unit * line.qty * line.discount) / 100
             order_line.append({
@@ -69,7 +69,3 @@ class pos_config(models.Model):
             'order':order
             }
 
-
-
-
-    

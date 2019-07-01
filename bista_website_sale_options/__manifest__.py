@@ -19,8 +19,8 @@
         "maq_prod_variant_unpublish",
         "ecommerce_category",
         "sale",
-        'maq_custom_theme',
-        'maqabim_website_sale',
+        # 'maq_custom_theme',
+        # 'maqabim_website_sale',
         'maqabim_website_popup'
     ],
     "data": [
@@ -28,6 +28,7 @@
         'views/product_sale_view_inherit.xml',
         'views/product_specification_views.xml',
         "views/website_sale_options.xml",
+        "data/data.xml"
     ],
     #    "qweb": [
     #        "static/src/xml/website_sale.xml",
@@ -35,3 +36,4 @@
     # "images": ["static/description/groupexpand.png"],
     "installable": True,
 }
+

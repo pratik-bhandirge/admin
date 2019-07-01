@@ -4,26 +4,26 @@
 <odoo>
 
     <!-- Give Space besides Add to Cart button -->
-    <template id="product_side_block" inherit_id="website_sale.product"
-              name="Product Side Block" active="False" customize_show="True">
-        <xpath expr="//div[hasclass('col-sm-7')]" position="attributes">
-            <attribute name="class">col-sm-5</attribute>
-        </xpath>
-        <xpath expr="//div[@id='product_details']" position="attributes">
-            <attribute name="class">col-sm-5 col-lg-3 col-lg-offset-1
-            </attribute>
-        </xpath>
-        <xpath expr="//section[@id='product_detail']/div[2]" position="inside">
-            <div class="col-sm-2 col-lg-3 oe_structure">
-                <h4>Put Your Content Here Like Images,Carousel,Ecommerce Terms
-                    etc...
-                </h4>
-            </div>
-        </xpath>
-    </template>
+<!--    <template id="product_side_block" inherit_id="website_sale.product"-->
+<!--              name="Product Side Block" active="False" customize_show="True">-->
+<!--        <xpath expr="//div[hasclass('col-sm-7')]" position="attributes">-->
+<!--            <attribute name="class">col-sm-5</attribute>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//div[@id='product_details']" position="attributes">-->
+<!--            <attribute name="class">col-sm-5 col-lg-3 col-lg-offset-1-->
+<!--            </attribute>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//section[@id='product_detail']/div[2]" position="inside">-->
+<!--            <div class="col-sm-2 col-lg-3 oe_structure">-->
+<!--                <h4>Put Your Content Here Like Images,Carousel,Ecommerce Terms-->
+<!--                    etc...-->
+<!--                </h4>-->
+<!--            </div>-->
+<!--        </xpath>-->
+<!--    </template>-->
 
     <!-- Remove Default Product Description & Added again with Some Style :D -->
-    <template id="product_description_new_style" inherit_id="theme_loftspace_sale.product"
+    <template id="product_description_new_style" inherit_id="website_sale.product"
               name="Product Info Tabs">
         <xpath expr="//div[@t-field='product.website_description']"
                position="replace"></xpath>
@@ -115,3 +115,4 @@
     </template>
 
 </odoo>
+
