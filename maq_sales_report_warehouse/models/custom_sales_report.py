@@ -187,12 +187,14 @@ class SalesReport(models.Model):
         """
         Clear all fields related filters
         """
+        _logger.info("Start clear filter")
         self.update({'product_ids':'', 'partner_ids':'', 'internal_ref':''})
         for rec in self:
             self.env.cr.execute("""UPDATE  sales_report_lines
                             SET active = TRUE
                             WHERE sales_report_id = %s"""% rec.id)
         self.update({'event_description':'Clicked on clear filter'})
+        _logger.info("End clear filter")
 
 
     @api.multi
@@ -210,17 +212,6 @@ class SalesReport(models.Model):
             # else:
             #     raise ValidationError(_("The Lines are already cleared"))
         self.update({'event_description':'Clicked on clear data'})
-
-    # @api.multi
-    # def _get_company_ids(self):
-    #     company_ids = []
-    #     sw = self.env['stock.warehouse']
-    #     for rec in self:
-    #         for warehouse_id in rec.m_warehouse_id.ids:
-    #             company_id = sw.browse(warehouse_id).company_id.id
-    #             if company_id:
-    #                 company_ids.append(company_id)
-    #     return list(set(company_ids))
 
     def _get_vendor_details(self, vals):
         vendor_details = ''
