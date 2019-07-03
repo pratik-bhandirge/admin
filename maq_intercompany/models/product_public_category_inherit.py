@@ -6,7 +6,8 @@ from odoo import models, fields, api
 class ProductPublicCategory(models.Model):
 
     _inherit = 'product.public.category'
-
+    ''' Added the company field in ecommerce category for multicompany scenario.
+    '''
     m_company_id = fields.Many2one("res.company", string="Company", compute="_compute_product_company", store=True)
 
     @api.depends("website_id", "parent_website_id", "parent_id")
@@ -15,5 +16,7 @@ class ProductPublicCategory(models.Model):
             if not rec.parent_id:
                 rec.m_company_id = rec.website_id.company_id
             elif rec.parent_id:
-                rec.m_company_id = rec.parent_id.website_id.company_id
-
+                if rec.parent_id.website_id:
+                    rec.m_company_id = rec.parent_id.website_id.company_id
+                elif rec.parent_id.parent_website_id:
+                    rec.m_company_id = rec.parent_id.parent_website_id.company_id

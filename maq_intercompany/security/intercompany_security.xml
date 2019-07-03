@@ -13,12 +13,17 @@
             <field name="name">Maq Intercompany</field>
             <field name="sequence">200</field>
         </record> -->
-
+        <!-- Add new group company admin manager -->
+        <record id="maq_company_admin_manager" model="res.groups">
+            <field name="name">Company Field Admin Manager</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+        </record>
+        <!-- Added a new group product chatter manager -->
         <record id="maq_product_chatter_manager" model="res.groups">
             <field name="name">Product Chatter Manager</field>
             <field name="category_id" ref="base.module_category_usability"/>
         </record>
-
+        <!-- Added the access rule for Ecommerce category field so company can see their own categories -->
         <record id="ecommerce_category_product_rule" model="ir.rule">
             <field name="name">Ecommerce Category Product Rule</field>
             <field ref="website_sale.model_product_public_category" name="model_id"/>
@@ -29,7 +34,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <!-- Record rule for cost_history -->
+        <!-- (26) Record rule for cost_history -->
         <record id="product_cost_history_rule" model="ir.rule">
             <field name="name">Product Price History Rule</field>
             <field ref="product.model_product_price_history" name="model_id"/>
@@ -40,7 +45,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <!-- Record rule for promotion and coupon program -->
+        <!-- (27) and (28) Record rule for promotion and coupon program -->
         <record id="sales_promotions_program_rule" model="ir.rule">
             <field name="name">Sales Promotions Program Rule</field>
             <field ref="sale_coupon.model_sale_coupon_program" name="model_id"/>
@@ -51,7 +56,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <!-- Record rule for crm lead object to see record according to allowed companies -->
+        <!-- (30), (31) and (33) Record rule for crm lead object to see record according to allowed companies -->
         <record id="crm_lead_intercompany_rule" model="ir.rule">
             <field name="name">CRM Lead Intercompany Rule</field>
             <field ref="crm.model_crm_lead" name="model_id"/>
@@ -77,7 +82,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <!-- Stock Scrap Intercompany record rule -->
+        <!-- (29) Stock Scrap Intercompany record rule -->
         <record id="stock_scrap_intercompany_rule" model="ir.rule">
             <field name="name">Stock Move Line Intercompany Rule</field>
             <field ref="stock.model_stock_scrap" name="model_id"/>
@@ -92,7 +97,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <!-- All channel sales report intercompany record rule -->
+        <!-- (25) All channel sales report intercompany record rule -->
         <record id="all_channel_sales_report_intercompany_rule" model="ir.rule">
             <field name="name">All Channel Sales Report Intercompany Rule</field>
             <field ref="sale.model_report_all_channels_sales" name="model_id"/>
@@ -103,7 +108,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        <!-- CRM Activity Report Intercompany record rule -->
+        <!-- (32) CRM Activity Report Intercompany record rule -->
         <record id="crm_activity_report_intercompany_rule" model="ir.rule">
             <field name="name">CRM Activity Report Intercompany Rule</field>
             <field ref="crm.model_crm_activity_report" name="model_id"/>
@@ -114,16 +119,9 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-
-<!--         <record id="calendar.calendar_event_rule_employee" model="ir.rule">
-            <field ref="calendar.model_calendar_event" name="model_id"/>
-            <field name="name">All Calendar Event for employees</field>
-            <field name="domain_force">[('user_id.company_ids.ids','in', user.company_ids.ids)]</field>
-            <field eval="[(4,ref('base.group_user'))]" name="groups"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record> -->
+        <!-- Add custom function for company erp manager rule -->
+        <function model="ir.rule" name="company_erp_manager" />
+        <!-- (34) Add custom function for company erp manager rule -->
+        <function model="calendar.event" name="calendar_for_employees" />
     </data>
 </odoo>

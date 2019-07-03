@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Improved the delivery slip report view for multicompany description -->
     <template id="report_delivery_document_inherit" inherit_id="stock.report_delivery_document">
         <xpath expr="//div[@class='page']/table[2]/tbody/tr/td[1]" position='replace'>
             <td>
