@@ -63,11 +63,11 @@ class ProductTemplate(models.Model):
         ], string="Control Policy", company_dependent=True,
         help="On ordered quantities: control bills based on ordered quantities.\n"
         "On received quantities: control bills based on received quantity.", default="receive")
-    list_price = fields.Float(
-        'Sales Price', default=1.0,
-        digits=dp.get_precision('Product Price'),
-        company_dependent=True,
-        help="Base price to compute the customer price. Sometimes called the catalog price.")
+#    list_price = fields.Float(
+#        'Sales Price', default=1.0,
+#        digits=dp.get_precision('Product Price'),
+#        company_dependent=True,
+#        help="Base price to compute the customer price. Sometimes called the catalog price.")
     description = fields.Text(
         'Description', translate=True, company_dependent=True,
         help="A precise description of the Product, used only for internal information purposes.")
