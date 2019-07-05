@@ -25,3 +25,21 @@ class WebsitePublishedWizard(models.TransientModel):
         for rec in self:
             rec.website_urls = website_urls_vals
         return res
+
+class WebsitePublishedMixin(models.AbstractModel):
+    _inherit = 'website.published.mixin'
+
+    @api.multi
+    def _compute_website_published(self):
+        for record in self:
+            current_website_id = self._context.get('website_id')
+            current_company_id = self.env.user.company_id
+            if current_company_id:
+                current_company_id = current_company_id.id
+                current_website_rec = record.env['website'].search([('company_id','=',current_company_id)],limit=1)
+                if current_website_rec:
+                    current_website_id = current_website_rec.id
+            if current_website_id:
+                record.website_published = current_website_id in record.published_on_website_ids.ids
+            else:  # should be in the backend, return things that are published anywhere
+                record.website_published = False
