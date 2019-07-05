@@ -11,8 +11,11 @@ class ProductProduct(models.Model):
 #     price_extra = fields.Float(
 #         'Variant Price Extra', compute='_compute_product_price_extra',
 #         digits=dp.get_precision('Product Price'),
-#         company_dependent=True,
 #         help="This is the sum of the extra price of all attributes")
+#     lst_price = fields.Float(
+#         'Sale Price', compute='_compute_product_lst_price',
+#         digits=dp.get_precision('Product Price'), inverse='_set_product_lst_price',
+#         help="The sale price is managed from the product template. Click on the 'Variant Prices' button to set the extra attribute prices.")
 
     def action_view_stock_move_lines(self):
         res = super(ProductProduct, self).action_view_stock_move_lines()
@@ -26,20 +29,10 @@ class ProductProduct(models.Model):
                                ('location_dest_id.company_id.id', '=', None)]})
         return res
 
-# class ProductAttributevalue(models.Model):
-#
-#     _inherit = "product.attribute.value"
-#
-#     price_extra = fields.Float(
-#         'Attribute Price Extra', compute='_compute_price_extra', inverse='_set_price_extra',
-#         default=0.0, digits=dp.get_precision('Product Price'),
-#         company_dependent=True,
-#         help="Price Extra: Extra price for the variant with this attribute value on sale price. eg. 200 price extra, 1000 + 200 = 1200.")
-# #
-# class ProductAttributePrice(models.Model):
-#     _inherit = "product.attribute.price"
-#
-#     price_extra = fields.Float('Price Extra', company_dependent=True, digits=dp.get_precision('Product Price'))
+class ProductAttributePrice(models.Model):
+    _inherit = "product.attribute.price"
+
+    price_extra = fields.Float('Price Extra', company_dependent=True, digits=dp.get_precision('Product Price'))
 
 
 class ProductTemplate(models.Model):
@@ -63,11 +56,11 @@ class ProductTemplate(models.Model):
         ], string="Control Policy", company_dependent=True,
         help="On ordered quantities: control bills based on ordered quantities.\n"
         "On received quantities: control bills based on received quantity.", default="receive")
-#    list_price = fields.Float(
-#        'Sales Price', default=1.0,
-#        digits=dp.get_precision('Product Price'),
-#        company_dependent=True,
-#        help="Base price to compute the customer price. Sometimes called the catalog price.")
+    list_price = fields.Float(
+        'Sales Price', default=1.0,
+        digits=dp.get_precision('Product Price'),
+        company_dependent=True,
+        help="Base price to compute the customer price. Sometimes called the catalog price.")
     description = fields.Text(
         'Description', translate=True, company_dependent=True,
         help="A precise description of the Product, used only for internal information purposes.")
