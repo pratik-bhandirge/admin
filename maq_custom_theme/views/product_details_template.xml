@@ -67,15 +67,6 @@
 
         <xpath expr="//a[@id='add_to_cart']" position="replace">
             <t t-if="len(product.product_variant_ids) == 1">
-                <div class="css_quantity input-group oe_website_spinner" contenteditable="false">
-                    <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
-                        <i class="fa fa-minus"></i>
-                    </a>
-                    <input type="text" class="form-control quantity" data-min="1" name="add_qty" value="1"/>
-                    <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                </div>
                 <a id="add_to_cart" class="btn btn-success btn-lg mt8 js_check_product a-submit center-block" href="#" t-if="product.product_variant_id.is_product_variant_publish() == True">Add to Cart</a>
             </t>
             <t t-elif="len(product._get_published_product_ids()) &gt; 1">
