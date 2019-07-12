@@ -1,8 +1,6 @@
 odoo.define('maq_website_sale.add_to_cart_b', function (require) {
     'use strict';
 
-    var ajax = require('web.ajax');
-    require('web.dom_ready');
     var weContext = require("web_editor.context");
     require('website_sale.website_sale');
 
