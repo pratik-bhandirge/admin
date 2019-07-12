@@ -74,6 +74,7 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
 
                     }
                 });
+                return false;
             });
 
             $form[0].reset();
