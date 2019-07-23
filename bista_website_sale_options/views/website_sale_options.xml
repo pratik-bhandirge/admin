@@ -135,6 +135,18 @@
                     <p>Multiple options available please select an option on product page</p>
                 </div>
             </t>
+            <div t-if="len(filterd_value_ids) == 1" class="css_quantity input-group oe_website_spinner product_grid_qty"
+                 groups="!ecommerce_category.group_hide_website_price">
+                <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json hidden-xs">
+                    <i class="fa fa-minus"/>
+                </a>
+                <input type="text" class="js_quantity form-control quantity" data-min="1" min="1" name="add_qty"
+                       value="1"/>
+                <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json hidden-xs">
+                    <i class="fa fa-plus"/>
+                </a>
+                <br/>
+            </div>
             <t t-elif="len(filterd_value_ids) &lt; 1">
                 <div class="product_grid_qty">
                     <p class="invisible">No options available please go to product page by click add to cart</p>

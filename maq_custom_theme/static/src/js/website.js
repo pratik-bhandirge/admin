@@ -1,6 +1,7 @@
 odoo.define('maq_website_sale.add_to_cart_b', function (require) {
     'use strict';
 
+    require('web.dom_ready');
     var weContext = require("web_editor.context");
     require('website_sale.website_sale');
 
@@ -41,7 +42,6 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
                     });
                 }
             }
-            console.log(data.length);
             if (data.length > 0) {
                 $($modal).appendTo($form)
                     .modal()
@@ -118,4 +118,3 @@ odoo.define('maq_website_sale.add_to_cart_b', function (require) {
     }
 
 });
-
