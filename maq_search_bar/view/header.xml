@@ -84,15 +84,11 @@
                              style="min-height: 0px;" t-foreach="product_ids" t-as="prod_id">
                             <a class="row search_product"
                                t-att-href="'/shop/product/%s' % slug(prod_id)" style="color:#000;">
-                                <div class="col-md-3 col-sm-3 col-xs-3 mb8 mt8">
-                                    <span itemprop="image"
-                                          t-attf-content="{{request.httprequest.url_root}}web/image/product.template/{{prod_id.id}}/image"
-                                          t-field="prod_id.image"
-                                          t-options="{'widget': 'image', 'resize': None if product_image_big else '50x50'}"
-                                          t-att-alt="prod_id.name"/>
-                                </div>
-                                <div class="col-md-9 col-sm-9 col-xs-9 mb8 mt8 prod_detail">
+                                <div class="col-md-12 col-sm-12 col-xs-12 mb8 mt8 prod_detail">
                                     <strong>
+                                        <t t-if="prod_id.default_code">
+                                            [<span t-esc="prod_id.default_code" style="color:#000;"/>]
+                                        </t>
                                         <span t-esc="prod_id.name" style="color:#000;"/>
                                     </strong>
                                 </div>
@@ -106,7 +102,7 @@
                                    t-att-href="'/shop?search=' + search_keyword">
                                     All departments
                                 </a>
-                                (<span t-esc="product_count"/>)
+                                <!-- (<span t-esc="product_count"/>) -->
                             </strong>
                         </div>
                     </div>
