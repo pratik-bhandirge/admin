@@ -29,10 +29,10 @@ class ProductProduct(models.Model):
                                ('location_dest_id.company_id.id', '=', None)]})
         return res
 
-class ProductAttributePrice(models.Model):
-    _inherit = "product.attribute.price"
+# class ProductAttributePrice(models.Model):
+#     _inherit = "product.attribute.price"
 
-    price_extra = fields.Float('Price Extra', company_dependent=True, digits=dp.get_precision('Product Price'))
+#     price_extra = fields.Float('Price Extra', company_dependent=True, digits=dp.get_precision('Product Price'))
 
 
 class ProductTemplate(models.Model):
