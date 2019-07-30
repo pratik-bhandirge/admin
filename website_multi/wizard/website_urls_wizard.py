@@ -61,7 +61,8 @@ class WebsitePublishedWizard(models.TransientModel):
     def create(self, vals):
         res = super(WebsitePublishedWizard, self).create(vals)
 
-        for website in self.env['website'].search([]):
+#         for website in self.env['website'].search([]):
+        for website in self.env['website'].search([('company_id','in',self.env.user.company_ids.ids)]):
             # todo jov fix port somehow
             self.env['website.url'].create({
                 'wizard_id': res.id,
@@ -71,5 +72,4 @@ class WebsitePublishedWizard(models.TransientModel):
                 'record_id': res.record_id,
                 'model_name': res.model_name,
             })
-
         return res
