@@ -4,12 +4,13 @@
         <xpath expr="//t[@t-call='theme_loftspace_sale.search']" position="replace">
             <div class="col-md-12">
                 <div class="as-search">
-                    <form action='/shop' method="get">
+                    <form method="get" t-att-data-search-all="request.website.search_all_products"
+                          t-att-action="keep('/shop'+ ('/category/'+slug(category)) if (category and not website.search_all_products) else None, search=0)">
                         <div class="input-group">
                             <div class="oe_search">
                                 <input type="text" name="search"
                                        placeholder="Search" autocomplete="off"
-                                       class="form-control pagination form-inline col-md-12"
+                                       class="form-control pagination form-inline col-md-12 oe_search_box"
                                        t-att-value="search"/>
                             </div>
                             <span class="input-group-btn">
@@ -37,12 +38,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="as-search">
-                        <form action='/shop' method="get">
+                        <form method="get" t-att-data-search-all="request.website.search_all_products"
+                              t-att-action="keep('/shop'+ ('/category/'+slug(category)) if (category and not website.search_all_products) else None, search=0)">
                             <div class="input-group">
                                 <div class="oe_search">
                                     <input type="text" name="search"
                                            placeholder="Search" autocomplete="off"
-                                           class="form-control pagination form-inline col-md-12"
+                                           class="form-control pagination form-inline col-md-12 oe_search_box"
                                            t-att-value="search"/>
                                 </div>
                                 <span class="input-group-btn">
@@ -83,25 +85,16 @@
                             <a class="row search_product"
                                t-att-href="'/shop/product/%s' % slug(prod_id)" style="color:#000;">
                                 <div class="col-md-3 col-sm-3 col-xs-3 mb8 mt8">
-                                    <!--<a itemprop="url"-->
-                                    <!--t-att-href="'/wholesale/product/%s' % slug(prod_id)">-->
                                     <span itemprop="image"
                                           t-attf-content="{{request.httprequest.url_root}}web/image/product.template/{{prod_id.id}}/image"
                                           t-field="prod_id.image"
                                           t-options="{'widget': 'image', 'resize': None if product_image_big else '50x50'}"
                                           t-att-alt="prod_id.name"/>
-                                    <!--</a>-->
                                 </div>
                                 <div class="col-md-9 col-sm-9 col-xs-9 mb8 mt8 prod_detail">
-                                    <!--<a itemprop="url"-->
-                                    <!--t-att-href="'/wholesale/product/%s' % slug(prod_id)">-->
                                     <strong>
                                         <span t-esc="prod_id.name" style="color:#000;"/>
                                     </strong>
-                                    <!--</a>-->
-                                    <!--<div class="description">
-                                        <span t-raw="prod_id.description_sale"/>
-                                    </div>-->
                                 </div>
                             </a>
                         </div>
