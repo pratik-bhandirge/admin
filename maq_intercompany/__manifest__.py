@@ -19,6 +19,7 @@
         'security/intercompany_security.xml',
 #         'views/calendar_event_view.xml',
         'views/delivery_slip_report_view_inherit.xml',
+        'views/product_attribute_price.xml',
         'views/product_public_categ_view.xml',
         'views/product_template_inherit.xml',
     ],
