@@ -61,10 +61,8 @@ class ProductTemplate(models.Model):
         help="Specify if the product can be selected in a sales order line.")
     purchase_ok = fields.Boolean('Can be Purchased',
                                 company_dependent=True, default=True)
-#     type = fields.Selection(selection_add=[('product', 'Stockable Product')], company_dependent=True)
     available_in_pos = fields.Boolean(string='Available in Point of Sale', company_dependent=True,
         help='Check if you want this product to appear in the Point of Sale', default=True)
-#     m_available_pos = fields.Boolean(string="POS Available", compute="_get_pos_toggle")
     purchase_method = fields.Selection([
         ('purchase', 'On ordered quantities'),
         ('receive', 'On received quantities'),
