@@ -2,29 +2,29 @@
 from odoo import models, fields, api
 
 
-class WebsitePublishedWizard(models.TransientModel):
-    _inherit = 'website.urls.wizard'
-    ''' Updated the create function to display the website according to allowed companies of user'''
-    @api.model
-    def create(self, vals):
-        res = super(WebsitePublishedWizard, self).create(vals)
-        website_urls_vals = []
+# class WebsitePublishedWizard(models.TransientModel):
+#     _inherit = 'website.urls.wizard'
+#     ''' Updated the create function to display the website according to allowed companies of user'''
+#     @api.model
+#     def create(self, vals):
+#         res = super(WebsitePublishedWizard, self).create(vals)
+#         website_urls_vals = []
         
-        for website in self.env['website'].search([('company_id','in',self.env.user.company_ids.ids)]):
-            # todo jov fix port somehow
-            website_vals = {
-                'wizard_id': res.id,
-                'url': 'http://%s%s' % (website.domain, res.path if res.path != '#' else ''),
-                'display_goto': res.path != '#',
-                'website_id': website.id,
-                'record_id': res.record_id,
-                'model_name': res.model_name,
-            }
-            website_urls_vals.append((6,0,website_vals))
-#             self.env['website.url'].create()
-        for rec in self:
-            rec.website_urls = website_urls_vals
-        return res
+#         for website in self.env['website'].search([('company_id','in',self.env.user.company_ids.ids)]):
+#             # todo jov fix port somehow
+#             website_vals = {
+#                 'wizard_id': res.id,
+#                 'url': 'http://%s%s' % (website.domain, res.path if res.path != '#' else ''),
+#                 'display_goto': res.path != '#',
+#                 'website_id': website.id,
+#                 'record_id': res.record_id,
+#                 'model_name': res.model_name,
+#             }
+#             website_urls_vals.append((6,0,website_vals))
+# #             self.env['website.url'].create()
+#         for rec in self:
+#             rec.website_urls = website_urls_vals
+#         return res
 
 class WebsitePublishedMixin(models.AbstractModel):
     _inherit = 'website.published.mixin'
