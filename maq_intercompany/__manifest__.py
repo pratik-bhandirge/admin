@@ -13,15 +13,16 @@ Update a view as per company restrictions and make fields to be company dependen
 =============================
 
 1. User can see log notes of users from other companies about inter-company products
+------------
 2. Allow users to only see companies in the dropdown which they are allowed to access
+------------
 
 3. Following views are updated
 ------------
 * Product Moves
 * INVENTORY --> OPERATIONS --> SCRAP
 
-
-4. Following fields should be act as company dependent
+4. Following fields will act as company dependent
 ------------
 * Can be Sold
 * Can be Purchased
