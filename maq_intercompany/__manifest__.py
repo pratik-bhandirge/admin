@@ -3,14 +3,37 @@
 {
     'name': 'Maq Intercompany',
     'category': 'Custom',
-    'summary': 'Stock move line record action update to keep move lines discrete company wise',
+    'summary': 'Update a view as per company restrictions and make fields to be company dependent',
     'version': '11.0.1.0.0',
     'author': 'Bista Solutions',
     'website': 'http://www.bistasolutions.com',
     'license': 'AGPL-3',
     'description': """
-    Stock move line record action update to keep move lines discrete company wise
-        """,
+Update a view as per company restrictions and make fields to be company dependent
+=============================
+
+1. User can see log notes of users from other companies about inter-company products
+2. Allow users to only see companies in the dropdown which they are allowed to access
+
+3. Following views are updated
+------------
+* Product Moves
+* INVENTORY --> OPERATIONS --> SCRAP
+
+
+4. Following fields should be act as company dependent
+------------
+* Can be Sold
+* Can be Purchased
+* Sale Price
+* Variant Prices
+* Available in Point of Sale
+* Control Policy
+* Invoicing Policy
+* Published on Website
+* Manufacturing Lead Time
+* Customer Lead Time
+    """,
     'depends': [
         'stock','product', 'website_multi', 'website_sale', 'ecommerce_category', 'sale_coupon',
         'calendar'
