@@ -32,14 +32,36 @@
             <field ref="stock.model_stock_scrap" name="model_id"/>
             <field eval="1" name="global"/>
             <field name="domain_force">['|',
-                               ('location_id.company_id.id', 'in', user.company_ids.ids),
-                               ('location_id.company_id.id', '=', None),
-                               ]</field>
+            ('location_id.company_id.id', 'in', user.company_ids.ids),
+            ('location_id.company_id.id', '=', None)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+        <!-- Intercompany rule for product.style object -->
+        <record id="product_style_intercompany_rule" model="ir.rule">
+            <field name="name">Product Style Intercompany Rule</field>
+            <field ref="website_sale.model_product_style" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',
+            ('company_id.id', 'in', user.company_id.id),
+            ('company_id.id', '=', None)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Intercompany rule for product.product-->
+        <record id="product_variant_intercompany_rule" model="ir.rule">
+            <field name="name">Product Variant Intercompany Rule</field>
+            <field ref="product.model_product_product" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',
+            ('company_id', 'in', user.company_id.id),
+            ('company_id', '=', False)]</field>
+        </record>
+
         <!-- Add custom function for company erp manager rule -->
         <function model="ir.rule" name="company_erp_manager" />
     </data>

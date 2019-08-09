@@ -78,6 +78,14 @@ class ProductTemplate(models.Model):
         help='Ordered Quantity: Invoice based on the quantity the customer ordered.\n'
              'Delivered Quantity: Invoiced based on the quantity the vendor delivered (time or deliveries).',
         default='order')
+    inventory_availability = fields.Selection([
+        ('never', 'Sell regardless of inventory'),
+        ('always', 'Show inventory on website and prevent sales if not enough stock'),
+        ('threshold', 'Show inventory below a threshold and prevent sales if not enough stock'),
+        ('custom', 'Show product-specific notifications'),
+    ], string='Inventory Availability', company_dependent=True, help='Adds an inventory availability status on the web product page.', default='never')
+    available_threshold = fields.Float(string='Availability Threshold', company_dependent=True, default=5.0)
+    custom_message = fields.Text(string='Custom Message', company_dependent=True, default='')
 
     def action_view_routes(self):
         '''This method inherits the default odoo method and updates the domain
@@ -92,3 +100,9 @@ class ProductTemplate(models.Model):
                                ('company_id.id', 'in', self.env.user.company_ids.ids),
                                ('company_id', '=', None)]})
         return res
+
+
+class ProductStyle(models.Model):
+    _inherit = "product.style"
+
+    company_id = fields.Many2one('res.company', string="Company")

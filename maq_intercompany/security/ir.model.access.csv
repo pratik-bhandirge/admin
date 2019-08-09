@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+website_sale.access_product_style,product.style.public,website_sale.model_product_style,,1,1,1,1
