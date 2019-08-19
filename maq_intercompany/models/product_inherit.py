@@ -2,7 +2,8 @@
 
 from odoo import models, fields, api
 from odoo.addons import decimal_precision as dp
-
+from odoo.tools.translate import html_translate
+from odoo.exceptions import ValidationError
 
 class ProductProduct(models.Model):
 
@@ -39,10 +40,53 @@ class ProductAttributePrice(models.Model):
     price_extra = fields.Float('Price Extra', company_dependent=True, digits=dp.get_precision('Product Price'))
     product_id = fields.Many2one('product.product', 'Product', compute='_get_product_variant')
 
+class ProductTemplateWebsiteDescription(models.Model):
+    _name = 'product.template.website.description'
+    _description = "Website Description Per Company"
+
+    product_tmpl_id = fields.Many2one('product.template', string="Product Template", required=True)
+    company_id = fields.Many2one('res.company', string="Company", required=True)
+    website_description = fields.Html('Description for the website', required=True, translate=html_translate)
+
+    @api.model
+    def create(self, vals):
+        res = super(ProductTemplateWebsiteDescription, self).create(vals)
+        company_id = vals.get('company_id')
+        if company_id:
+            product_website_description_recs = self.search_count([('company_id','=', company_id)])
+            if product_website_description_recs > 1:
+                raise ValidationError("There can only be one record per company!")
+        return res
+
+    @api.multi
+    def write(self, vals):
+        res = super(ProductTemplateWebsiteDescription, self).write(vals)
+        for rec in self:
+            company_id = vals.get('company_id')
+            if company_id:
+                product_website_description_recs = self.search_count([('company_id','=', company_id)])
+                if product_website_description_recs > 1:
+                    raise ValidationError("There can only be one record per company!")
+        return res
+
 
 class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
+
+    @api.depends("website_description_ids")
+    def _get_website_description(self):
+        """
+        Based on users company fetch an value of description
+        """
+        company_id = self.env.user.company_id.id
+        for rec in self:
+            website_description = ''
+            for website_description_id in rec.website_description_ids:
+                if website_description_id.company_id.id == company_id:
+                    website_description = website_description_id.website_description
+                    break
+            rec.website_description = website_description
 
     '''Added fields with company dependent attribute to make them used as
        multi-company'''
@@ -86,6 +130,9 @@ class ProductTemplate(models.Model):
     ], string='Inventory Availability', company_dependent=True, help='Adds an inventory availability status on the web product page.', default='never')
     available_threshold = fields.Float(string='Availability Threshold', company_dependent=True, default=5.0)
     custom_message = fields.Text(string='Custom Message', company_dependent=True, default='')
+    website_description = fields.Html('Description for the website', compute="_get_website_description", translate=html_translate)
+    website_description_ids = fields.One2many('product.template.website.description', 'product_tmpl_id', string="Website Description")
+
 
     def action_view_routes(self):
         '''This method inherits the default odoo method and updates the domain
