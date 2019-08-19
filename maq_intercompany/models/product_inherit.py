@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 from odoo.addons import decimal_precision as dp
 from odoo.tools.translate import html_translate
+from odoo.exceptions import ValidationError
 
 class ProductProduct(models.Model):
 
@@ -47,11 +48,33 @@ class ProductTemplateWebsiteDescription(models.Model):
     company_id = fields.Many2one('res.company', string="Company", required=True)
     website_description = fields.Html('Description for the website', required=True, translate=html_translate)
 
+    @api.model
+    def create(self, vals):
+        res = super(ProductTemplateWebsiteDescription, self).create(vals)
+        company_id = vals.get('company_id')
+        if company_id:
+            product_website_description_recs = self.search_count([('company_id','=', company_id)])
+            if product_website_description_recs > 1:
+                raise ValidationError("There can only be one record per company!")
+        return res
+
+    @api.multi
+    def write(self, vals):
+        res = super(ProductTemplateWebsiteDescription, self).write(vals)
+        for rec in self:
+            company_id = vals.get('company_id')
+            if company_id:
+                product_website_description_recs = self.search_count([('company_id','=', company_id)])
+                if product_website_description_recs > 1:
+                    raise ValidationError("There can only be one record per company!")
+        return res
+
 
 class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
 
+    @api.depends("website_description_ids")
     def _get_website_description(self):
         """
         Based on users company fetch an value of description
@@ -61,7 +84,7 @@ class ProductTemplate(models.Model):
             website_description = ''
             for website_description_id in rec.website_description_ids:
                 if website_description_id.company_id.id == company_id:
-                    website_description = website_description_rec.website_description
+                    website_description = website_description_id.website_description
                     break
             rec.website_description = website_description
 

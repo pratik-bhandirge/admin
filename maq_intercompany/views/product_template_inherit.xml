@@ -33,6 +33,7 @@
                             </field>
                         </group>
                 </page>
+            </xpath>
         </field>
     </record>
     <!-- The following form is defined to show the oe_chatter who has Admin > Settings Rights -->

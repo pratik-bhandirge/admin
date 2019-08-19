@@ -45,7 +45,7 @@
             <field ref="website_sale.model_product_style" name="model_id"/>
             <field eval="1" name="global"/>
             <field name="domain_force">['|',
-            ('company_id.id', 'in', user.company_id.id),
+            ('company_id.id', '=', user.company_id.id),
             ('company_id.id', '=', None)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -58,8 +58,17 @@
             <field ref="product.model_product_product" name="model_id"/>
             <field eval="1" name="global"/>
             <field name="domain_force">['|',
-            ('company_id', 'in', user.company_id.id),
-            ('company_id', '=', False)]</field>
+            ('company_id.id', '=', user.company_id.id),
+            ('company_id.id', '=', False)]</field>
+        </record>
+        <!-- Intercompany rule for product.template.website.description -->
+        <record id="product_template_website_description_intercompany_rule" model="ir.rule">
+            <field name="name">Product Template Website Description Intercompany Rule</field>
+            <field ref="maq_intercompany.model_product_template_website_description" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',
+            ('company_id.id', '=', user.company_id.id),
+            ('company_id.id', '=', False)]</field>
         </record>
 
         <!-- Add custom function for company erp manager rule -->
