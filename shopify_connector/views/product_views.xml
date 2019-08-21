@@ -17,14 +17,14 @@
                                     <field name="shopify_config_id"/>
                                     <field name="shopify_prod_tmpl_id"/>
                                     <button name="export_shopify" string="Export" type="object" attrs="{'invisible': [('shopify_prod_tmpl_id','!=',False)]}"/>
-                                    <button class="oe_stat_button" name="website_publish_button"
+                                    <!-- <button class="oe_stat_button" name="website_publish_button"
                                     type="object" string="Publish" attrs="{'invisible': ['|',('shopify_prod_tmpl_id','in', [False]),('shopify_published','=',True)]}">
                                           <field name="shopify_published" widget="boolean_toggle"/>
                                     </button>
                                     <button class="oe_stat_button" name="website_unpublish_button"
                                     type="object" string="Unpublish" attrs="{'invisible': ['|',('shopify_prod_tmpl_id','in', [False]),('shopify_published','=',False)]}">
                                         <field name="shopify_published" widget="boolean_toggle"/>
-                                    </button>
+                                    </button> -->
                                 </tree>
                                 <form>
                                     <group>
