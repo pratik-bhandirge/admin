@@ -82,29 +82,29 @@ class ShopifyProductTemplate(models.Model):
                 shopify_config_rec = rec.shopify_config_id
                 if rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids:
                     shopify_config_rec.export_product(rec)
-                # elif not (rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids):
-                #     raise ValidationError(_("Please select atleast 1 product or province tags before exporting product to shopify!"))
-            # elif rec.shopify_prod_tmpl_id:
-            #     raise ValidationError(_("The product is already exported to shopify!"))
+                elif not (rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids):
+                    raise ValidationError(_("Please select atleast 1 product or province tags before exporting product to shopify!"))
+#             elif rec.shopify_prod_tmpl_id:
+#                 raise ValidationError(_("The product is already exported to shopify!"))
 
-    @api.multi
-    def website_publish_button(self):
-        self.shopify_config_id.check_connection()
-        for rec in self:
-            if not rec.shopify_published:
-                rec.shopify_published = True
-                shopify_product_id = str(rec.shopify_prod_tmpl_id)
-                shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
-                success = shopify_product.save()
-                print ("success --->>", success)
+#     @api.multi
+#     def website_publish_button(self):
+#         self.shopify_config_id.check_connection()
+#         for rec in self:
+#             if not rec.shopify_published:
+#                 rec.shopify_published = True
+#                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
+#                 shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
+#                 success = shopify_product.save()
+#                 print ("success --->>", success)
 
-    @api.multi
-    def website_unpublish_button(self):
-        self.shopify_config_id.check_connection()
-        for rec in self:
-            if rec.shopify_published:
-                rec.shopify_published = False
-                shopify_product_id = str(rec.shopify_prod_tmpl_id)
-                shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
-                success = shopify_product.save()
-                print ("success ubpublish--->>", success)
+#     @api.multi
+#     def website_unpublish_button(self):
+#         self.shopify_config_id.check_connection()
+#         for rec in self:
+#             if rec.shopify_published:
+#                 rec.shopify_published = False
+#                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
+#                 shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
+#                 success = shopify_product.save()
+#                 print ("success ubpublish--->>", success)
