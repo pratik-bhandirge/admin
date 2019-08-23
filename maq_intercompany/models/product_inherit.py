@@ -48,26 +48,13 @@ class ProductTemplateWebsiteDescription(models.Model):
     company_id = fields.Many2one('res.company', string="Company", required=True)
     website_description = fields.Html('Description for the website', required=True, translate=html_translate)
 
-    @api.model
-    def create(self, vals):
-        res = super(ProductTemplateWebsiteDescription, self).create(vals)
-        company_id = vals.get('company_id')
-        if company_id:
-            product_website_description_recs = self.search_count([('company_id','=', company_id)])
-            if product_website_description_recs > 1:
-                raise ValidationError("There can only be one record per company!")
-        return res
 
-    @api.multi
-    def write(self, vals):
-        res = super(ProductTemplateWebsiteDescription, self).write(vals)
-        for rec in self:
-            company_id = vals.get('company_id')
-            if company_id:
-                product_website_description_recs = self.search_count([('company_id','=', company_id)])
-                if product_website_description_recs > 1:
-                    raise ValidationError("There can only be one record per company!")
-        return res
+
+    _sql_constraints = [
+        ('product_company_uniq',
+         'unique(product_tmpl_id, company_id)',
+         'There can only be one description per product per company.')
+        ]
 
 
 class ProductTemplate(models.Model):
