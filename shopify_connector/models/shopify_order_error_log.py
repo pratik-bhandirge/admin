@@ -7,6 +7,7 @@ class ShopifyOrderErrorLog(models.Model):
 
     _name = 'shopify.order.error.log'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+    _order = "create_date desc"
 
     shopify_so_id = fields.Char(
         "Shopify SO ID", help="Enter Shopify SO ID", track_visibility="onchange")

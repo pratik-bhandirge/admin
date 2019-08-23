@@ -116,7 +116,8 @@ class StockMoveLine(models.Model):
                                 shopify_location_id = shopify_location_rec.shopify_location_id
                                 inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
                                     'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
-                                if inventory_item_id:
+                                shopify_product_cost = product_rec.standard_price
+                                if inventory_item_id and shopify_product_cost > 0:
                                     shopify_config_rec.sudo().update_shopify_inventory(
                                         shopify_location_id, inventory_item_id, int(negative_qty))
                                     shopify_export_val = True
@@ -126,7 +127,8 @@ class StockMoveLine(models.Model):
                                 shopify_location_id = shopify_location_rec.shopify_location_id
                                 inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
                                     'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
-                                if inventory_item_id:
+                                shopify_product_cost = product_rec.standard_price
+                                if inventory_item_id and shopify_product_cost > 0:
                                     shopify_config_rec.sudo().update_shopify_inventory(
                                         shopify_location_id, inventory_item_id, int(qty))
                                     shopify_export_val = True
