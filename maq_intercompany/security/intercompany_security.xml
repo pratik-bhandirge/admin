@@ -11,6 +11,17 @@
             <field name="name">Product Chatter Manager</field>
             <field name="category_id" ref="base.module_category_usability"/>
         </record>
+        <!-- Added the access rule for Ecommerce category field so company can see their own categories -->
+        <record id="ecommerce_category_product_rule" model="ir.rule">
+            <field name="name">Ecommerce Category Product Rule</field>
+            <field ref="website_sale.model_product_public_category" name="model_id"/>
+            <field eval="1" name="global"/>
+            <field name="domain_force">['|',('m_company_id','=',user.company_id.id),('m_company_id','=',False)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
         <!-- Stock Move Line Record rule -->
         <record id="stock_move_line_intercompany_rule" model="ir.rule">
             <field name="name">Stock Move Line(Product Moves) Intercompany Rule</field>
@@ -57,9 +68,12 @@
             <field name="name">Product Variant Intercompany Rule</field>
             <field ref="product.model_product_product" name="model_id"/>
             <field eval="1" name="global"/>
-            <field name="domain_force">['|',
+            <!-- <field name="domain_force">['|',
             ('company_id.id', '=', user.company_id.id),
-            ('company_id.id', '=', False)]</field>
+            ('company_id.id', '=', False)]</field> -->
+            <field name="domain_force">['|',
+            ('company_id','=',user.company_id.id),
+            ('company_id','=',False)]</field>
         </record>
         <!-- Intercompany rule for product.template.website.description -->
         <record id="product_template_website_description_intercompany_rule" model="ir.rule">
