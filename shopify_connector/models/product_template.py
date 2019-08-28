@@ -21,12 +21,16 @@ class ProductTemplate(models.Model):
         "Published on Shopify", help="Published on Shopify", track_visibility='onchange')
 
     @api.multi
-    def check_default_code_uniq(self):
+    def _check_default_code_uniq_template(self):
         for rec in self:
-            search_product_count = self.search_count([('default_code','=',rec.default_code)])
-            if search_product_count > 0:
-                return False
+            if rec.default_code:
+                search_product_count = self.search_count(
+                    [('default_code', '=', rec.default_code)])
+                if search_product_count > 1:
+                    return False
+        return True
 
     _constraints = [
-        (check_default_code_uniq, 'Default Code must be unique per Product!',['default_code']),
+        (_check_default_code_uniq_template,
+         'Default Code must be unique per Product!', ['default_code']),
     ]
