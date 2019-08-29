@@ -12,7 +12,7 @@
             <field name="category_id" ref="base.module_category_usability"/>
         </record>
         <!-- Added the access rule for Ecommerce category field so company can see their own categories -->
-        <record id="ecommerce_category_product_rule" model="ir.rule">
+        <!-- <record id="ecommerce_category_product_rule" model="ir.rule">
             <field name="name">Ecommerce Category Product Rule</field>
             <field ref="website_sale.model_product_public_category" name="model_id"/>
             <field eval="1" name="global"/>
@@ -21,7 +21,7 @@
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
-        </record>
+        </record> -->
         <!-- Stock Move Line Record rule -->
         <record id="stock_move_line_intercompany_rule" model="ir.rule">
             <field name="name">Stock Move Line(Product Moves) Intercompany Rule</field>

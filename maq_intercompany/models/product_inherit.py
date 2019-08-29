@@ -66,14 +66,36 @@ class ProductTemplate(models.Model):
         """
         Based on users company fetch an value of description
         """
-        company_id = self.env.user.company_id.id
+        website_id = self.env.context.get('website_id')
+        if website_id:
+            company_id = self.env['website'].browse(website_id).company_id.id
+        else:
+            company_id = self.env.user.company_id.id
         for rec in self:
             website_description = ''
-            for website_description_id in rec.website_description_ids:
-                if website_description_id.company_id.id == company_id:
-                    website_description = website_description_id.website_description
-                    break
+            for website_description_id in rec.website_description_ids.filtered(lambda r: r.company_id.id == company_id):
+                website_description = website_description_id.website_description
             rec.website_description = website_description
+
+    @api.depends("website_description_ids")
+    def _set_website_description(self):
+        """
+        Based on users input, it will set the value
+        """
+        website_id = self.env.context.get('website_id')
+        if website_id:
+            company_id = self.env['website'].browse(website_id).company_id.id
+        else:
+            company_id = self.env.user.company_id.id
+        for rec in self:
+            website_description_ids = rec.website_description_ids.filtered(lambda r: r.company_id.id == company_id)
+            if website_description_ids:
+                for website_description_id in website_description_ids:
+                    website_description_id.website_description = rec.website_description
+            elif website_id:
+                self.env['product.template.website.description'].create({'company_id': company_id,
+                                                                         'product_tmpl_id': rec.id,
+                                                                         'website_description': rec.website_description})
 
     '''Added fields with company dependent attribute to make them used as
        multi-company'''
@@ -117,7 +139,21 @@ class ProductTemplate(models.Model):
     ], string='Inventory Availability', company_dependent=True, help='Adds an inventory availability status on the web product page.', default='never')
     available_threshold = fields.Float(string='Availability Threshold', company_dependent=True, default=5.0)
     custom_message = fields.Text(string='Custom Message', company_dependent=True, default='')
-    website_description = fields.Html('Description for the website', compute="_get_website_description", translate=html_translate)
+    description = fields.Text(
+        'Description', translate=True, company_dependent=True,
+        help="A precise description of the Product, used only for internal information purposes.")
+    description_purchase = fields.Text(
+        'Purchase Description', translate=True, company_dependent=True,
+        help="A description of the Product that you want to communicate to your vendors. "
+             "This description will be copied to every Purchase Order, Receipt and Vendor Bill/Credit Note.")
+    description_sale = fields.Text(
+        'Sale Description', translate=True, company_dependent=True,
+        help="A description of the Product that you want to communicate to your customers. "
+             "This description will be copied to every Sales Order, Delivery Order and Customer Invoice/Credit Note")
+    description_picking = fields.Text('Description on Picking', company_dependent=True, translate=True)
+    description_pickingout = fields.Text('Description on Delivery Orders', company_dependent=True, translate=True)
+    description_pickingin = fields.Text('Description on Receptions', company_dependent=True, translate=True)
+    website_description = fields.Html('Description for the website', compute="_get_website_description", inverse='_set_website_description', translate=html_translate)
     website_description_ids = fields.One2many('product.template.website.description', 'product_tmpl_id', string="Website Description")
 
 
