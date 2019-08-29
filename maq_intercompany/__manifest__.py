@@ -40,13 +40,14 @@ Update a view as per company restrictions and make fields to be company dependen
         'calendar'
     ],
     'data': [
-        'security/ir.model.access.csv',
         'security/intercompany_security.xml',
+        'security/ir.model.access.csv',
         'views/delivery_slip_report_view_inherit.xml',
         'views/product_attribute_price.xml',
         'views/product_public_categ_view.xml',
         'views/product_style_view.xml',
         'views/product_template_inherit.xml',
+        'views/product_template_website_desc_view.xml',
     ],
     'installable': True,
     'application': True,
