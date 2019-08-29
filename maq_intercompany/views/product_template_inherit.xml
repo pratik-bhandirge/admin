@@ -9,6 +9,31 @@
         <field name="arch" type="xml">
             <xpath expr="//form/div[hasclass('oe_chatter')]" position="replace">
             </xpath>
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Website Descriptions">
+                    <group>
+                        <field name="website_description_ids" nolabel="1" context="{'default_product_tmpl_id': active_id}">
+                            <tree>
+                                <field name="product_tmpl_id" invisible="1" readonly="1"/>
+                                <field name="company_id"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <group>
+                                        <field name="company_id"/>
+                                    </group>
+                                    <group>
+                                        <field name="product_tmpl_id" readonly="1" invisible="1"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="website_description"/>
+                                </group>
+                            </form>
+                            </field>
+                        </group>
+                </page>
+            </xpath>
         </field>
     </record>
     <!-- The following form is defined to show the oe_chatter who has Admin > Settings Rights -->
