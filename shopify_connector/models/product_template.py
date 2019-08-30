@@ -15,8 +15,6 @@ class ProductTemplate(models.Model):
                                          "Province Tags", help="Enter Province Tags", track_visibility='onchange', domain=[('is_province', '=', True)])
     allowed_variants_ids = fields.One2many("shopify.product.product", "product_template_id",
                                            "Allowed Variants", help="Enter Allowed Variants", track_visibility='onchange', domain=lambda self: [('product_template_id', 'in', self.ids)])
-#     prod_tmpl_id = fields.Many2one("product.template", "Product Template ID",
-#                                    help="Enter Product Template ID", track_visibility='onchange')
     published_on_shopify = fields.Boolean(
         "Published on Shopify", help="Published on Shopify", track_visibility='onchange')
 

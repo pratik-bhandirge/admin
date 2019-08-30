@@ -42,18 +42,23 @@ class ShopifyProductProduct(models.Model):
         "Default Code", help="Enter Default Code", related="product_variant_id.default_code", readonly="1", track_visibility='onchange')
     lst_price = fields.Float(
         string='Sale Price', help="Sale price for Shopify", required=True)
-    shopify_weight = fields.Float(string="Weight", help="Weight of Product Variants", related="product_variant_id.weight", readonly=True)
-    shopify_uom = fields.Many2one("product.uom", string="UOM", help="UOM of product", related="product_variant_id.uom_id", readonly=True)
+    shopify_weight = fields.Float(string="Weight", help="Weight of Product Variants",
+                                  related="product_variant_id.weight", readonly=True)
+    shopify_uom = fields.Many2one("product.uom", string="UOM", help="UOM of product",
+                                  related="product_variant_id.uom_id", readonly=True)
 
     @api.model
     def create(self, vals):
         res = super(ShopifyProductProduct, self).create(vals)
         product_variant_id = vals.get('product_variant_id')
         shopify_config_id = vals.get('shopify_config_id')
-        shopify_product_variants_count = self.env['shopify.product.product'].search_count([('product_variant_id','=',product_variant_id),('shopify_config_id','=',shopify_config_id)])
-        shopify_product_variants = self.env['shopify.product.product'].search([('product_variant_id','=',product_variant_id),('shopify_config_id','=',shopify_config_id)])
+        shopify_product_variants_count = self.env['shopify.product.product'].search_count(
+            [('product_variant_id', '=', product_variant_id), ('shopify_config_id', '=', shopify_config_id)])
+        shopify_product_variants = self.env['shopify.product.product'].search(
+            [('product_variant_id', '=', product_variant_id), ('shopify_config_id', '=', shopify_config_id)])
         if shopify_product_variants_count > 1:
-            raise ValidationError(_("You cannot create multiple records for same shopify configuration"))
+            raise ValidationError(
+                _("You cannot create multiple records for same shopify configuration"))
         return res
 
     @api.multi
@@ -62,15 +67,19 @@ class ShopifyProductProduct(models.Model):
         for rec in self:
             product_variant_id = rec.product_variant_id.id
             shopify_config_id = vals.get('shopify_config_id')
-            shopify_product_variants_count = self.env['shopify.product.product'].search_count([('product_variant_id','=',product_variant_id),('shopify_config_id','=',shopify_config_id)])
-            shopify_product_variants = self.env['shopify.product.product'].search([('product_variant_id','=',product_variant_id),('shopify_config_id','=',shopify_config_id)])
+            shopify_product_variants_count = self.env['shopify.product.product'].search_count(
+                [('product_variant_id', '=', product_variant_id), ('shopify_config_id', '=', shopify_config_id)])
+            shopify_product_variants = self.env['shopify.product.product'].search(
+                [('product_variant_id', '=', product_variant_id), ('shopify_config_id', '=', shopify_config_id)])
             if shopify_product_variants_count > 1:
-                raise ValidationError(_("You cannot create multiple records for same shopify configuration"))
+                raise ValidationError(
+                    _("You cannot create multiple records for same shopify configuration"))
         return res
 
     @api.multi
     def unlink(self):
         for rec in self:
             if rec.shopify_product_id:
-                raise ValidationError(_("You cannot delete an already exported shopify product variant!"))
+                raise ValidationError(
+                    _("You cannot delete an already exported shopify product variant!"))
         return super(AccountInvoiceLine, self).unlink()

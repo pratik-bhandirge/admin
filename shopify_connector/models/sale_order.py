@@ -24,34 +24,32 @@ class SaleOrder(models.Model):
         "Shopify Error Message", help="Enter Shopify Error Message", track_visibility='onchange', readonly=True)
     shopify_config_id = fields.Many2one(
         "shopify.config", "Shopify Config", readonly=True)
-    
+
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(SaleOrder, self).fields_view_get(
             view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
-        print ("view_type --->>", view_type)
         if view_type == 'tree' and self._context.get('shopify_sale_order'):
             doc = etree.XML(res['arch'])
             for node in doc.xpath("//tree"):
                 if self._context['shopify_sale_order'] == 1:
                     node.set('create', "false")
-                    node.set('delete','false')
+                    node.set('delete', 'false')
                 else:
                     node.set('create', "true")
-                    node.set('delete','true')
+                    node.set('delete', 'true')
             res['arch'] = etree.tostring(doc, encoding='unicode')
         if view_type == 'form' and self._context.get('shopify_sale_order'):
             doc = etree.XML(res['arch'])
             for node in doc.xpath("//form"):
                 if self._context['shopify_sale_order'] == 1:
                     node.set('create', "false")
-                    node.set('delete','false')
+                    node.set('delete', 'false')
                 else:
                     node.set('create', "true")
-                    node.set('delete','true')
+                    node.set('delete', 'true')
             res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
-    
 
 
 class SaleOrderLine(models.Model):

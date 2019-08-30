@@ -51,9 +51,11 @@ class ShopifyProductTemplate(models.Model):
         res = super(ShopifyProductTemplate, self).create(vals)
         product_template_id = vals.get('product_tmpl_id')
         shopify_config_id = vals.get('shopify_config_id')
-        shopify_product_templates = self.env['shopify.product.template'].search_count([('product_tmpl_id','=',product_template_id),('shopify_config_id','=',shopify_config_id)])
+        shopify_product_templates = self.env['shopify.product.template'].search_count(
+            [('product_tmpl_id', '=', product_template_id), ('shopify_config_id', '=', shopify_config_id)])
         if shopify_product_templates > 1:
-            raise ValidationError(_("You cannot create multiple records for same shopify configuration"))
+            raise ValidationError(
+                _("You cannot create multiple records for same shopify configuration"))
         return res
 
     @api.multi
@@ -62,17 +64,21 @@ class ShopifyProductTemplate(models.Model):
         for rec in self:
             product_template_id = rec.product_tmpl_id.id
             shopify_config_id = vals.get('shopify_config_id')
-            shopify_product_variants_count = self.env['shopify.product.template'].search_count([('product_tmpl_id','=',product_template_id),('shopify_config_id','=',shopify_config_id)])
-            shopify_product_variants = self.env['shopify.product.template'].search([('product_tmpl_id','=',product_template_id),('shopify_config_id','=',shopify_config_id)])
+            shopify_product_variants_count = self.env['shopify.product.template'].search_count(
+                [('product_tmpl_id', '=', product_template_id), ('shopify_config_id', '=', shopify_config_id)])
+            shopify_product_variants = self.env['shopify.product.template'].search(
+                [('product_tmpl_id', '=', product_template_id), ('shopify_config_id', '=', shopify_config_id)])
             if shopify_product_variants_count > 1:
-                raise ValidationError(_("You cannot create multiple records for same shopify configuration"))
+                raise ValidationError(
+                    _("You cannot create multiple records for same shopify configuration"))
         return res
 
     @api.multi
     def unlink(self):
         for rec in self:
             if rec.shopify_prod_tmpl_id:
-                raise ValidationError(_("You cannot delete an already exported shopify product!"))
+                raise ValidationError(
+                    _("You cannot delete an already exported shopify product!"))
         return super(AccountInvoiceLine, self).unlink()
 
     @api.multi
@@ -83,7 +89,8 @@ class ShopifyProductTemplate(models.Model):
                 if rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids:
                     shopify_config_rec.export_product(rec)
                 elif not (rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids):
-                    raise ValidationError(_("Please select atleast 1 product or province tags before exporting product to shopify!"))
+                    raise ValidationError(
+                        _("Please select atleast 1 product or province tags before exporting product to shopify!"))
 #             elif rec.shopify_prod_tmpl_id:
 #                 raise ValidationError(_("The product is already exported to shopify!"))
 

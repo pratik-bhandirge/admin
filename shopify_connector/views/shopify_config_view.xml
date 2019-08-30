@@ -11,9 +11,9 @@
                             class="oe_highlight" string="Check Connection"/>
                         <button name="export_products_to_shopify" type="object"
                             class="oe_highlight" string="Export Products"/>
-                       <!--  <button name="import_locations" type="object"
+                       <!--  <button name="test_import_locations" type="object"
                             class="oe_highlight" string="Import Location"/>
-                        <button name="import_orders" type="object" 
+                        <button name="test_import_orders" type="object" 
                             class="oe_highlight" string="Import Orders"/> -->
                         <field name="state" widget="statusbar" statusbar_visible="draft,success,fail"/>
                     </header>

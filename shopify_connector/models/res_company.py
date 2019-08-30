@@ -15,4 +15,5 @@ class ResCompany(models.Model):
         "stock.warehouse", "Shopify Warehouse",  help="Shopify Warehouse", track_visibility="onchange")
     shopify_province_ids = fields.Many2many("res.country.state", 'res_company_state_rel', 'res_company_id',
                                             'res_state_id', "Shopify Province",  help="Shopify Province", track_visibility="onchange")
-    shopify_location_id = fields.Many2one("stock.location", "Shopify Stock Location",  help="Here you can set default Shopify Stock Location", track_visibility="onchange")
+    shopify_location_id = fields.Many2one("stock.location", "Shopify Stock Location",
+                                          help="Here you can set default Shopify Stock Location", track_visibility="onchange")

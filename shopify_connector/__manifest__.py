@@ -28,8 +28,8 @@ Key Features
         'delivery',
     ],
     'data': [
-        'security/ir.model.access.csv',
         'security/shopify_connector_security.xml',
+        'security/ir.model.access.csv',
         "views/product_moves_view.xml",
         "views/product_uom_views.xml",
         "views/res_company_views.xml",

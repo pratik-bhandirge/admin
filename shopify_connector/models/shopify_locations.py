@@ -13,7 +13,8 @@ class ShopifyLocations(models.Model):
 
     shopify_config_id = fields.Many2one("shopify.config", "Shopify Configuration",
                                         help="Enter Shopify Config.", track_visibility='onchange', required=True)
-    shopify_location_id = fields.Char(string="Shopify Location ID", help="Enter Shopify Location ID", track_visibility='onchange', required=True)
+    shopify_location_id = fields.Char(
+        string="Shopify Location ID", help="Enter Shopify Location ID", track_visibility='onchange', required=True)
     name = fields.Char("Name", help="Enter Name",
                        track_visibility='onchange', required=True)
     address1 = fields.Char(
@@ -45,7 +46,8 @@ class ShopifyLocations(models.Model):
     @api.multi
     def check_shopify_location_id_uniq(self):
         for rec in self:
-            search_product_count = self.sudo().search_count([('shopify_location_id','=',rec.shopify_location_id)])
+            search_product_count = self.sudo().search_count(
+                [('shopify_location_id', '=', rec.shopify_location_id)])
             if search_product_count > 1:
                 return False
             else:
@@ -61,7 +63,8 @@ class StockLocation(models.Model):
 
     _inherit = 'stock.location'
 
-    shopify_location_ids = fields.Many2many('shopify.locations', help="Enter Shopify Locations")
+    shopify_location_ids = fields.Many2many(
+        'shopify.locations', help="Enter Shopify Locations")
 
 
 # class StockMove(models.Model):
@@ -117,7 +120,12 @@ class StockMoveLine(models.Model):
                                 inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
                                     'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
                                 shopify_product_cost = product_rec.standard_price
-                                if inventory_item_id and shopify_product_cost > 0:
+                                product_inventory_valuation = product_rec.categ_id.property_valuation
+                                if inventory_item_id and product_inventory_valuation == 'manual_periodic':
+                                    shopify_config_rec.sudo().update_shopify_inventory(
+                                        shopify_location_id, inventory_item_id, int(negative_qty))
+                                    shopify_export_val = True
+                                elif inventory_item_id and product_inventory_valuation == 'real_time' and shopify_product_cost > 0:
                                     shopify_config_rec.sudo().update_shopify_inventory(
                                         shopify_location_id, inventory_item_id, int(negative_qty))
                                     shopify_export_val = True
@@ -128,7 +136,12 @@ class StockMoveLine(models.Model):
                                 inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
                                     'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
                                 shopify_product_cost = product_rec.standard_price
-                                if inventory_item_id and shopify_product_cost > 0:
+                                product_inventory_valuation = product_rec.categ_id.property_valuation
+                                if inventory_item_id and product_inventory_valuation == 'manual_periodic':
+                                    shopify_config_rec.sudo().update_shopify_inventory(
+                                        shopify_location_id, inventory_item_id, int(qty))
+                                    shopify_export_val = True
+                                elif inventory_item_id and product_inventory_valuation == 'real_time' and shopify_product_cost > 0:
                                     shopify_config_rec.sudo().update_shopify_inventory(
                                         shopify_location_id, inventory_item_id, int(qty))
                                     shopify_export_val = True
