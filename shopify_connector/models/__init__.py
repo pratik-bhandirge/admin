@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import inherit_partner
 from . import product_product
 from . import product_template
 from . import product_uom

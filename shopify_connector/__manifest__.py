@@ -30,6 +30,7 @@ Key Features
     'data': [
         'security/shopify_connector_security.xml',
         'security/ir.model.access.csv',
+        "views/partner_view.xml",
         "views/product_moves_view.xml",
         "views/product_uom_views.xml",
         "views/res_company_views.xml",

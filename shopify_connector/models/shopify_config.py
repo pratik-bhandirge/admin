@@ -485,13 +485,20 @@ class ShopifyConfig(models.Model):
             po_env = self.env['purchase.order']
             shopify_location_obj = self.env['shopify.locations']
             stock_location_obj = self.env['stock.location']
+            partner_obj = self.env['res.partner']
+            province_obj = self.env['res.country.state']
 
             # Base on customer province find Company_id
             order_company = self.default_company_id
             shopify_order_attributes = shopify_order.attributes
             shipping_address = shopify_order_attributes.get('shipping_address')
+            shopify_customer_id = ''
+            shopify_vendor_id = ''
+            order_province_id = ''
             if shipping_address:
                 order_province = shipping_address.province_code
+                order_province_id = province_obj.search([('code','=',order_province)])
+                shopify_customer_id = shopify_customer_id.id
                 for company_rec in self.company_ids:
                     code = []
                     for province in company_rec.shopify_province_ids:
@@ -503,9 +510,21 @@ class ShopifyConfig(models.Model):
             # Based on company_id fetch customer_id, warehouse_id, vendor_id and
             # location_id
             company_id = order_company.id
-            shopify_customer_id = order_company.shopify_customer_id.id
+            #Chcek customer is created for that provience and commpany
+            if order_province_id:
+                shopify_partner_records = partner_obj.sudo().search([('company_id','=',company_id),
+                    ('is_shopify','=',True), ('state_id','=',order_province_id.id)])
+                for shopify_partner_rec in shopify_partner_records:
+                    if shopify_partner_rec.customer == True:
+                        shopify_customer_id = shopify_partner_rec.id
+                    if shopify_customer_rec.supplier == True:
+                        shopify_vendor_id = shopify_partner_rec.id
+            if not shopify_customer_id:
+                shopify_customer_id = order_company.shopify_customer_id.id
+
             shopify_warehouse_id = order_company.shopify_warehouse_id.id
-            shopify_vendor_id = order_company.shopify_vendor_id.id
+            if not shopify_vendor_id:
+                shopify_vendor_id = order_company.shopify_vendor_id.id
             shopify_location_rec = order_company.shopify_location_id
             shopify_location_id = shopify_location_rec.id
 
