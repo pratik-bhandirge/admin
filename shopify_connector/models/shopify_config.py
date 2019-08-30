@@ -353,7 +353,7 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        self.import_order(1335621191500)
+        self.import_order(1335577577292)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
@@ -495,10 +495,9 @@ class ShopifyConfig(models.Model):
             shopify_customer_id = ''
             shopify_vendor_id = ''
             order_province_id = ''
+            order_province = ''
             if shipping_address:
                 order_province = shipping_address.province_code
-                order_province_id = province_obj.search([('code','=',order_province)])
-                shopify_customer_id = shopify_customer_id.id
                 for company_rec in self.company_ids:
                     code = []
                     for province in company_rec.shopify_province_ids:
@@ -510,6 +509,12 @@ class ShopifyConfig(models.Model):
             # Based on company_id fetch customer_id, warehouse_id, vendor_id and
             # location_id
             company_id = order_company.id
+            if order_province:
+                if order_company.country_id:
+                    domain = [('code','=',order_province),('country_id','=', order_company.country_id.id)]
+                else:
+                    domain = [('code','=',order_province)]
+                order_province_id = province_obj.search(domain, limit=1)
             #Chcek customer is created for that provience and commpany
             if order_province_id:
                 shopify_partner_records = partner_obj.sudo().search([('company_id','=',company_id),
@@ -522,9 +527,9 @@ class ShopifyConfig(models.Model):
             if not shopify_customer_id:
                 shopify_customer_id = order_company.shopify_customer_id.id
 
-            shopify_warehouse_id = order_company.shopify_warehouse_id.id
             if not shopify_vendor_id:
                 shopify_vendor_id = order_company.shopify_vendor_id.id
+            shopify_warehouse_id = order_company.shopify_warehouse_id.id
             shopify_location_rec = order_company.shopify_location_id
             shopify_location_id = shopify_location_rec.id
 
