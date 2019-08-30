@@ -353,7 +353,7 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        self.import_order(1335577577292)
+        self.import_order(1335960176460)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
@@ -522,7 +522,7 @@ class ShopifyConfig(models.Model):
                 for shopify_partner_rec in shopify_partner_records:
                     if shopify_partner_rec.customer == True:
                         shopify_customer_id = shopify_partner_rec.id
-                    if shopify_customer_rec.supplier == True:
+                    if shopify_partner_rec.supplier == True:
                         shopify_vendor_id = shopify_partner_rec.id
             if not shopify_customer_id:
                 shopify_customer_id = order_company.shopify_customer_id.id
