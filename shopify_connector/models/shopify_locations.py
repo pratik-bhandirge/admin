@@ -66,6 +66,20 @@ class StockLocation(models.Model):
     shopify_location_ids = fields.Many2many(
         'shopify.locations', help="Enter Shopify Locations")
 
+    @api.multi
+    def shopify_location_id_select(self):
+        for rec in self:
+            location_count = len(rec.shopify_location_ids)
+            if location_count > 1:
+                return False
+            else:
+                return True
+
+    _constraints = [
+        (shopify_location_id_select,
+         'You can select only one shopify location!', ['shopify_location_ids']),
+    ]
+
 
 # class StockMove(models.Model):
 #

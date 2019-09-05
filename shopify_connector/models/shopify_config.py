@@ -46,6 +46,9 @@ class ShopifyConfig(models.Model):
         if default_company_id not in company_ids:
             raise ValidationError(
                 _("The chosen default company is not in the companies !"))
+        if len(company_ids) > 2:
+            raise ValidationError(
+                _("You cannot select more than two companies !"))
         return res
 
     @api.multi
@@ -56,7 +59,16 @@ class ShopifyConfig(models.Model):
         if default_company_id not in self.company_ids.ids:
             raise ValidationError(
                 _("The chosen default company is not in the companies !"))
+        if len(self.company_ids.ids) > 2:
+            raise ValidationError(
+                _("You cannot select more than two companies !"))
         return res
+
+    @api.multi
+    def reset_to_draft(self):
+        for rec in self:
+            rec.state = 'draft'
+        return True
 
     @api.multi
     def check_connection(self):
@@ -459,8 +471,8 @@ class ShopifyConfig(models.Model):
         shopify_order_id = int(shopify_order_id)
         shopify_order = shopify.Order.find(shopify_order_id)
 
-#         if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
-#             return True
+        if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
+            return True
         # base on Shopify order fetch financial_status and fulfillment_status
         financial_status = shopify_order.financial_status
         fulfillment_status = shopify_order.fulfillment_status
