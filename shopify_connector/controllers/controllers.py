@@ -22,11 +22,7 @@ class ShopifyOdooConnector(http.Controller):
             if config_name and shopify_order_id:
                 shopify_config_rec = request.env['shopify.config'].sudo().search(
                     [('name', '=', config_name)], limit=1)
-                if shopify_config_rec and (
-                    (shopify_financial_status == 'paid' and\
-                     shopify_fulfillment_status == 'fulfilled') or\
-                    (shopify_financial_status == 'partially_refunded' and\
-                     shopify_fulfillment_status == 'partial')):
+                if shopify_config_rec and ((shopify_financial_status == 'paid' and shopify_fulfillment_status == 'fulfilled') or (shopify_financial_status == 'partially_refunded' and shopify_fulfillment_status == 'partial')):
                     shopify_config_rec.check_connection()
                     shopify_config_rec.import_order(shopify_order_id)
         _logger.info("************Webhook Call End************")
