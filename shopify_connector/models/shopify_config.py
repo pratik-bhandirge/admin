@@ -636,6 +636,7 @@ class ShopifyConfig(models.Model):
                 src_shopify_customer_id = ''
                 src_shopify_warehouse_id = ''
                 src_shopify_location_rec = ''
+                multi_location_company = ''
 
                 # Process an individual fulfillment
                 for fulfillment in fulfillments:
@@ -658,8 +659,10 @@ class ShopifyConfig(models.Model):
                                 if src_location_company and shopify_location_company and shopify_location_company != src_location_company:
                                     multi_comp = True
                                     src_shopify_customer_id = src_location_company_rec.shopify_customer_id.id
-                                    src_shopify_warehouse_id = src_location_rec.m_warehouse_id.id or src_location_rec.get_warehouse().id
+#                                     src_shopify_warehouse_id = src_location_rec.m_warehouse_id.id or src_location_rec.get_warehouse().id
+                                    src_shopify_warehouse_id = src_location_company_rec.shopify_warehouse_id.id
                                     src_shopify_location_rec = src_location_company_rec.shopify_location_id
+                                    multi_location_company = src_location_company
                                 else:
                                     multi_comp = False
 
@@ -676,10 +679,19 @@ class ShopifyConfig(models.Model):
                                             line_data = line_item.attributes
                                             product = product_env.search(
                                                 [('shopify_product_id', '=', line_data.get('variant_id'))]).product_variant_id
+                                            price_unit = product.lst_price if product else 0
+                                            vendors = product.seller_ids
+                                            if vendors:
+                                                for vendor in vendors:
+                                                    if vendor.name.id == shopify_vendor_id:
+                                                        price_unit = vendor.price
                                             if not product:
                                                 product = product_variant_env.search(
                                                     [('default_code', '=', line_data.get('sku'))])
-
+                                                if vendors:
+                                                    for vendor in vendors:
+                                                        if vendor.name.id == shopify_vendor_id:
+                                                            price_unit = vendor.price
                                             if product:
                                                 product_id = product.id
                                                 product_name = product.name or ''
@@ -691,7 +703,7 @@ class ShopifyConfig(models.Model):
                                                     'product_qty': qty_move,
                                                     'product_uom': product.uom_po_id.id,
                                                     'print_qty': qty_move,
-                                                    'price_unit': 0,
+                                                    'price_unit': price_unit,
                                                     'date_planned': datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                                                 }))
                                             else:
@@ -779,7 +791,7 @@ class ShopifyConfig(models.Model):
                                                   'product_uom': vp.uom_id.id}))
                     shopify_note = "Order is created from purchase order reference "+po_rec.name
                     src_so_vals = {'partner_id': src_shopify_customer_id,
-                                   'company_id': src_location_company,
+                                   'company_id': multi_location_company,
                                    'warehouse_id': src_shopify_warehouse_id,
                                    'order_line': so_line_vals,
                                    'origin': odoo_so_name + ' / ' + po_rec.name,
@@ -790,6 +802,7 @@ class ShopifyConfig(models.Model):
                                    # 'shopify_fulfillment_status': fulfillment_status,
                                    # 'shopify_financial_status': financial_status,
                                    }
+                    _logger.info("********>>>> src_location_company >>> %s >>>", multi_location_company)
 
                     # Process Multi company Orders
                     try:
