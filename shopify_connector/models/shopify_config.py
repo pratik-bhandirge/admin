@@ -679,7 +679,7 @@ class ShopifyConfig(models.Model):
                                             line_data = line_item.attributes
                                             product = product_env.search(
                                                 [('shopify_product_id', '=', line_data.get('variant_id'))]).product_variant_id
-                                            price_unit = product.lst_price if product else 0
+                                            price_unit = product.standard_price if product else 0
                                             vendors = product.seller_ids
                                             if vendors:
                                                 for vendor in vendors:
@@ -785,8 +785,18 @@ class ShopifyConfig(models.Model):
                     so_line_vals = []
                     for v in po_rec.order_line:
                         vp = v.product_id
+                        product_pricelist = vp.item_ids
+                        sales_price = vp.list_price
+                        if product_pricelist:
+                            for pricelist in product_pricelist:
+                                if pricelist.pricelist_id.company_id.id == multi_location_company:
+                                    sales_price = pricelist.fixed_price
+                        elif not product_pricelist:
+                            property_search = self.env['ir.property'].sudo().search([('res_id','ilike','product.template,'+str(vp.product_tmpl_id.id)), ('fields_id.field_description', 'ilike', 'Sales Price'), ('company_id.id','=',multi_location_company)], limit=1)
+                            if property_search:
+                                sales_price = property_search.value_float
                         so_line_vals.append((0,0,{'product_id': vp.id,
-                                                  'price_unit': v.price_unit,
+                                                  'price_unit': sales_price,
                                                   'product_uom_qty': v.product_qty,
                                                   'product_uom': vp.uom_id.id}))
                     shopify_note = "Order is created from purchase order reference "+po_rec.name
@@ -802,7 +812,6 @@ class ShopifyConfig(models.Model):
                                    # 'shopify_fulfillment_status': fulfillment_status,
                                    # 'shopify_financial_status': financial_status,
                                    }
-                    _logger.info("********>>>> src_location_company >>> %s >>>", multi_location_company)
 
                     # Process Multi company Orders
                     try:
