@@ -33,7 +33,7 @@ def _create_company_records(cr, registry):
                 break
         try:
             shopify_vendor_id = partner_env.create(
-                {'name': 'Shopify Vendor - ' + company_name, 'supplier': True, 'customer': False})
+                {'name': 'Shopify Vendor - ' + company_name, 'supplier': True, 'customer': False, 'company_id': company.id})
             company_vals.update({'shopify_vendor_id': shopify_vendor_id.id})
         except Exception as e:
             _logger.error(
@@ -52,10 +52,12 @@ def _create_company_records(cr, registry):
         if pricelist_rec:
             cust_vals = {'name': 'Shopify Customer - ' + company_name,
                          'property_product_priclist': pricelist_rec.id,
-                         'supplier': False, 'customer': True}
+                         'supplier': False, 'customer': True,
+                         'company_id': company.id}
         else:
             cust_vals = {'name': 'Shopify Customer - ' + company_name,
-                         'supplier': False, 'customer': True}
+                         'supplier': False, 'customer': True,
+                         'company_id': company.id}
         try:
             shopify_customer_id = partner_env.create(cust_vals)
             company_vals.update({'shopify_customer_id': shopify_customer_id.id})
