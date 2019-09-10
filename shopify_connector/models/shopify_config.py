@@ -785,18 +785,8 @@ class ShopifyConfig(models.Model):
                     so_line_vals = []
                     for v in po_rec.order_line:
                         vp = v.product_id
-                        product_pricelist = vp.item_ids
-                        sales_price = vp.list_price
-                        if product_pricelist:
-                            for pricelist in product_pricelist:
-                                if pricelist.pricelist_id.company_id.id == multi_location_company:
-                                    sales_price = pricelist.fixed_price
-                        elif not product_pricelist:
-                            property_search = self.env['ir.property'].sudo().search([('res_id','ilike','product.template,'+str(vp.product_tmpl_id.id)), ('fields_id.field_description', 'ilike', 'Sales Price'), ('company_id.id','=',multi_location_company)], limit=1)
-                            if property_search:
-                                sales_price = property_search.value_float
                         so_line_vals.append((0,0,{'product_id': vp.id,
-                                                  'price_unit': sales_price,
+                                                  'price_unit': v.price_unit,
                                                   'product_uom_qty': v.product_qty,
                                                   'product_uom': vp.uom_id.id}))
                     shopify_note = "Order is created from purchase order reference "+po_rec.name
