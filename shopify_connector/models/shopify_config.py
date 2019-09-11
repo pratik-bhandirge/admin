@@ -365,7 +365,7 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        self.import_order(1335960176460)
+        self.import_order(1340194129740)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
@@ -845,7 +845,6 @@ class ShopifyConfig(models.Model):
             product_env = self.env['shopify.product.product']
             product_variant_env = self.env['product.product']
             move_lines_vals = []
-
             for line_item in fulfillment.line_items:
                 line_data = line_item.attributes
                 product = product_env.search(
@@ -881,7 +880,7 @@ class ShopifyConfig(models.Model):
                        'origin': odoo_so_name,
                        }
             sp_id = self.env['stock.picking'].create(sp_vals)
-            sp_id.button_validate()
+            sp_id.with_context(shopify_picking_validate=True).button_validate()
         else:
             shopify_error_log += "\n" if shopify_error_log else ""
             shopify_error_log += "Picking type not found for warehouse id - " + \

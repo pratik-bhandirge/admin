@@ -113,56 +113,59 @@ class StockMoveLine(models.Model):
 
     def _action_done(self):
         res = super(StockMoveLine, self)._action_done()
-        try:
-            shopify_prod_obj = self.env['shopify.product.product']
-            shopify_export_val = False
-            for move in self:
-                product_rec = move.product_id
-                product_id = product_rec.id
-                product_count = shopify_prod_obj.sudo().search_count(
-                    [('product_variant_id', '=', product_id), ('shopify_product_id', 'not in', ('', False))])
-                if product_count > 0:
-                    qty = move.qty_done
-                    if qty > 0:
-                        negative_qty = qty * -1
-                        location_id = move.location_id
-                        location_dest_id = move.location_dest_id
-                        if location_id:
-                            for shopify_location_rec in location_id.shopify_location_ids:
-                                shopify_config_rec = shopify_location_rec.shopify_config_id
-                                shopify_location_id = shopify_location_rec.shopify_location_id
-                                inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
-                                    'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
-                                shopify_product_cost = product_rec.standard_price
-                                product_inventory_valuation = product_rec.categ_id.property_valuation
-                                if inventory_item_id and product_inventory_valuation == 'manual_periodic':
-                                    shopify_config_rec.sudo().update_shopify_inventory(
-                                        shopify_location_id, inventory_item_id, int(negative_qty))
-                                    shopify_export_val = True
-                                elif inventory_item_id and product_inventory_valuation == 'real_time' and shopify_product_cost > 0:
-                                    shopify_config_rec.sudo().update_shopify_inventory(
-                                        shopify_location_id, inventory_item_id, int(negative_qty))
-                                    shopify_export_val = True
-                        if location_dest_id:
-                            for shopify_location_rec in location_dest_id.shopify_location_ids:
-                                shopify_config_rec = shopify_location_rec.shopify_config_id
-                                shopify_location_id = shopify_location_rec.shopify_location_id
-                                inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
-                                    'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
-                                shopify_product_cost = product_rec.standard_price
-                                product_inventory_valuation = product_rec.categ_id.property_valuation
-                                if inventory_item_id and product_inventory_valuation == 'manual_periodic':
-                                    shopify_config_rec.sudo().update_shopify_inventory(
-                                        shopify_location_id, inventory_item_id, int(qty))
-                                    shopify_export_val = True
-                                elif inventory_item_id and product_inventory_valuation == 'real_time' and shopify_product_cost > 0:
-                                    shopify_config_rec.sudo().update_shopify_inventory(
-                                        shopify_location_id, inventory_item_id, int(qty))
-                                    shopify_export_val = True
-                if shopify_export_val:
-                    move.shopify_export = shopify_export_val
-        except Exception as e:
-            _logger.error('Stock update opration have following error: %s', e)
-            move.shopify_error_log = str(e)
-            pass
+        # exclude the mmethod call if action done happening while shopify order import
+        shopify_picking = self._context.get('shopify_picking_validate')
+        if not shopify_picking:
+            try:
+                shopify_prod_obj = self.env['shopify.product.product']
+                shopify_export_val = False
+                for move in self:
+                    product_rec = move.product_id
+                    product_id = product_rec.id
+                    product_count = shopify_prod_obj.sudo().search_count(
+                        [('product_variant_id', '=', product_id), ('shopify_product_id', 'not in', ('', False))])
+                    if product_count > 0:
+                        qty = move.qty_done
+                        if qty > 0:
+                            negative_qty = qty * -1
+                            location_id = move.location_id
+                            location_dest_id = move.location_dest_id
+                            if location_id:
+                                for shopify_location_rec in location_id.shopify_location_ids:
+                                    shopify_config_rec = shopify_location_rec.shopify_config_id
+                                    shopify_location_id = shopify_location_rec.shopify_location_id
+                                    inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
+                                        'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
+                                    shopify_product_cost = product_rec.standard_price
+                                    product_inventory_valuation = product_rec.categ_id.property_valuation
+                                    if inventory_item_id and product_inventory_valuation == 'manual_periodic':
+                                        shopify_config_rec.sudo().update_shopify_inventory(
+                                            shopify_location_id, inventory_item_id, int(negative_qty))
+                                        shopify_export_val = True
+                                    elif inventory_item_id and product_inventory_valuation == 'real_time' and shopify_product_cost > 0:
+                                        shopify_config_rec.sudo().update_shopify_inventory(
+                                            shopify_location_id, inventory_item_id, int(negative_qty))
+                                        shopify_export_val = True
+                            if location_dest_id:
+                                for shopify_location_rec in location_dest_id.shopify_location_ids:
+                                    shopify_config_rec = shopify_location_rec.shopify_config_id
+                                    shopify_location_id = shopify_location_rec.shopify_location_id
+                                    inventory_item_id = shopify_prod_obj.sudo().search([('product_variant_id', '=', product_id), (
+                                        'shopify_config_id', '=', shopify_config_rec.id)], limit=1).shopify_inventory_item_id
+                                    shopify_product_cost = product_rec.standard_price
+                                    product_inventory_valuation = product_rec.categ_id.property_valuation
+                                    if inventory_item_id and product_inventory_valuation == 'manual_periodic':
+                                        shopify_config_rec.sudo().update_shopify_inventory(
+                                            shopify_location_id, inventory_item_id, int(qty))
+                                        shopify_export_val = True
+                                    elif inventory_item_id and product_inventory_valuation == 'real_time' and shopify_product_cost > 0:
+                                        shopify_config_rec.sudo().update_shopify_inventory(
+                                            shopify_location_id, inventory_item_id, int(qty))
+                                        shopify_export_val = True
+                    if shopify_export_val:
+                        move.shopify_export = shopify_export_val
+            except Exception as e:
+                _logger.error('Stock update opration have following error: %s', e)
+                move.shopify_error_log = str(e)
+                pass
         return res
