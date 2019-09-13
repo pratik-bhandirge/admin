@@ -46,6 +46,14 @@ class ShopifyProductProduct(models.Model):
                                   related="product_variant_id.weight", readonly=True)
     shopify_uom = fields.Many2one("product.uom", string="UOM", help="UOM of product",
                                   related="product_variant_id.uom_id", readonly=True)
+    meta_fields_id = fields.Many2one("shopify.metafields", "Shopify Variant Metafields",
+                                     help="Enter Shopify Variant Metafields", track_visibility='onchange')
+
+    @api.multi
+    def export_shopify_variant(self):
+        for rec in self:
+            shopify_config_rec = rec.shopify_config_id
+            shopify_config_rec.export_prod_variant(rec)
 
     @api.model
     def create(self, vals):

@@ -12,11 +12,12 @@
                                 <!-- <field name="product_id"/> -->
                                 <!-- <field name="product_template_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/> -->
                                 <field name="product_variant_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" required="1"/>
-                                <field name="default_code"/>
+                                <field name="lst_price"/>
                             </group>
                             <group>
                                 <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                 <field name="shopify_published_variant" invisible="1"/>
+                                <field name="meta_fields_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                             </group>
                         </group>
                         <group>
@@ -31,7 +32,7 @@
                         </group>
                         <group>
                             <group>
-                                <field name="lst_price"/>
+                                <field name="default_code"/>
                             </group>
                             <group>
                                 <field name="shopify_weight"/>
