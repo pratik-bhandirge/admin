@@ -25,6 +25,7 @@
                                     type="object" string="Unpublish" attrs="{'invisible': ['|',('shopify_prod_tmpl_id','in', [False]),('shopify_published','=',False)]}">
                                         <field name="shopify_published" widget="boolean_toggle"/>
                                     </button> -->
+                                    <button name="update_shopify_product" string="Update" type="object" attrs="{'invisible': [('shopify_prod_tmpl_id','=',False)]}"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -40,8 +41,8 @@
                                             <field name="meta_fields_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/>
                                         </group>
                                         <group>
-                                            <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/>
-                                            <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/>
+                                            <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                                            <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                             <field name="shopify_published" invisible="1"/>
                                         </group>
                                         <group>
@@ -96,7 +97,8 @@
                                     <field name="shopify_inventory_item_id"/>
                                     <field name="shopify_config_id"/>
                                     <field name="product_template_id"/>
-                                    <!-- <button name="export_shopify_variant" string="Export Variant" type="object" attrs="{'invisible': [('shopify_product_id','!=',False)]}"/> -->
+                                    <button name="export_shopify_variant" string="Export Variant" type="object" attrs="{'invisible': [('shopify_product_id','!=',False)]}"/>
+                                    <button name="update_shopify_variant" string="Update Variant" type="object" attrs="{'invisible': [('shopify_product_id','=',False)]}"/>
                                 </tree>
                                 <form>
                                     <group>

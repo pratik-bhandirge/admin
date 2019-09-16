@@ -27,6 +27,9 @@ class SaleOrder(models.Model):
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        '''
+        Hide create and delete ability when we get shopify_sale_order in context
+        '''
         res = super(SaleOrder, self).fields_view_get(
             view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
         if view_type == 'tree' and self._context.get('shopify_sale_order'):

@@ -16,6 +16,9 @@ class ProductProduct(models.Model):
 
     @api.multi
     def _check_default_code_uniq_product(self):
+        '''
+        Prevent the default code duplication when creating product variant
+        '''
         for rec in self:
             if rec.default_code:
                 search_product_count = self.search_count(

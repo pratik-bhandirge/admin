@@ -113,7 +113,7 @@ class StockMoveLine(models.Model):
 
     def _action_done(self):
         res = super(StockMoveLine, self)._action_done()
-        # exclude the mmethod call if action done happening while shopify order import
+        # exclude the method call if action done happening while shopify order import
         shopify_picking = self._context.get('shopify_picking_validate')
         if not shopify_picking:
             try:

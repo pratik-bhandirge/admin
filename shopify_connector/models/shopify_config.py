@@ -40,6 +40,10 @@ class ShopifyConfig(models.Model):
 
     @api.model
     def create(self, vals):
+        '''
+        Check on record creation time if the default company is set in companies and
+        restrict user to select only two companies.
+        '''
         res = super(ShopifyConfig, self).create(vals)
         company_ids = vals['company_ids'][0][2]
         default_company_id = vals['default_company_id']
@@ -53,6 +57,10 @@ class ShopifyConfig(models.Model):
 
     @api.multi
     def write(self, vals):
+        '''
+        Check on record updation time if the default company is set in companies and
+        restrict user to select only two companies.
+        '''
         res = super(ShopifyConfig, self).write(vals)
         default_company_id = vals.get(
             'default_company_id') or self.default_company_id.id
@@ -66,6 +74,7 @@ class ShopifyConfig(models.Model):
 
     @api.multi
     def reset_to_draft(self):
+        '''This method will set the shopify config to draft state'''
         for rec in self:
             rec.state = 'draft'
         return True
@@ -328,6 +337,19 @@ class ShopifyConfig(models.Model):
             #     _('Facing a problems while exporting product!: %s') % e)
 
     def export_prod_variant(self, shopify_prod_rec):
+        '''
+        Process to export product variant from odoo to shopify
+
+        1. Check if product variant already exported or variant has shopify product template.
+        2. Set the shopify product variant object and set variant attributes, weight unit, price,
+           sku, inventory management, product_id.
+        3. If product variant created successfully, then set images and metafields on product variant on
+           shopify side. Also update the shopify product variant ID, inventory item ID and Product Template
+           ID on shopify product variant one2many.
+        4. Update the Inventory of the product variant on respective locations which are mapped with
+           shopify locations.
+        5. If any issue occurs during the variant export process, then raise the user warnings accordingly.
+        '''
         s_prod_tmpl = self.env['shopify.product.template']
         stock_quant_obj = self.env['stock.quant']
         for rec in self:

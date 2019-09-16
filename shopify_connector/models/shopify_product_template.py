@@ -16,6 +16,9 @@ class ShopifyProductTemplate(models.Model):
     @api.multi
     @api.onchange('shopify_config_id')
     def onchange_shopify_config(self):
+        '''
+        Set Vendor and product type according to shopify config ID
+        '''
         for rec in self:
             if rec.shopify_config_id:
                 rec.vendor = ""
@@ -48,6 +51,9 @@ class ShopifyProductTemplate(models.Model):
 
     @api.model
     def create(self, vals):
+        '''
+        Prevent the user to create a shopify product template record with the same shopify config.
+        '''
         res = super(ShopifyProductTemplate, self).create(vals)
         product_template_id = vals.get('product_tmpl_id')
         shopify_config_id = vals.get('shopify_config_id')
@@ -60,6 +66,9 @@ class ShopifyProductTemplate(models.Model):
 
     @api.multi
     def write(self, vals):
+        '''
+        Prevent the user to update a shopify product template record with the same shopify config.
+        '''
         res = super(ShopifyProductTemplate, self).write(vals)
         for rec in self:
             product_template_id = rec.product_tmpl_id.id
@@ -73,16 +82,20 @@ class ShopifyProductTemplate(models.Model):
                     _("You cannot create multiple records for same shopify configuration"))
         return res
 
-    @api.multi
-    def unlink(self):
-        for rec in self:
-            if rec.shopify_prod_tmpl_id:
-                raise ValidationError(
-                    _("You cannot delete an already exported shopify product!"))
-        return super(AccountInvoiceLine, self).unlink()
+#     @api.multi
+#     def unlink(self):
+#         for rec in self:
+#             if rec.shopify_prod_tmpl_id:
+#                 raise ValidationError(
+#                     _("You cannot delete an already exported shopify product!"))
+#         return super(AccountInvoiceLine, self).unlink()
 
     @api.multi
     def export_shopify(self):
+        '''
+        This method is called by export button and it checks if product or province tags are set and then,
+        it calls the export product method on shopify config object.
+        '''
         for rec in self:
             if not rec.shopify_prod_tmpl_id:
                 shopify_config_rec = rec.shopify_config_id
@@ -94,6 +107,41 @@ class ShopifyProductTemplate(models.Model):
 #             elif rec.shopify_prod_tmpl_id:
 #                 raise ValidationError(_("The product is already exported to shopify!"))
 
+    @api.multi
+    def update_shopify_product(self):
+        '''
+        Process shopify product template updation from odoo to shopify
+
+        1. Check the connection of odoo with shopify.
+        2. Get the respective field values like shopify product template id, product and province tags,
+           product template name, body html, vendor, product type.
+        3. Set all the fields values on shopify product and save the shopify product object.
+        '''
+        self.shopify_config_id.check_connection()
+        for rec in self:
+            shopify_product_id = str(rec.shopify_prod_tmpl_id)
+            prod_tags = rec.product_tmpl_id.prod_tags_ids
+            province_tags = rec.product_tmpl_id.province_tags_ids
+            str_prod_province_tags = []
+            for prod_tag in prod_tags:
+                str_prod_province_tags.append(prod_tag.name)
+            for prov_tag in province_tags:
+                str_prod_province_tags.append(prov_tag.name)
+            tags = ",".join(str_prod_province_tags)
+
+            product_template_name = str(rec.product_tmpl_id.name)
+            product_template_body_html = rec.body_html
+            product_template_vendor = rec.vendor.name
+            product_template_product_type = rec.product_type.name
+            product_template_tags = tags
+            shopify_product = shopify.Product({'id': shopify_product_id,
+                                               'title': product_template_name,
+                                               'body_html': product_template_body_html,
+                                               'vendor': product_template_vendor,
+                                               'product_type': product_template_product_type,
+                                               'tags': product_template_tags})
+            success = shopify_product.save()
+
 #     @api.multi
 #     def website_publish_button(self):
 #         self.shopify_config_id.check_connection()
@@ -103,7 +151,6 @@ class ShopifyProductTemplate(models.Model):
 #                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
 #                 shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
 #                 success = shopify_product.save()
-#                 print ("success --->>", success)
 
 #     @api.multi
 #     def website_unpublish_button(self):
@@ -114,4 +161,3 @@ class ShopifyProductTemplate(models.Model):
 #                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
 #                 shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
 #                 success = shopify_product.save()
-#                 print ("success ubpublish--->>", success)
