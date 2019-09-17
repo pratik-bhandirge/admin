@@ -115,7 +115,8 @@ class ShopifyProductTemplate(models.Model):
         1. Check the connection of odoo with shopify.
         2. Get the respective field values like shopify product template id, product and province tags,
            product template name, body html, vendor, product type.
-        3. Set all the fields values on shopify product and save the shopify product object.
+        3. If the product exists on shopify then only it will update, else it will throw validation error
+        4. Set all the fields values on shopify product and save the shopify product object.
         '''
         self.shopify_config_id.check_connection()
         for rec in self:

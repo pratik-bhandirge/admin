@@ -70,7 +70,9 @@ class ShopifyProductProduct(models.Model):
         1. Check the connection of odoo with shopify.
         2. Get the respective field values like product_variant_default_code, product_variant_price,
            shopify_product_variant_id, shopify_product_template_id.
-        3. Set all the fields values on shopify product variant and save the shopify product variant object.
+        3. If the product and variant are existing on shopify, then only it will update the fields,
+            else it will throw validation error.
+        4. Set all the fields values on shopify product variant and save the shopify product variant object.
         '''
         self.shopify_config_id.check_connection()
         for rec in self:
