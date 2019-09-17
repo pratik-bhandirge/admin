@@ -134,13 +134,17 @@ class ShopifyProductTemplate(models.Model):
             product_template_vendor = rec.vendor.name
             product_template_product_type = rec.product_type.name
             product_template_tags = tags
-            shopify_product = shopify.Product({'id': shopify_product_id,
-                                               'title': product_template_name,
-                                               'body_html': product_template_body_html,
-                                               'vendor': product_template_vendor,
-                                               'product_type': product_template_product_type,
-                                               'tags': product_template_tags})
-            success = shopify_product.save()
+            is_shopify_product = shopify.Product.exists(shopify_product_id)
+            if is_shopify_product:
+                shopify_product = shopify.Product({'id': shopify_product_id,
+                                                   'title': product_template_name,
+                                                   'body_html': product_template_body_html,
+                                                   'vendor': product_template_vendor,
+                                                   'product_type': product_template_product_type,
+                                                   'tags': product_template_tags})
+                success = shopify_product.save()
+            else:
+                raise ValidationError(_("Product Template does not exist in shopify !"))
 
 #     @api.multi
 #     def website_publish_button(self):

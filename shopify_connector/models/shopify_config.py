@@ -122,6 +122,24 @@ class ShopifyConfig(models.Model):
         return self.export_product(product_tmpl_ids)
 
     @api.multi
+    def export_new_shopify_variants(self):
+        '''
+        Export newly created variant of a product to shopify
+        '''
+        self.ensure_one()
+        new_product_variant_ids = self.env['shopify.product.product'].sudo().search(
+            [('shopify_config_id', '=', self.id),
+             ('shopify_product_id', 'in', ['', False]),
+             ('shopify_inventory_item_id', 'in', ['', False]),
+             ('shopify_product_template_id', 'in', ['', False])
+             ])
+        if new_product_variant_ids:
+            for new_product in new_product_variant_ids:
+                new_product.export_shopify_variant()
+        else:
+            raise ValidationError(_('No New shopify product variants available to export !'))
+
+    @api.multi
     def export_product(self, s_product_tmpl_ids):
         """
         Process Product template and pass it to the shopify
