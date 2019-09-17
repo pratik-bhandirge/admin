@@ -78,10 +78,15 @@ class ShopifyProductProduct(models.Model):
             product_variant_price = rec.lst_price
             shopify_product_variant_id = rec.shopify_product_id
             shopify_product_template_id = str(rec.shopify_product_template_id.shopify_prod_tmpl_id)
-            shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
-            shopify_product_variant.sku = product_variant_default_code
-            shopify_product_variant.price = product_variant_price
-            success = shopify_product_variant.save()
+            is_shopify_variant = shopify.Variant.exists(shopify_product_variant_id)
+            is_shopify_product = shopify.Product.exists(shopify_product_template_id)
+            if is_shopify_variant and is_shopify_product:
+                shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
+                shopify_product_variant.sku = product_variant_default_code
+                shopify_product_variant.price = product_variant_price
+                success = shopify_product_variant.save()
+            else:
+                raise ValidationError(_("Product does not exist in shopify!"))
 
     @api.model
     def create(self, vals):
