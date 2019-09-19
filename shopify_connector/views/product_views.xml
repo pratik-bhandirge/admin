@@ -38,7 +38,7 @@
                                             <!-- <field name="product_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/> -->
                                             <!-- <field name="name" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/> -->
                                             <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/>
-                                            <field name="meta_fields_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','!=',False)]}"/>
+                                            <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" widget="many2many_tags"/>
                                         </group>
                                         <group>
                                             <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
@@ -106,7 +106,7 @@
                                             <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_product_id','!=',False)]}"/>
                                             <!-- <field name="product_id"/> -->
                                             <field name="product_template_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" readonly="1"/>
-                                            <field name="meta_fields_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                                            <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" widget="many2many_tags"/>
                                         </group>
                                         <group>
                                             <field name="lst_price"/>

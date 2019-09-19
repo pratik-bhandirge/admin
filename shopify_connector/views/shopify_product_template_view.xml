@@ -11,7 +11,7 @@
                             <group>
                                 <field name="product_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <!-- <field name="name" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/> -->
-                                <field name="meta_fields_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
+                                <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}" widget="many2many_tags"/>
                             </group>
                             <group>
                                 <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
@@ -70,7 +70,7 @@
                     <group expand="1" string="Group By">
                         <filter string="Product Type" name="product_type" context="{'group_by':'product_type'}"/>
                         <filter string="Vendor" name="vendor" context="{'group_by':'vendor'}"/>
-                        <filter string="Metafields" name="meta_fields_id" context="{'group_by':'meta_fields_id'}"/>
+                        <filter string="Metafields" name="meta_fields_ids" context="{'group_by':'meta_fields_ids'}"/>
                         <filter string="Shopify Config." name="shopify_config" context="{'group_by':'shopify_config_id'}"/>
                     </group>
                 </search>

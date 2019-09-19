@@ -17,7 +17,7 @@
                             <group>
                                 <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                 <field name="shopify_published_variant" invisible="1"/>
-                                <field name="meta_fields_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                                <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" widget="many2many_tags"/>
                             </group>
                         </group>
                         <group>

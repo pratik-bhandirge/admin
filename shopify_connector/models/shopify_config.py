@@ -80,6 +80,35 @@ class ShopifyConfig(models.Model):
         return True
 
     @api.multi
+    def test_connection(self):
+        """
+        This function check that shopify store is exist or not using api_key, password and shop_url
+        """
+        for rec in self:
+#             try:
+            api_key = rec.api_key or ''
+            password = rec.password or ''
+            shop_url = rec.shop_url or ''
+            if api_key and password and shop_url:
+                shopify.ShopifyResource.set_user(api_key)
+                shopify.ShopifyResource.set_password(password)
+                shopify.ShopifyResource.set_site(shop_url)
+                shop = shopify.Shop.current()
+                if not shop:
+                    raise Warning(
+                    _('Kindly check api key, password or shop url'))
+            else:
+                raise Warning(
+                    _('Kindly check api key, password or shop url'))
+#             except Exception as e:
+#                 rec.update({'state': 'fail'})
+#                 self._cr.commit()
+#                 _logger.error('Invalid API key or access token: %s', e)
+#                 raise Warning(
+#                     _('UnauthorizedAccess: Invalid API key or access token.'))
+        return True
+
+    @api.multi
     def check_connection(self):
         """
         This function check that shopify store is exist or not using api_key, password and shop_url
@@ -161,7 +190,7 @@ class ShopifyConfig(models.Model):
             10.3 Update shopify_product_id, shopify_inventory_item_id and shopify_product_template_id in shopify_product_product master
             10.4 Update an inventory for product for all locations
         """
-        self.check_connection()
+        self.test_connection()
 
         product_tmpl_obj = self.env['product.template']
         shopify_prod_obj = self.env['shopify.product.product']
@@ -177,71 +206,75 @@ class ShopifyConfig(models.Model):
         for s_product_tmpl_id in s_product_tmpl_ids:
             try:
                 product_tmpl_id = s_product_tmpl_id.product_tmpl_id
+                if product_tmpl_id.sale_ok and product_tmpl_id.purchase_ok:
                 # TO DO: Create a one2many relation shopify_product_template
                 # with shopify_product_product
                 # Get Shopify product variants recordset using
                 # shopify_proouct_template masters
-                products = shopify_prod_obj.sudo().\
-                    search([('shopify_config_id', '=', shopify_config_id),
-                            ('shopify_product_id', 'in', ['', False]),
-                            ('product_variant_id', 'in', product_tmpl_id.product_variant_ids.ids)])
+                    products = shopify_prod_obj.sudo().\
+                        search([('shopify_config_id', '=', shopify_config_id),
+                                ('shopify_product_id', 'in', ['', False]),
+                                ('product_variant_id', 'in', product_tmpl_id.product_variant_ids.ids)])
 
-                # Get attribute data from product template recordset
-                options = []
-                for attribute_line in product_tmpl_id.attribute_line_ids:
-                    options_val = {}
-                    options_val.update(
-                        {'name': attribute_line.attribute_id.name})
-                    values = []
-                    for value_id in attribute_line.value_ids:
-                        values.append(value_id.name)
-                    options_val.update({'values': values})
-                    options += [options_val]
+                    # Get attribute data from product template recordset
+                    options = []
+                    for attribute_line in product_tmpl_id.attribute_line_ids:
+                        options_val = {}
+                        options_val.update(
+                            {'name': attribute_line.attribute_id.name})
+                        values = []
+                        for value_id in attribute_line.value_ids:
+                            values.append(value_id.name)
+                        options_val.update({'values': values})
+                        options += [options_val]
 
-                # Prepare product's variant vals using shopify_product_product  recordset
-                # - Variant's SKU, as well as weight and weight unit, are fetching from product variant while the price is fetched from shopify_product_product master
-                variants = []
-                for s_product in products:
-                    variant_val = {}
-                    product = s_product.product_variant_id
+                    # Prepare product's variant vals using shopify_product_product  recordset
+                    # - Variant's SKU, as well as weight and weight unit, are fetching from product variant while the price is fetched from shopify_product_product master
+                    variants = []
+                    for s_product in products:
+                        variant_val = {}
+                        product = s_product.product_variant_id
 
-                    count = 1
-                    for value in product.attribute_value_ids:
-                        variant_val.update({'option' + str(count): value.name})
-                        count += 1
+                        count = 1
+                        for value in product.attribute_value_ids:
+                            variant_val.update({'option' + str(count): value.name})
+                            count += 1
 
-                        # variant_meta_rec = s_product.meta_fields_id
-                        # variant_meta_data_dict = {"key": variant_meta_rec.key or '',
-                        #                         "value": variant_meta_rec.value or '',
-                        #                         "value_type": variant_meta_rec.value_type or '',
-                        #                         "namespace": variant_meta_rec.namespace or ''}
-                        # if variant_meta_data_dict:
-                        #     variant_val.update({'metafields': [variant_meta_data_dict]})
+                            # variant_meta_rec = s_product.meta_fields_id
+                            # variant_meta_data_dict = {"key": variant_meta_rec.key or '',
+                            #                         "value": variant_meta_rec.value or '',
+                            #                         "value_type": variant_meta_rec.value_type or '',
+                            #                         "namespace": variant_meta_rec.namespace or ''}
+                            # if variant_meta_data_dict:
+                            #     variant_val.update({'metafields': [variant_meta_data_dict]})
 
-                    # lst_price = s_product.lst_price if s_product.lst_price > 0 else product.lst_price
+                        # lst_price = s_product.lst_price if s_product.lst_price > 0 else product.lst_price
 
-                    weight_unit = product.uom_id
-                    if weight_unit and weight_unit.name in _shopify_allow_weights:
-                        variant_val.update({'weight': product.weight,
-                                            'weight_unit': weight_unit.name})
-                    else:
-                        _logger.error(
-                            _('UOM is not define for product variant id!: %s') % str(product.id))
+                        weight_unit = product.uom_id
+                        if weight_unit and weight_unit.name in _shopify_allow_weights:
+                            variant_val.update({'weight': product.weight,
+                                                'weight_unit': weight_unit.name})
+                        else:
+                            _logger.error(
+                                _('UOM is not define for product variant id!: %s') % str(product.id))
 
-                    variant_val.update(
-                        {'price': s_product.lst_price,
-                         'sku': product.default_code or product.id,
-                         "inventory_management": "shopify"})
-                    variants += [variant_val]
+                        variant_val.update(
+                            {'price': s_product.lst_price,
+                             'sku': product.default_code or product.id,
+                             "inventory_management": "shopify"})
+                        variants += [variant_val]
+                else:
+                    raise ValidationError(_("A product should be 'Can be Sold' and 'Can be Purchased' before exporting"))
 
                 # Prepare vals for images using product template image_medium
                 # and image_ids records
                 images = []
                 if product_tmpl_id.image_medium:
-                    images += [{'attachment': product_tmpl_id.image_medium}]
+                    images += [{'attachment': product_tmpl_id.image_medium.decode("utf-8"),
+                                'position': 1}]
                 for product_image in product_tmpl_id.product_image_ids:
                     if product_image.image:
-                        images += [{'attachment': product_image.image}]
+                        images += [{'attachment': product_image.image.decode("utf-8")}]
 
                 # Get tags data from using product template recordset
                 # (prod_tags_ids & province_tags_ids)
@@ -283,13 +316,14 @@ class ShopifyConfig(models.Model):
                 if success:
                     # Now update variants details in Odoo system as well as variant inventory and icon images on Shopify
                     # s_product_tmpl_id.update({'shopify_published': True})
-                    if s_product_tmpl_id.meta_fields_id:
-                        template_meta_rec = s_product_tmpl_id.meta_fields_id
+                    if s_product_tmpl_id.meta_fields_ids:
+                        template_meta_rec = s_product_tmpl_id.meta_fields_ids
                         if template_meta_rec:
-                            new_product.add_metafield(shopify.Metafield({'namespace': template_meta_rec.namespace or '',
-                                'key': template_meta_rec.key or '',
-                                'value': template_meta_rec.value or '',
-                                'value_type': template_meta_rec.value_type or ''}))
+                            for meta_rec in template_meta_rec:
+                                new_product.add_metafield(shopify.Metafield({'namespace': meta_rec.namespace or '',
+                                    'key': meta_rec.key or '',
+                                    'value': meta_rec.value or '',
+                                    'value_type': meta_rec.value_type or ''}))
 
                     shopify_product_tmpl_id = new_product.id
                     if shopify_product_tmpl_id:
@@ -311,15 +345,18 @@ class ShopifyConfig(models.Model):
                                         ('default_code', '=', default_code)], limit=1)
                             product_variant_rec = shopify_product_product.product_variant_id
 
+
                             # Update an image on shopify for the variant
                             if product_variant_rec:
                                 variant_image = product_variant_rec.image_medium
                                 if variant_image:
-                                    image = shopify.Image(
-                                        {'product_id': shopify_product_tmpl_id})
-                                    image.attachment = variant_image
-                                    image.variant_ids = [variant_id]
+                                    image = shopify.Image()
+                                    image.product_id = shopify_product_tmpl_id
+                                    image.attachment = variant_image.decode("utf-8")
+#                                     image.variant_ids = [variant_id]
                                     image.save()
+                                    variant.image_id = image.id
+                                    variant.save()
                             if shopify_product_product:
                                 # Update shopify_product_id,
                                 # shopify_inventory_item_id and
@@ -329,12 +366,13 @@ class ShopifyConfig(models.Model):
                                                                        'shopify_product_template_id': s_product_tmpl_id.id,
                                                                        'shopify_inventory_item_id': inventory_item_id})
 
-                                variant_meta_rec = shopify_product_product.meta_fields_id
+                                variant_meta_rec = shopify_product_product.meta_fields_ids
                                 if variant_meta_rec:
-                                    variant.add_metafield(shopify.Metafield({'namespace': variant_meta_rec.namespace or '',
-                                        'key': variant_meta_rec.key or '',
-                                        'value': variant_meta_rec.value or '',
-                                        'value_type': variant_meta_rec.value_type or ''}))
+                                    for meta_rec in variant_meta_rec:
+                                        variant.add_metafield(shopify.Metafield({'namespace': meta_rec.namespace or '',
+                                            'key': meta_rec.key or '',
+                                            'value': meta_rec.value or '',
+                                            'value_type': meta_rec.value_type or ''}))
                                 # Update an inventory for product for all
                                 # locations
                                 for shopify_locations_record in shopify_locations_records:
@@ -371,7 +409,7 @@ class ShopifyConfig(models.Model):
         s_prod_tmpl = self.env['shopify.product.template']
         stock_quant_obj = self.env['stock.quant']
         for rec in self:
-            rec.check_connection()
+            rec.test_connection()
             config_id = rec.id
             if shopify_prod_rec.shopify_product_id:
                 raise Warning(_('Variant is already exported to Shopify.'))
@@ -379,76 +417,81 @@ class ShopifyConfig(models.Model):
             variant_val = {}
             product = shopify_prod_rec.product_variant_id
             product_tmpl_id = product.product_tmpl_id
-
-            s_prod_tmpl_rec = s_prod_tmpl.sudo().search([('product_tmpl_id','=',product_tmpl_id.id), 
-                ('shopify_config_id','=',config_id)], limit = 1)
-            if not s_prod_tmpl_rec:
-                raise Warning(_('Shopify Product template record is not found. Kindly export a product template'))
-            else:
-                shopify_prod_tmpl_id = s_prod_tmpl_rec.shopify_prod_tmpl_id
-                if shopify_prod_tmpl_id:
-                    shopify_prod = shopify.Variant()
-                    count = 1
-                    for value in product.attribute_value_ids:
-                        # shopify_prod.'option' + str(count) = value.name
-                        opt_cmd = 'shopify_prod.option' + str(count) + " = '" + str(value.name) +"'"
-                        exec(opt_cmd)
-                        count += 1
-
-                    weight_unit = product.uom_id
-                    if weight_unit and weight_unit.name in _shopify_allow_weights:
-                        shopify_prod.weight = product.weight
-                        shopify_prod.weight_unit = weight_unit.name
-                    else:
-                        _logger.error(
-                            _('UOM is not define for product variant id!: %s') % str(product.id))
-
-                    shopify_prod.price = shopify_prod_rec.lst_price
-                    shopify_prod.sku = product.default_code or product.id
-                    shopify_prod.inventory_management = "shopify"
-                    shopify_prod.product_id = shopify_prod_tmpl_id
-                    success = shopify_prod.save()
-                    if success:
-                        variant_id = shopify_prod.id
-                        inventory_item_id = shopify_prod.inventory_item_id
-                        default_code = shopify_prod.sku
-                        product_variant_rec = shopify_prod_rec.product_variant_id
-                        if shopify_prod_rec:
-                            variant_image = product_variant_rec.image_medium
-                            if variant_image:
-                                image = shopify.Image(
-                                    {'product_id': shopify_prod_tmpl_id})
-                                image.attachment = variant_image
-                                image.variant_ids = [variant_id]
-                                image.save()
-                            shopify_prod_rec.sudo().update({'shopify_product_id': variant_id,
-                                                            'shopify_product_template_id': s_prod_tmpl_rec.id,
-                                                            'shopify_inventory_item_id': inventory_item_id})
-                            shopify_metafields_dict = {}
-                            if shopify_prod_rec.meta_fields_id:
-                                variant_meta_rec = shopify_prod_rec.meta_fields_id
-                                if variant_meta_rec:
-                                    shopify_prod.add_metafield(shopify.Metafield({'namespace': variant_meta_rec.namespace or '',
-                                        'key': variant_meta_rec.key or '',
-                                        'value': variant_meta_rec.value or '',
-                                        'value_type': variant_meta_rec.value_type or ''}))
-                            shopify_locations_records = self.env['shopify.locations'].sudo().search(
-                                [('shopify_config_id', '=', config_id)])
-                            for shopify_locations_record in shopify_locations_records:
-                                shopify_location = shopify_locations_record.shopify_location_id
-                                shopify_location_id = shopify_locations_record.id
-                                available_qty = 0
-                                quant_locations = stock_quant_obj.sudo().search([('location_id.usage', '=', 'internal'), (
-                                    'product_id', '=', shopify_prod_rec.product_variant_id.id), ('location_id.shopify_location_ids', 'in', [shopify_location_id])])
-                                for quant_location in quant_locations:
-                                    available_qty += quant_location.quantity
-                                location = shopify.InventoryLevel.set(
-                                    shopify_location, inventory_item_id, int(available_qty))
-                    else:
-                        raise Warning(_('Issue raised while exporting product variant!'))
+            if product_tmpl_id.sale_ok and product_tmpl_id.purchase_ok:
+                s_prod_tmpl_rec = s_prod_tmpl.sudo().search([('product_tmpl_id','=',product_tmpl_id.id),
+                    ('shopify_config_id','=',config_id)], limit = 1)
+                if not s_prod_tmpl_rec:
+                    raise Warning(_('Shopify Product template record is not found. Kindly export a product template'))
                 else:
-                    raise Warning(_('Product template is created at Shopify, but not exported to Shopify. Kindly export a product template'))
+                    shopify_prod_tmpl_id = s_prod_tmpl_rec.shopify_prod_tmpl_id
+                    if shopify_prod_tmpl_id:
+                        shopify_prod = shopify.Variant()
+                        count = 1
+                        for value in product.attribute_value_ids:
+                            # shopify_prod.'option' + str(count) = value.name
+                            opt_cmd = 'shopify_prod.option' + str(count) + " = '" + str(value.name) +"'"
+                            exec(opt_cmd)
+                            count += 1
 
+                        weight_unit = product.uom_id
+                        if weight_unit and weight_unit.name in _shopify_allow_weights:
+                            shopify_prod.weight = product.weight
+                            shopify_prod.weight_unit = weight_unit.name
+                        else:
+                            _logger.error(
+                                _('UOM is not define for product variant id!: %s') % str(product.id))
+
+                        shopify_prod.price = shopify_prod_rec.lst_price
+                        shopify_prod.sku = product.default_code or product.id
+                        shopify_prod.inventory_management = "shopify"
+                        shopify_prod.product_id = shopify_prod_tmpl_id
+                        success = shopify_prod.save()
+                        if success:
+                            variant_id = shopify_prod.id
+                            inventory_item_id = shopify_prod.inventory_item_id
+                            default_code = shopify_prod.sku
+                            product_variant_rec = shopify_prod_rec.product_variant_id
+                            if shopify_prod_rec:
+                                variant_image = product_variant_rec.image_medium
+                                if variant_image:
+                                    image = shopify.Image()
+                                    image.product_id = shopify_prod_tmpl_id
+                                    image.attachment = variant_image.decode("utf-8")
+#                                     image.variant_ids = [variant_id]
+                                    image.save()
+                                    shopify_prod.image_id = image.id
+                                    shopify_prod.save()
+
+                                shopify_prod_rec.sudo().update({'shopify_product_id': variant_id,
+                                                                'shopify_product_template_id': s_prod_tmpl_rec.id,
+                                                                'shopify_inventory_item_id': inventory_item_id})
+                                shopify_metafields_dict = {}
+                                if shopify_prod_rec.meta_fields_ids:
+                                    variant_meta_rec = shopify_prod_rec.meta_fields_ids
+                                    if variant_meta_rec:
+                                        for meta_rec in variant_meta_rec:
+                                            shopify_prod.add_metafield(shopify.Metafield({'namespace': meta_rec.namespace or '',
+                                                'key': meta_rec.key or '',
+                                                'value': meta_rec.value or '',
+                                                'value_type': meta_rec.value_type or ''}))
+                                shopify_locations_records = self.env['shopify.locations'].sudo().search(
+                                    [('shopify_config_id', '=', config_id)])
+                                for shopify_locations_record in shopify_locations_records:
+                                    shopify_location = shopify_locations_record.shopify_location_id
+                                    shopify_location_id = shopify_locations_record.id
+                                    available_qty = 0
+                                    quant_locations = stock_quant_obj.sudo().search([('location_id.usage', '=', 'internal'), (
+                                        'product_id', '=', shopify_prod_rec.product_variant_id.id), ('location_id.shopify_location_ids', 'in', [shopify_location_id])])
+                                    for quant_location in quant_locations:
+                                        available_qty += quant_location.quantity
+                                    location = shopify.InventoryLevel.set(
+                                        shopify_location, inventory_item_id, int(available_qty))
+                        else:
+                            raise Warning(_('Issue raised while exporting product variant!'))
+                    else:
+                        raise Warning(_('Product template is created at Shopify, but not exported to Shopify. Kindly export a product template'))
+            else:
+                raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before export"))
 
 
 
@@ -556,7 +599,7 @@ class ShopifyConfig(models.Model):
         Adjust qty on shopify base on given location_id and inventory_item_id
         """
         try:
-            self.check_connection()
+            self.test_connection()
             adjust_location = shopify.InventoryLevel.adjust(
                 shopify_location_id, inventory_item_id, qty)
         except Exception as e:
@@ -600,7 +643,7 @@ class ShopifyConfig(models.Model):
         """
         Fetch order ids from shopify with give condition and pass it to import_order function
         """
-        self.check_connection()
+        self.test_connection()
 #         shopify_orders = shopify.Order.find(
 #             status='any', financial_status='paid', fulfillment_status='fulfilled')
 #         for shopify_order in shopify_orders:

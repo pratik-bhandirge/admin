@@ -49,7 +49,7 @@ class ShopifyProductProduct(models.Model):
                                   related="product_variant_id.weight", readonly=True)
     shopify_uom = fields.Many2one("product.uom", string="UOM", help="UOM of product",
                                   related="product_variant_id.uom_id", readonly=True)
-    meta_fields_id = fields.Many2one("shopify.metafields", "Shopify Variant Metafields",
+    meta_fields_ids = fields.Many2many("shopify.metafields",
                                      help="Enter Shopify Variant Metafields", track_visibility='onchange')
 
     @api.multi
@@ -74,21 +74,56 @@ class ShopifyProductProduct(models.Model):
             else it will throw validation error.
         4. Set all the fields values on shopify product variant and save the shopify product variant object.
         '''
-        self.shopify_config_id.check_connection()
+        self.shopify_config_id.test_connection()
         for rec in self:
-            product_variant_default_code = str(rec.product_variant_id.default_code)
-            product_variant_price = rec.lst_price
-            shopify_product_variant_id = rec.shopify_product_id
-            shopify_product_template_id = str(rec.shopify_product_template_id.shopify_prod_tmpl_id)
-            is_shopify_variant = shopify.Variant.exists(shopify_product_variant_id)
-            is_shopify_product = shopify.Product.exists(shopify_product_template_id)
-            if is_shopify_variant and is_shopify_product:
-                shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
-                shopify_product_variant.sku = product_variant_default_code
-                shopify_product_variant.price = product_variant_price
-                success = shopify_product_variant.save()
+            if rec.product_template_id.sale_ok and rec.product_tmpl_id.purchase_ok:
+                product_variant_default_code = str(rec.product_variant_id.default_code)
+                product_variant_price = rec.lst_price
+                shopify_product_variant_id = rec.shopify_product_id
+                product_variant_id = rec.product_variant_id
+                product_variant_image = product_variant_id.image_medium
+                product_variant_metafields = rec.meta_fields_ids
+                product_variant_metafields_key_list = [mt.key for mt in rec.meta_fields_ids]
+                shopify_product_template_id = str(rec.shopify_product_template_id.shopify_prod_tmpl_id)
+                is_shopify_variant = shopify.Variant.exists(shopify_product_variant_id)
+                is_shopify_product = shopify.Product.exists(shopify_product_template_id)
+                if is_shopify_variant and is_shopify_product:
+                    shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
+                    if product_variant_image:
+                        image = shopify.Image()
+                        image.product_id = shopify_product_template_id
+                        image.attachment = product_variant_image.decode("utf-8")
+                        image.save()
+#                         image.variant_ids = [image.id]
+                        shopify_product_variant.image_id = image.id
+                        shopify_product_variant.save()
+                    metafield_list = shopify_product_variant.metafields()
+                    metafield_key_list = [mt.key for mt in metafield_list]
+                    if product_variant_metafields_key_list == metafield_key_list and (len(product_variant_metafields_key_list) and len(metafield_key_list)) > 0:
+                        for var_metafield in product_variant_metafields:
+                            for metafield in metafield_list:
+                                if var_metafield.key == metafield.key:
+                                    metafield.attributes.update(
+                                        {'value': var_metafield.value,
+                                         'value_type': var_metafield.value_type})
+                                metafield.save()
+                    else:
+                        if metafield_list and len(metafield_list) > 0:
+                            for mt in metafield_list:
+                                mt.destroy()
+                        if product_variant_metafields and len(product_variant_metafields) > 0:
+                            for meta_rec in product_variant_metafields:
+                                shopify_product_variant.add_metafield(shopify.Metafield({'namespace': meta_rec.namespace or '',
+                                                    'key': meta_rec.key or '',
+                                                    'value': meta_rec.value or '',
+                                                    'value_type': meta_rec.value_type or ''}))
+                    shopify_product_variant.sku = product_variant_default_code
+                    shopify_product_variant.price = product_variant_price
+                    success = shopify_product_variant.save()
+                else:
+                    raise ValidationError(_("Product does not exist in shopify!"))
             else:
-                raise ValidationError(_("Product does not exist in shopify!"))
+                raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before updation"))
 
     @api.model
     def create(self, vals):
