@@ -36,7 +36,7 @@ class ShopifyProductTemplate(models.Model):
     product_type = fields.Many2one("shopify.product.type", "Shopify Product Type",
                                    help="Enter Shopify Product Type", track_visibility='onchange')
     shopify_published = fields.Boolean(
-        "Shopify Published",  help="Enter Shopify Published", track_visibility='onchange', default=False, readonly=True)
+        "Shopify Published",  help="Enter Shopify Published", track_visibility='onchange', default=True)
     shopify_prod_tmpl_id = fields.Char(
         "Shopify Product Template ID", help="Enter Shopify Product Template ID", track_visibility='onchange', readonly=True)
     meta_fields_ids = fields.Many2many("shopify.metafields",
@@ -82,14 +82,6 @@ class ShopifyProductTemplate(models.Model):
                     _("You cannot create multiple records for same shopify configuration"))
         return res
 
-#     @api.multi
-#     def unlink(self):
-#         for rec in self:
-#             if rec.shopify_prod_tmpl_id:
-#                 raise ValidationError(
-#                     _("You cannot delete an already exported shopify product!"))
-#         return super(AccountInvoiceLine, self).unlink()
-
     @api.multi
     def export_shopify(self):
         '''
@@ -104,8 +96,6 @@ class ShopifyProductTemplate(models.Model):
                 elif not (rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids):
                     raise ValidationError(
                         _("Please select atleast 1 product or province tags before exporting product to shopify!"))
-#             elif rec.shopify_prod_tmpl_id:
-#                 raise ValidationError(_("The product is already exported to shopify!"))
 
     @api.multi
     def update_shopify_product(self):
@@ -122,36 +112,34 @@ class ShopifyProductTemplate(models.Model):
         for rec in self:
             if rec.product_tmpl_id.sale_ok and rec.product_tmpl_id.purchase_ok:
                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
-                prod_tags = rec.product_tmpl_id.prod_tags_ids
-                province_tags = rec.product_tmpl_id.province_tags_ids
-                str_prod_province_tags = []
-                for prod_tag in prod_tags:
-                    str_prod_province_tags.append(prod_tag.name)
-                for prov_tag in province_tags:
-                    str_prod_province_tags.append(prov_tag.name)
-                tags = ",".join(str_prod_province_tags)
-                shopify_product_template_id = rec.shopify_prod_tmpl_id
-                product_template_name = str(rec.product_tmpl_id.name)
-                product_template_body_html = rec.body_html
-                product_template_vendor = rec.vendor.name
-                product_template_product_type = rec.product_type.name
-                product_template_tags = tags
-                product_template_image = rec.product_tmpl_id.image_medium
-                product_template_metafields = rec.meta_fields_ids
-                product_template_metafields_keys = [mt.key for mt in product_template_metafields]
                 is_shopify_product = shopify.Product.exists(shopify_product_id)
                 if is_shopify_product:
-                    shopify_product = shopify.Product({'id': shopify_product_id})
+                    prod_tags = rec.product_tmpl_id.prod_tags_ids
+                    province_tags = rec.product_tmpl_id.province_tags_ids
+                    str_prod_province_tags = []
+                    for prod_tag in prod_tags:
+                        str_prod_province_tags.append(prod_tag.name)
+                    for prov_tag in province_tags:
+                        str_prod_province_tags.append(prov_tag.name)
+                    product_template_tags = ",".join(str_prod_province_tags)
+                    product_template_metafields = rec.meta_fields_ids
+                    product_template_metafields_keys = [mt.key for mt in product_template_metafields]
+                    shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
                     shopify_product_metafields = shopify_product.metafields()
                     shopify_product_metafields_keys = [mt.key for mt in shopify_product_metafields]
-                    if product_template_image:
-                        image = shopify.Image()
-                        image.product_id = shopify_product_template_id
-                        image.attachment = product_template_image.decode("utf-8")
-                        image.position = 1
-                        image.save()
-                        shopify_product.image_id = image.id
+                    image_list = [{'attachment': rec.product_tmpl_id.image_medium.decode('utf-8'),
+                                   'position': 1}]
+                    for product_image in rec.product_tmpl_id.product_image_ids:
+                        image_list.append({'attachment': product_image.image.decode('utf-8')})
+                    get_images = shopify.Image.find(product_id=rec.shopify_prod_tmpl_id)
+                    if get_images:
+                        for images in get_images:
+                            images.destroy()
+
+                    if image_list:
+                        shopify_product.images = image_list
                         shopify_product.save()
+
                     if product_template_metafields_keys == shopify_product_metafields_keys and (len(product_template_metafields_keys) and len(shopify_product_metafields_keys)) > 0:
                         for temp_metafield in product_template_metafields:
                             for metafield in shopify_product_metafields:
@@ -170,12 +158,22 @@ class ShopifyProductTemplate(models.Model):
                                                     'key': meta_rec.key or '',
                                                     'value': meta_rec.value or '',
                                                     'value_type': meta_rec.value_type or ''}))
-                    shopify_product.title = product_template_name
-                    shopify_product.body_html = product_template_body_html
-                    shopify_product.vendor = product_template_vendor
-                    shopify_product.product_type = product_template_product_type
+                    shopify_product.title = rec.product_tmpl_id.name
+                    shopify_product.body_html = rec.body_html
+                    shopify_product.vendor = rec.vendor.name
+                    shopify_product.product_type = rec.product_type.name
                     shopify_product.tags = product_template_tags
                     success = shopify_product.save()
+                    # The code is written to update the shopify variants along with templates
+                    shopify_product_products_list = []
+                    product_variants = rec.product_tmpl_id.product_variant_ids.ids
+                    shopify_product_search = self.env['shopify.product.product'].search([('product_variant_id','in',product_variants),
+                                                                    ('shopify_config_id','=',rec.shopify_config_id.id)])
+                    for shopify_prod in shopify_product_search:
+                        if shopify_prod.shopify_product_id:
+                            shopify_prod.update_shopify_variant()
+                        else:
+                            shopify_prod.export_shopify_variant()
                 else:
                     raise ValidationError(_("Product Template does not exist in shopify !"))
             else:

@@ -17,7 +17,7 @@
                                 <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
-                                <field name="shopify_published" invisible="1"/>
+                                <field name="shopify_published"/>
                             </group>
                             <group>
                                 <field name="shopify_prod_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>

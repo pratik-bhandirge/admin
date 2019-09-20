@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ProductTemplate(models.Model):
@@ -35,3 +36,18 @@ class ProductTemplate(models.Model):
         (_check_default_code_uniq_template,
          'Default Code must be unique per Product!', ['default_code']),
     ]
+
+    @api.multi
+    def write(self, vals):
+        res = super(ProductTemplate, self).write(vals)
+        for rec in self:
+            can_be_sold = vals.get('sale_ok') or rec.sale_ok
+            can_be_purchased = vals.get('purchase_ok') or rec.purchase_ok
+            shopify_published_list = []
+            if not can_be_sold or not can_be_purchased:
+                shopify_product_templates = rec.shopify_product_template_ids
+                for s_prod_temp in shopify_product_templates:
+                    shopify_published_list.append(s_prod_temp.shopify_published)
+                if True in shopify_published_list:
+                    raise ValidationError(_("The product should be unpublished on shopify end as well!!"))
+        return res

@@ -43,7 +43,7 @@
                                         <group>
                                             <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                             <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
-                                            <field name="shopify_published" invisible="1"/>
+                                            <field name="shopify_published"/>
                                         </group>
                                         <group>
                                             <field name="shopify_prod_tmpl_id"/>

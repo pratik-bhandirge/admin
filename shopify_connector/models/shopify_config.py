@@ -287,9 +287,11 @@ class ShopifyConfig(models.Model):
                     str_prod_province_tags.append(prov_tag.name)
                 tags = ",".join(str_prod_province_tags)
 
+
                 # Create Product Template on Shopify using the above details
                 new_product = shopify.Product()
                 new_product.title = product_tmpl_id.name
+                new_product.published = s_product_tmpl_id.shopify_published
                 if s_product_tmpl_id.product_type:
                     new_product.product_type = s_product_tmpl_id.product_type.name  # "Snowboard"
                 if s_product_tmpl_id.vendor:
