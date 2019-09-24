@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class ResCompany(models.Model):
-
     _inherit = "res.company"
 
     shopify_vendor_id = fields.Many2one(
@@ -17,3 +16,5 @@ class ResCompany(models.Model):
                                             'res_state_id', "Shopify Province",  help="Shopify Province", track_visibility="onchange")
     shopify_location_id = fields.Many2one("stock.location", "Shopify Stock Location",
                                           help="Here you can set default Shopify Stock Location", track_visibility="onchange")
+    shopify_user_id = fields.Many2one("res.users", "Default User", track_visibility="onchange", required=True,
+                                      help="Default user who'll create SO and PO for a company")

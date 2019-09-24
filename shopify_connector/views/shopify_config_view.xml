@@ -11,6 +11,8 @@
                             class="oe_highlight" string="Check Connection"/>
                         <button name="export_products_to_shopify" type="object"
                             class="oe_highlight" string="Export Products"/>
+                        <button name="test_msg" type="object"
+                            class="oe_highlight" string="Test Msg"/>
                        <!--  <button name="test_import_locations" type="object"
                             class="oe_highlight" string="Import Location"/>
                         <button name="test_import_orders" type="object" 

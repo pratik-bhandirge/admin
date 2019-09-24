@@ -12,6 +12,7 @@
                             <group>
                                 <field name="shopify_vendor_id"/>
                                 <field name="shopify_customer_id"/>
+                                <field name="shopify_user_id"/>
                             </group>
                             <group>
                                 <field name="shopify_warehouse_id"/>

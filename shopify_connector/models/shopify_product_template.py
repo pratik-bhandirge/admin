@@ -48,6 +48,7 @@ class ShopifyProductTemplate(models.Model):
     shopify_error_log = fields.Text(
         "Shopify Error", help="Error occurs while exporting move to the shopify",
         readonly=True)
+    check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
 
     @api.model
     def create(self, vals):
@@ -110,91 +111,85 @@ class ShopifyProductTemplate(models.Model):
         '''
         self.shopify_config_id.test_connection()
         for rec in self:
+            if rec.check_multi_click:
+                return True
+            rec.check_multi_click = True
+            rec._cr.commit()
             if rec.product_tmpl_id.sale_ok and rec.product_tmpl_id.purchase_ok:
-                shopify_product_id = str(rec.shopify_prod_tmpl_id)
-                is_shopify_product = shopify.Product.exists(shopify_product_id)
-                if is_shopify_product:
-                    prod_tags = rec.product_tmpl_id.prod_tags_ids
-                    province_tags = rec.product_tmpl_id.province_tags_ids
-                    str_prod_province_tags = []
-                    for prod_tag in prod_tags:
-                        str_prod_province_tags.append(prod_tag.name)
-                    for prov_tag in province_tags:
-                        str_prod_province_tags.append(prov_tag.name)
-                    product_template_tags = ",".join(str_prod_province_tags)
-                    product_template_metafields = rec.meta_fields_ids
-                    product_template_metafields_keys = [mt.key for mt in product_template_metafields]
-                    shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
-                    shopify_product_metafields = shopify_product.metafields()
-                    shopify_product_metafields_keys = [mt.key for mt in shopify_product_metafields]
-                    image_list = [{'attachment': rec.product_tmpl_id.image_medium.decode('utf-8'),
-                                   'position': 1}]
-                    for product_image in rec.product_tmpl_id.product_image_ids:
-                        image_list.append({'attachment': product_image.image.decode('utf-8')})
-                    get_images = shopify.Image.find(product_id=rec.shopify_prod_tmpl_id)
-                    if get_images:
-                        for images in get_images:
-                            images.destroy()
+                try:
+                    shopify_product_id = str(rec.shopify_prod_tmpl_id)
+                    is_shopify_product = shopify.Product.exists(shopify_product_id)
+                    if is_shopify_product:
+                        prod_tags = rec.product_tmpl_id.prod_tags_ids
+                        province_tags = rec.product_tmpl_id.province_tags_ids
+                        str_prod_province_tags = []
+                        for prod_tag in prod_tags:
+                            str_prod_province_tags.append(prod_tag.name)
+                        for prov_tag in province_tags:
+                            str_prod_province_tags.append(prov_tag.name)
+                        product_template_tags = ",".join(str_prod_province_tags)
+                        product_template_metafields = rec.meta_fields_ids
+                        product_template_metafields_keys = [mt.key for mt in product_template_metafields]
+                        shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
+                        shopify_product_metafields = shopify_product.metafields()
+                        shopify_product_metafields_keys = [mt.key for mt in shopify_product_metafields]
+                        image_list = [{'attachment': rec.product_tmpl_id.image_medium.decode('utf-8'),
+                                       'position': 1}]
+                        for product_image in rec.product_tmpl_id.product_image_ids:
+                            image_list.append({'attachment': product_image.image.decode('utf-8')})
+                        get_images = shopify.Image.find(product_id=rec.shopify_prod_tmpl_id)
+                        if get_images:
+                            for images in get_images:
+                                images.destroy()
 
-                    if image_list:
-                        shopify_product.images = image_list
-                        shopify_product.save()
+                        if image_list:
+                            shopify_product.images = image_list
+                            shopify_product.save()
 
-                    if product_template_metafields_keys == shopify_product_metafields_keys and (len(product_template_metafields_keys) and len(shopify_product_metafields_keys)) > 0:
-                        for temp_metafield in product_template_metafields:
-                            for metafield in shopify_product_metafields:
-                                if temp_metafield.key == metafield.key:
-                                    metafield.attributes.update(
-                                        {'value': temp_metafield.value,
-                                         'value_type': temp_metafield.value_type})
-                                metafield.save()
-                    else:
-                        if shopify_product_metafields and len(shopify_product_metafields) > 0:
-                            for mt in shopify_product_metafields:
-                                mt.destroy()
-                        if product_template_metafields and len(product_template_metafields) > 0:
-                            for meta_rec in product_template_metafields:
-                                shopify_product.add_metafield(shopify.Metafield({'namespace': meta_rec.namespace or '',
-                                                    'key': meta_rec.key or '',
-                                                    'value': meta_rec.value or '',
-                                                    'value_type': meta_rec.value_type or ''}))
-                    shopify_product.title = rec.product_tmpl_id.name
-                    shopify_product.body_html = rec.body_html
-                    shopify_product.vendor = rec.vendor.name
-                    shopify_product.product_type = rec.product_type.name
-                    shopify_product.tags = product_template_tags
-                    success = shopify_product.save()
-                    # The code is written to update the shopify variants along with templates
-                    shopify_product_products_list = []
-                    product_variants = rec.product_tmpl_id.product_variant_ids.ids
-                    shopify_product_search = self.env['shopify.product.product'].search([('product_variant_id','in',product_variants),
-                                                                    ('shopify_config_id','=',rec.shopify_config_id.id)])
-                    for shopify_prod in shopify_product_search:
-                        if shopify_prod.shopify_product_id:
-                            shopify_prod.update_shopify_variant()
+                        if product_template_metafields_keys == shopify_product_metafields_keys and (len(product_template_metafields_keys) and len(shopify_product_metafields_keys)) > 0:
+                            for temp_metafield in product_template_metafields:
+                                for metafield in shopify_product_metafields:
+                                    if temp_metafield.key == metafield.key:
+                                        metafield.attributes.update(
+                                            {'value': temp_metafield.value,
+                                             'value_type': temp_metafield.value_type})
+                                    metafield.save()
                         else:
-                            shopify_prod.export_shopify_variant()
-                else:
-                    raise ValidationError(_("Product Template does not exist in shopify !"))
+                            if shopify_product_metafields and len(shopify_product_metafields) > 0:
+                                for mt in shopify_product_metafields:
+                                    mt.destroy()
+                            if product_template_metafields and len(product_template_metafields) > 0:
+                                for meta_rec in product_template_metafields:
+                                    shopify_product.add_metafield(shopify.Metafield({'namespace': meta_rec.namespace or '',
+                                                        'key': meta_rec.key or '',
+                                                        'value': meta_rec.value or '',
+                                                        'value_type': meta_rec.value_type or ''}))
+                        shopify_product.title = rec.product_tmpl_id.name
+                        shopify_product.body_html = rec.body_html
+                        shopify_product.vendor = rec.vendor.name
+                        shopify_product.product_type = rec.product_type.name
+                        shopify_product.tags = product_template_tags
+                        success = shopify_product.save()
+                        # The code is written to update the shopify variants along with templates
+                        shopify_product_products_list = []
+                        product_variants = rec.product_tmpl_id.product_variant_ids.ids
+                        shopify_product_search = self.env['shopify.product.product'].search([('product_variant_id','in',product_variants),
+                                                                        ('shopify_config_id','=',rec.shopify_config_id.id)])
+                        for shopify_prod in shopify_product_search:
+                            if shopify_prod.shopify_product_id:
+                                shopify_prod.update_shopify_variant()
+                            else:
+                                shopify_prod.export_shopify_variant()
+                        rec.check_multi_click = False
+                    else:
+                        rec.check_multi_click = False
+                        rec._cr.commit() 
+                        raise ValidationError(_("Product Template does not exist in shopify !"))
+                except Exception as e:
+                    _logger.error('Error occurs while updating product template on shopify: %s', e)
+                    rec.check_multi_click = False
+                    rec._cr.commit()
+                    pass
             else:
+                rec.check_multi_click = False
                 raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before updation"))
-
-#     @api.multi
-#     def website_publish_button(self):
-#         self.shopify_config_id.check_connection()
-#         for rec in self:
-#             if not rec.shopify_published:
-#                 rec.shopify_published = True
-#                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
-#                 shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
-#                 success = shopify_product.save()
-
-#     @api.multi
-#     def website_unpublish_button(self):
-#         self.shopify_config_id.check_connection()
-#         for rec in self:
-#             if rec.shopify_published:
-#                 rec.shopify_published = False
-#                 shopify_product_id = str(rec.shopify_prod_tmpl_id)
-#                 shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
-#                 success = shopify_product.save()

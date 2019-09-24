@@ -13,7 +13,6 @@ from odoo.exceptions import Warning, ValidationError
 _logger = logging.getLogger(__name__)
 _shopify_allow_weights = ['kg', 'lb', 'oz', 'g']
 
-
 class ShopifyConfig(models.Model):
 
     _name = 'shopify.config'
@@ -495,106 +494,6 @@ class ShopifyConfig(models.Model):
             else:
                 raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before export"))
 
-
-
-
-
-
-
-
-
-
-
-#                 shopify_prod_tmpl_id = s_prod_tmpl_rec.shopify_prod_tmpl_id
-#                 if shopify_prod_tmpl_id:
-#                     shopify_prod = shopify.Variant()
-#                     shopify_prod
-#                     shopify_prod = shopify.Product.find(shopify_prod_tmpl_id)
-#                     if shopify_prod:
-#                         count = 1
-#                         for value in product.attribute_value_ids:
-#                             variant_val.update({'option' + str(count): value.name})
-#                             count += 1
-
-#                         if shopify_prod_rec.meta_fields_id:
-#                             variant_meta_rec = shopify_prod_rec.meta_fields_id
-#                             variant_meta_data_dict = {"key": variant_meta_rec.key or '',
-#                                                     "value": variant_meta_rec.value or '',
-#                                                     "value_type": variant_meta_rec.value_type or '',
-#                                                     "namespace": variant_meta_rec.namespace or ''}
-#                             if variant_meta_data_dict:
-#                                 variant_val.update({'metafields': [variant_meta_data_dict]})
-
-#                         weight_unit = product.uom_id
-#                         if weight_unit and weight_unit.name in _shopify_allow_weights:
-#                             variant_val.update({'weight': product.weight,
-#                                                 'weight_unit': weight_unit.name})
-#                         else:
-#                             _logger.error(
-#                                 _('UOM is not define for product variant id!: %s') % str(product.id))
-
-#                         variant_val.update(
-#                             {'price': shopify_prod_rec.lst_price,
-#                              'sku': product.default_code or product.id,
-#                              "inventory_management": "shopify"})
-#                         shopify_prod.variants = [variant_val]
-#                         ngfvkdnf
-#                         success = shopify_prod.save()
-#                         if success:
-#                             # Fetch Shopify Locations base on the configuration from
-#                             # shopify.locations master
-#                             shopify_locations_records = self.env['shopify.locations'].sudo().search(
-#                                 [('shopify_config_id', '=', config_id)])
-#                             for variant in shopify_prod.variants:
-#                                 variant_id = variant.id
-#                                 inventory_item_id = variant.inventory_item_id
-#                                 default_code = variant.sku
-#                                 shopify_product_product = s_prod_var.sudo().\
-#                                     search([('shopify_config_id', '=', config_id),
-#                                             ('shopify_product_id',
-#                                              'in', ['', False]),
-#                                             ('product_template_id',
-#                                              '=', product_tmpl_id.id),
-#                                             ('default_code', '=', default_code)], limit=1)
-#                                 product_variant_rec = shopify_product_product.product_variant_id
-
-#                                 # Update an image on shopify for the variant
-#                                 if product_variant_rec:
-#                                     variant_image = product_variant_rec.image_medium
-# #                                     if variant_image:
-# #                                         image = shopify.Image(
-# #                                             {'product_id': shopify_product_tmpl_id})
-# #                                         image.attachment = variant_image
-# #                                         image.variant_ids = [variant_id]
-# #                                         image.save()
-#                                 if shopify_product_product:
-#                                     # Update shopify_product_id,
-#                                     # shopify_inventory_item_id and
-#                                     # shopify_product_template_id in
-#                                     # shopify_product_product master
-#                                     shopify_product_product.sudo().update({'shopify_product_id': variant_id,
-#                                                                            'shopify_product_template_id': s_prod_tmpl_rec.id,
-#                                                                            'shopify_inventory_item_id': inventory_item_id})
-
-#                                     # Update an inventory for product for all
-#                                     # locations
-#                                     for shopify_locations_record in shopify_locations_records:
-#                                         shopify_location = shopify_locations_record.shopify_location_id
-#                                         shopify_location_id = shopify_locations_record.id
-#                                         available_qty = 0
-#                                         quant_locations = stock_quant_obj.sudo().search([('location_id.usage', '=', 'internal'), (
-#                                             'product_id', '=', shopify_product_product.product_variant_id.id), ('location_id.shopify_location_ids', 'in', [shopify_location_id])])
-#                                         for quant_location in quant_locations:
-#                                             available_qty += quant_location.quantity
-#                                         location = shopify.InventoryLevel.set(
-#                                             shopify_location, inventory_item_id, int(available_qty))
-#                     else:
-#                         raise Warning(_('Product template is not found at Shopify. Kindly export a product template'))
-#                 else:
-#                     raise Warning(_('Product template is created at Shopify, but not exported to Shopify. Kindly export a product template'))
-
-
-
     @api.multi
     def update_shopify_inventory(self, shopify_location_id, inventory_item_id, qty):
         """
@@ -607,39 +506,7 @@ class ShopifyConfig(models.Model):
         except Exception as e:
             _logger.error(
                 _('Facing a problems while update a product quantity!: %s') % e)
-            # raise Warning(
-            # _('Facing a problems while update a product quantity!: %s') % e)
 
-#     @api.multi
-#     def test_import_locations(self):
-#         """
-#         This is a test function. No need to do anything as locations are configured by client
-#         """
-#         self.check_connection()
-#         locations = shopify.Location.find()
-#         for location in locations:
-#             country_code = location.country_code
-#             country_id = self.env['res.country'].sudo().search(
-#                 [('code', '=', country_code)])
-#             country_name = country_id.name if country_id else ''
-#             self.env['shopify.locations'].create({
-#                 'active': location.active,
-#                 'address1': location.address1,
-#                 'address2': location.address2,
-#                 'city': location.city,
-#                 'country_code': country_code,
-#                 'name': location.name,
-#                 'phone': location.phone,
-#                 'province_code': location.province_code,
-#                 'zip': location.zip,
-#                 'legacy': location.legacy,
-#                 'shopify_location_id': location.id,
-#                 'shopify_config_id': self.id,
-#                 'country_name': country_name,
-#                 'province': location.province,
-#                 'updated_at_shopify': location.updated_at,
-#                 'created_at_shopify': location.created_at})
-#
     @api.multi
     def test_import_orders(self):
         """
@@ -701,7 +568,7 @@ class ShopifyConfig(models.Model):
                                 move_line.qty_done = 0
                     # Done picking with no backorder
                     picking.action_done()
-                    backorder_pick = self.env['stock.picking'].search(
+                    backorder_pick = self.env['stock.picking'].sudo().search(
                         [('backorder_id', '=', picking.id)])
                     backorder_pick.action_cancel()
 
@@ -728,8 +595,27 @@ class ShopifyConfig(models.Model):
                     pass
         return shopify_error_log
 
+    def get_shopify_order_company(self,shopify_order_id):
+        _logger.info("Start get_shopify_user_id***********")
+        shopify_order = shopify.Order.find(shopify_order_id)
+        order_company = self.default_company_id
+        shopify_order_attributes = shopify_order.attributes
+        shipping_address = shopify_order_attributes.get('shipping_address')
+        if shipping_address:
+            order_province = shipping_address.province_code
+            for company_rec in self.company_ids:
+                code = []
+                for province in company_rec.shopify_province_ids:
+                    code += [province.code]
+                if str(order_province) in code:
+                    order_company = company_rec
+                    break
+        _logger.info("End get_shopify_user_id***********")
+        return order_company        
+        
+    
     @api.multi
-    def import_order(self, shopify_order_id):
+    def import_order(self, shopify_order_id, order_company, allow_import=False):
         """
         Import provided Sale order id from shopify to odoo
 
@@ -759,22 +645,21 @@ class ShopifyConfig(models.Model):
         """
         so_env = self.env['sale.order']
         shopify_order_id = int(shopify_order_id)
-        shopify_order = shopify.Order.find(shopify_order_id)
-
         if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
             return True
+        
+        shopify_order = shopify.Order.find(shopify_order_id)
         # base on Shopify order fetch financial_status and fulfillment_status
         financial_status = shopify_order.financial_status
         fulfillment_status = shopify_order.fulfillment_status
 
         # set allow_import flag base on order's financial_status and
         # fulfillment_status
-        if financial_status == 'partially_refunded' and fulfillment_status == 'partial':
-            allow_import = True
-        elif financial_status == 'paid' and fulfillment_status == 'fulfilled':
-            allow_import = True
-        else:
-            allow_import = False
+        if not allow_import:
+            if financial_status == 'partially_refunded' and fulfillment_status == 'partial':
+                allow_import = True
+            elif financial_status == 'paid' and fulfillment_status == 'fulfilled':
+                allow_import = True
 
         if allow_import:
             shopify_error_log = ''
@@ -790,23 +675,15 @@ class ShopifyConfig(models.Model):
             partner_obj = self.env['res.partner']
             province_obj = self.env['res.country.state']
 
-            # Base on customer province find Company_id
-            order_company = self.default_company_id
             shopify_order_attributes = shopify_order.attributes
             shipping_address = shopify_order_attributes.get('shipping_address')
             shopify_customer_id = ''
             shopify_vendor_id = ''
             order_province_id = ''
             order_province = ''
+            shopify_vendor_rec = ''
             if shipping_address:
                 order_province = shipping_address.province_code
-                for company_rec in self.company_ids:
-                    code = []
-                    for province in company_rec.shopify_province_ids:
-                        code += [province.code]
-                    if str(order_province) in code:
-                        order_company = company_rec
-                        break
 
             # Based on company_id fetch customer_id, warehouse_id, vendor_id and
             # location_id
@@ -830,10 +707,14 @@ class ShopifyConfig(models.Model):
                 shopify_customer_id = order_company.shopify_customer_id.id
 
             if not shopify_vendor_id:
-                shopify_vendor_id = order_company.shopify_vendor_id.id
+                shopify_vendor_rec = order_company.shopify_vendor_id
+                if shopify_vendor_rec:
+                    shopify_vendor_id = shopify_vendor_rec.id
+            
             shopify_warehouse_id = order_company.shopify_warehouse_id.id
             shopify_location_rec = order_company.shopify_location_id
             shopify_location_id = shopify_location_rec.id
+            shopify_user_id = order_company.shopify_user_id.id
 
             # Scrap this step and move it at 11 - Base on order's details fetch fulfillments details
             # fulfillments = shopify.Fulfillment.find(order_id=shopify_order.id)
@@ -844,21 +725,14 @@ class ShopifyConfig(models.Model):
                 line_data = line_item.attributes
                 # Get product_id of Odoo system base on shopify_product_product
                 # master
-                product = product_env.search([('shopify_product_id', '=', line_data.get(
+                product = product_env.sudo(shopify_user_id).search([('shopify_product_id', '=', line_data.get(
                     'variant_id'))], limit=1).product_variant_id
-                if not product:
-                    # if a product is not found then fetch base on SKU (this is
-                    # a temporary step, going to scrap once table structure
-                    # setup well)
-                    product = product_variant_env.search(
-                        [('default_code', '=', line_data.get('sku'))], limit=1)
-                # TODO: When we import a product from shopify then we need to check weather product is imported or not
-                # if not imported ten we need to import it first before oreder creation
-                # if not product:
-                #     self.import_product_product()
-                #     product = product_env.search(
-                #     [('product_sfy_variant_id', '=', line_data.get('variant_id'))])
-                #   new_cr.commit()
+#                 if not product:
+#                     # if a product is not found then fetch base on SKU (this is
+#                     # a temporary step, going to scrap once table structure
+#                     # setup well)
+#                     product = product_variant_env.sudo(shopify_user_id).search(
+#                         [('default_code', '=', line_data.get('sku'))], limit=1)
                 if product:
                     # Add Tax
                     # shopify_tax = False
@@ -876,18 +750,20 @@ class ShopifyConfig(models.Model):
                     # set product_id and product_uom base on Odoo product recordset
                     # If any error occurs while finding a product will log it
                     # in shopify_error_log variable
-                    line_vals.append((0, 0, {'product_id': product.id,
+                    line_vals_dict = {'product_id': product.id,
                                              'name': line_data.get('name').encode('utf-8'),
                                              'price_unit': line_data.get('price'),
                                              'product_uom_qty': line_data.get('quantity'),
-                                             'product_uom': product.uom_id and product.uom_id.id,
+                                             'product_uom': product.uom_id.id,
                                              # 'tax_id': shopify_tax and [(6, 0, tax_ids)] or
                                              # [(6, 0, [])]
-                                             }))
+                                             }
+                    line_vals.append((0, 0, line_vals_dict))
+#                     line_vals.extend([(0, 0, line_vals_dict)])
+                    
                 else:
                     shopify_error_log += "\n" if shopify_error_log else ""
                     shopify_error_log += "Product does not exist"
-
             # Prepare vals for sale.order master
             so_vals = {'partner_id': shopify_customer_id,
                        'company_id': company_id,
@@ -899,6 +775,7 @@ class ShopifyConfig(models.Model):
                        'shopify_config_id': shopify_config_id,
                        'shopify_fulfillment_status': fulfillment_status,
                        'shopify_financial_status': financial_status,
+                       'user_id':shopify_user_id,
                        }
 
             # Once sale order vals is prepared, create a sale order in the
@@ -927,6 +804,26 @@ class ShopifyConfig(models.Model):
                 src_shopify_warehouse_id = ''
                 src_shopify_location_rec = ''
                 multi_location_company = ''
+                src_shopify_user_id = ''
+                odoo_po_rec = po_env.sudo(shopify_user_id).search([('company_id', '=', company_id), ('partner_id', '=', shopify_vendor_id), ('origin', '=', odoo_so_name)], limit=1)
+                po_vals = {}
+                if not odoo_po_rec:
+                    fpos = self.env['account.fiscal.position'].with_context(force_company=company_id).get_fiscal_position(shopify_vendor_id)
+                    po_currency_id = shopify_vendor_rec.with_context(force_company=company_id).property_purchase_currency_id.id or self.env.user.company_id.currency_id.id
+                    po_payment_term_id = shopify_vendor_rec.with_context(force_company=company_id).property_supplier_payment_term_id.id
+                    po_vals = {'partner_id': shopify_vendor_id,
+                               'company_id': company_id,
+                               'fiscal_position_id': fpos,
+                               'currency_id': po_currency_id,
+                               'payment_term_id': po_payment_term_id,           
+                               'origin': odoo_so_name,                               
+                               }
+
+                    vendor_picking_type_rec = self.env['stock.picking.type'].sudo(shopify_user_id).search(
+                        [('warehouse_id', '=', shopify_warehouse_id), ('code', '=', 'incoming')], limit=1)
+                    if vendor_picking_type_rec:
+                        po_vals.update({'picking_type_id': vendor_picking_type_rec.id})
+
 
                 # Process an individual fulfillment
                 for fulfillment in fulfillments:
@@ -953,40 +850,39 @@ class ShopifyConfig(models.Model):
                                     src_shopify_warehouse_id = src_location_company_rec.shopify_warehouse_id.id
                                     src_shopify_location_rec = src_location_company_rec.shopify_location_id
                                     multi_location_company = src_location_company
+                                    src_shopify_user_id = src_location_company_rec.shopify_user_id.id
                                 else:
                                     multi_comp = False
 
                                 if multi_comp:
-                                    done_qty_vals,shopify_error_log = self._process_internal_transfer(
+                                    done_qty_vals,shopify_error_log = self.sudo()._process_internal_transfer(
                                         shopify_warehouse_id, src_location_rec, src_shopify_location_rec,
                                         odoo_so_name, fulfillment, src_location_company, done_qty_vals, shopify_error_log)
 
-                                    vendor_picking_type_rec = self.env['stock.picking.type'].sudo().search(
-                                        [('warehouse_id', '=', shopify_warehouse_id), ('code', '=', 'incoming')], limit=1)
-                                    if vendor_picking_type_rec:
+                                    if 'picking_type_id' in po_vals:
                                         po_lines_vals = []
                                         for line_item in fulfillment.line_items:
                                             line_data = line_item.attributes
-                                            product = product_env.search(
+                                            product = product_env.sudo(shopify_user_id).search(
                                                 [('shopify_product_id', '=', line_data.get('variant_id'))]).product_variant_id
+                                            
                                             price_unit = product.standard_price if product else 0
                                             vendors = product.seller_ids
-                                            if vendors:
-                                                for vendor in vendors:
-                                                    if vendor.name.id == shopify_vendor_id:
-                                                        price_unit = vendor.price
+                                            # if vendors:
+                                            #     for vendor in vendors:
+                                            #         if vendor.name.id == shopify_vendor_id:
+                                            #             price_unit = vendor.price
                                             if not product:
-                                                product = product_variant_env.search(
+                                                product = product_variant_env.sudo(shopify_user_id).search(
                                                     [('default_code', '=', line_data.get('sku'))])
-                                                if vendors:
-                                                    for vendor in vendors:
-                                                        if vendor.name.id == shopify_vendor_id:
-                                                            price_unit = vendor.price
+                                                # if vendors:
+                                                #     for vendor in vendors:
+                                                #         if vendor.name.id == shopify_vendor_id:
+                                                #             price_unit = vendor.price
                                             if product:
                                                 product_id = product.id
                                                 product_name = product.name or ''
                                                 qty_move = line_data.get('quantity')
-
                                                 po_lines_vals.append((0, 0, {
                                                     'name': product_name,
                                                     'product_id': product_id,
@@ -999,25 +895,14 @@ class ShopifyConfig(models.Model):
                                             else:
                                                 shopify_error_log += "\n" if shopify_error_log else ""
                                                 shopify_error_log += "Product does not exist"
-
-                                        po_vals = {'partner_id': shopify_vendor_id,
-                                                   'company_id': company_id,
-                                                   'origin': odoo_so_name,
-                                                   'picking_type_id': vendor_picking_type_rec.id,
-                                                   'order_line': po_lines_vals,
-                                                   }
                                         process_po = True
                                         po_vals_list.append(po_vals)
                                         try:
-                                            po_ids = po_env.sudo().search([('company_id', '=', company_id), (
-                                                'partner_id', '=', shopify_vendor_id), ('origin', '=', odoo_so_name)], limit=1)
-
-                                            if po_ids:
-                                                po_ids.write(
-                                                    {'order_line': po_lines_vals})
+                                            if odoo_po_rec:
+                                                odoo_po_rec.write({'order_line': po_lines_vals})
                                             else:
-                                                odoo_po_rec = po_env.create(
-                                                    po_vals)
+                                                po_vals.update({'order_line': po_lines_vals})
+                                                odoo_po_rec = po_env.sudo(shopify_user_id).create(po_vals)
 
                                         except Exception as e:
                                             shopify_error_log += "\n" if shopify_error_log else ""
@@ -1027,85 +912,102 @@ class ShopifyConfig(models.Model):
                                             pass
 
                                     # for po_vals_l in po_vals_list[0]:
-                                    po_rec = po_env.sudo().search([('company_id', '=', company_id),
-                                        ('partner_id', '=', shopify_vendor_id),
-                                        ('origin', '=', odoo_so_name)], limit=1)
-                                    if po_rec:
-                                        po_rec.button_confirm()
-                                        for picking in po_rec.picking_ids:
-                                            for move in picking.move_lines:
-                                                move.update({'quantity_done': move.product_uom_qty})
-                                            picking.action_done()
+                                    # po_rec = po_env.sudo(shopify_user_id).search([('company_id', '=', company_id),
+                                    #     ('partner_id', '=', shopify_vendor_id),
+                                    #     ('origin', '=', odoo_so_name)], limit=1)
+                                    # if po_rec:
+                                    #     po_rec.sudo(shopify_user_id).button_confirm()
+                                    #     for picking in po_rec.picking_ids:
+                                    #         for move in picking.move_lines:
+                                    #             move.update({'quantity_done': move.product_uom_qty})
+                                    #         picking.action_done()
                                 else:
-                                    done_qty_vals,shopify_error_log = self._process_internal_transfer(
+                                    done_qty_vals,shopify_error_log = self.sudo()._process_internal_transfer(
                                         shopify_warehouse_id, src_location_rec, shopify_location_rec, odoo_so_name, fulfillment, company_id, done_qty_vals, shopify_error_log)
 
-                po_rec = po_env.sudo().search([('company_id', '=', company_id),
-                                            ('partner_id', '=', shopify_vendor_id),
-                                            ('origin', '=', odoo_so_name)], limit=1)
-                if po_rec and src_shopify_customer_id and src_location_company and src_shopify_warehouse_id:
-                    #to do : - Process vendor bill for this PO. Create a vendor bill and process to Validate.
-#                     partner_rec = self.env['res.partner'].browse(src_shopify_customer_id)
-                    po_partner_rec = po_rec.partner_id
+                # po_rec = po_env.sudo(shopify_user_id).search([('company_id', '=', company_id),
+                #                             ('partner_id', '=', shopify_vendor_id),
+                #                             ('origin', '=', odoo_so_name)], limit=1)
+                if odoo_po_rec:
+                    odoo_po_rec.sudo(shopify_user_id).button_confirm()
+
+                    for picking in odoo_po_rec.picking_ids:
+                        for move in picking.move_lines:
+                            move.update({'quantity_done': move.product_uom_qty})
+                        picking.action_done()
+#                 if odoo_po_rec and src_shopify_customer_id and src_location_company and src_shopify_warehouse_id:
+#                     #to do : - Process vendor bill for this PO. Create a vendor bill and process to Validate.
+# #                     partner_rec = self.env['res.partner'].browse(src_shopify_customer_id)
+                    po_partner_rec = odoo_po_rec.partner_id
                     vendor_bill_vals = []
-                    for vb in po_rec.order_line:
+                    so_line_vals = []
+                    for vb in odoo_po_rec.order_line:
                         prod_id = vb.product_id
+                        vb._compute_tax_id()
+                        vb._onchange_quantity()
                         vendor_bill_vals.append((0,0,{'product_id': prod_id.id,
-                                                      'name': po_rec.name + ": " +prod_id.name,
-                                                      'price_unit': vb.price_unit,
+                                                      'name': odoo_po_rec.name + ": " +prod_id.name,
+                                                      'price_unit': vb.sudo(shopify_user_id).price_unit,
                                                       'quantity': vb.product_qty,
                                                       'uom_id': prod_id.uom_id.id,
                                                       'account_id': po_partner_rec.property_account_payable_id.id,
                                                       'purchase_line_id': vb.id}))
+                        so_line_vals.append((0,0,{'product_id': prod_id.id,
+                                                  'price_unit': vb.price_unit,
+                                                  'product_uom_qty': vb.product_qty,
+                                                  'product_uom': prod_id.uom_id.id}))
                     src_vb_vals = {'partner_id': po_partner_rec.id,
-                                   'origin': po_rec.name,
+                                   'origin': odoo_po_rec.name,
                                    'invoice_line_ids': vendor_bill_vals,
                                    'type': 'in_invoice'
                                    }
                     try:
-                        src_vendor_bill_rec = self.env['account.invoice'].create(
+                        src_vendor_bill_rec = self.env['account.invoice'].sudo(shopify_user_id).create(
                             src_vb_vals)
-                        po_rec.write({'invoice_ids': [(6,0,[int(src_vendor_bill_rec.id)])]})
-                        src_vendor_bill_rec.action_invoice_open()
+                        odoo_po_rec.sudo(shopify_user_id).write({'invoice_ids': [(6,0,[int(src_vendor_bill_rec.id)])]})
+                        src_vendor_bill_rec.sudo(shopify_user_id).action_invoice_open()
                     except:
                         shopify_error_log += "\n" if shopify_error_log else ""
                         shopify_error_log += "Vendor Bill creation issue"
                         pass
+
                     # Start processing SO against this PO
-                    so_line_vals = []
-                    for v in po_rec.order_line:
-                        vp = v.product_id
-                        so_line_vals.append((0,0,{'product_id': vp.id,
-                                                  'price_unit': v.price_unit,
-                                                  'product_uom_qty': v.product_qty,
-                                                  'product_uom': vp.uom_id.id}))
-                    shopify_note = "Order is created from purchase order reference "+po_rec.name
-                    src_so_vals = {'partner_id': src_shopify_customer_id,
-                                   'company_id': multi_location_company,
-                                   'warehouse_id': src_shopify_warehouse_id,
-                                   'order_line': so_line_vals,
-                                   'origin': odoo_so_name + ' / ' + po_rec.name,
-                                   'shopify_name':  str(shopify_order.order_number) or '',
-                                   'shopify_order_id': str(shopify_order.id) or '',
-                                   'shopify_note': shopify_note,
-                                   'shopify_config_id': shopify_config_id,
-                                   # 'shopify_fulfillment_status': fulfillment_status,
-                                   # 'shopify_financial_status': financial_status,
-                                   }
+#                     so_line_vals = []
+#                     for v in odoo_po_rec.order_line:
+#                         vp = v.product_id
+#                         so_line_vals.append((0,0,{'product_id': vp.id,
+#                                                   'price_unit': v.price_unit,
+#                                                   'product_uom_qty': v.product_qty,
+#                                                   'product_uom': vp.uom_id.id}))
+                    if so_line_vals:
+                        shopify_note = "Order is created from purchase order reference "+odoo_po_rec.name
+                        src_so_vals = {'partner_id': src_shopify_customer_id,
+                                       'company_id': multi_location_company,
+                                       'warehouse_id': src_shopify_warehouse_id,
+                                       'order_line': so_line_vals,
+                                       'origin': odoo_so_name + ' / ' + odoo_po_rec.name,
+                                       'shopify_name':  str(shopify_order.order_number) or '',
+                                       'shopify_order_id': str(shopify_order.id) or '',
+                                       'shopify_note': shopify_note,
+                                       'shopify_config_id': shopify_config_id,
+                                       'user_id':src_shopify_user_id,
+                                       # 'shopify_fulfillment_status': fulfillment_status,
+                                       # 'shopify_financial_status': financial_status,
+                                       }
 
-                    # Process Multi company Orders
-                    try:
-                        src_so_rec = so_env.create(
-                            src_so_vals)
-                    except:
-                        shopify_error_log += "\n" if shopify_error_log else ""
-                        shopify_error_log += "Order creation issue"
-                        pass
+                        # Process Multi company Orders
+                        try:
+                            src_so_rec = so_env.sudo(src_shopify_user_id).create(src_so_vals)
+                            _logger.info("PO Order created with id ***************************%s"%(src_so_rec))
+                        except:
+                            shopify_error_log += "\n" if shopify_error_log else ""
+                            shopify_error_log += "Order creation issue"
+                            pass
 
-                    shopify_error_log += self._process_so(src_so_rec)
+                        shopify_error_log += self.sudo(src_shopify_user_id)._process_so(src_so_rec)
                 # Once the quantity is fulfilled at Shopify location - start
                 # processing order using process_order function
-                shopify_error_log += self._process_so(odoo_so_rec,done_qty_vals)
+                shopify_error_log += self.sudo(shopify_user_id)._process_so(odoo_so_rec,done_qty_vals)
 
             # If any value have shopify_error_log variable then record that error
             # in shopify.order.error.log master
@@ -1169,7 +1071,7 @@ class ShopifyConfig(models.Model):
                        'company_id': company_id,
                        'origin': odoo_so_name,
                        }
-            sp_id = self.env['stock.picking'].create(sp_vals)
+            sp_id = self.env['stock.picking'].sudo().create(sp_vals)
             sp_id.with_context(shopify_picking_validate=True).button_validate()
         else:
             shopify_error_log += "\n" if shopify_error_log else ""
