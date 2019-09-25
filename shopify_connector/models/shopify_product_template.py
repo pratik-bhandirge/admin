@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import shopify
+import logging
 
 from odoo import models, fields, api, _
 from odoo.tools.translate import html_translate
 from odoo.exceptions import ValidationError
+_logger = logging.getLogger(__name__)
 
 
 class ShopifyProductTemplate(models.Model):
@@ -128,13 +130,16 @@ class ShopifyProductTemplate(models.Model):
                         for prov_tag in province_tags:
                             str_prod_province_tags.append(prov_tag.name)
                         product_template_tags = ",".join(str_prod_province_tags)
+                        product_template_image_medium = rec.product_tmpl_id.image_medium.decode('utf-8') if rec.product_tmpl_id.image_medium else False
                         product_template_metafields = rec.meta_fields_ids
                         product_template_metafields_keys = [mt.key for mt in product_template_metafields]
                         shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
                         shopify_product_metafields = shopify_product.metafields()
                         shopify_product_metafields_keys = [mt.key for mt in shopify_product_metafields]
-                        image_list = [{'attachment': rec.product_tmpl_id.image_medium.decode('utf-8'),
-                                       'position': 1}]
+                        image_list = []
+                        if product_template_image_medium:
+                            image_list = [{'attachment': rec.product_tmpl_id.image_medium.decode('utf-8'),
+                                           'position': 1}]
                         for product_image in rec.product_tmpl_id.product_image_ids:
                             image_list.append({'attachment': product_image.image.decode('utf-8')})
                         get_images = shopify.Image.find(product_id=rec.shopify_prod_tmpl_id)

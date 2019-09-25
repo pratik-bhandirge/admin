@@ -727,12 +727,12 @@ class ShopifyConfig(models.Model):
                 # master
                 product = product_env.sudo(shopify_user_id).search([('shopify_product_id', '=', line_data.get(
                     'variant_id'))], limit=1).product_variant_id
-#                 if not product:
-#                     # if a product is not found then fetch base on SKU (this is
-#                     # a temporary step, going to scrap once table structure
-#                     # setup well)
-#                     product = product_variant_env.sudo(shopify_user_id).search(
-#                         [('default_code', '=', line_data.get('sku'))], limit=1)
+                if not product:
+                    # if a product is not found then fetch base on SKU (this is
+                    # a temporary step, going to scrap once table structure
+                    # setup well)
+                    product = product_variant_env.sudo(shopify_user_id).search(
+                        [('default_code', '=', line_data.get('sku'))], limit=1)
                 if product:
                     # Add Tax
                     # shopify_tax = False

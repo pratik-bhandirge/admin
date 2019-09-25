@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import shopify
+import logging
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+_logger = logging.getLogger(__name__)
 
 
 class ShopifyProductProduct(models.Model):
@@ -81,7 +83,7 @@ class ShopifyProductProduct(models.Model):
                     product_variant_price = rec.lst_price
                     shopify_product_variant_id = rec.shopify_product_id
                     product_variant_id = rec.product_variant_id
-                    product_variant_image = product_variant_id.image_medium.decode("utf-8")
+                    product_variant_image = product_variant_id.image_medium.decode("utf-8") if product_variant_id.image_medium else False
                     product_variant_metafields = rec.meta_fields_ids
                     product_variant_metafields_key_list = [mt.key for mt in rec.meta_fields_ids]
                     shopify_product_template_id = str(rec.shopify_product_template_id.shopify_prod_tmpl_id)
