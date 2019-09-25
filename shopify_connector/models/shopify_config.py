@@ -541,9 +541,12 @@ class ShopifyConfig(models.Model):
         try:
             process_order = True
             odoo_so_rec.action_confirm()
-        except:
+        except Exception as e:
             shopify_error_log += "\n" if shopify_error_log else ""
             shopify_error_log += "Order confirmation issue"
+            if e:
+                error_string = "\n" + str(e)
+                shopify_error_log += error_string
             process_order = False
             pass
 
@@ -572,26 +575,34 @@ class ShopifyConfig(models.Model):
                         [('backorder_id', '=', picking.id)])
                     backorder_pick.action_cancel()
 
-                picking_not_process = so_picking_ids.filtered(
-                    lambda picking_id: picking_id.state in ['done', 'cancel'])
+                picking_not_process = so_picking_ids.filtered(lambda picking_id: picking_id.state in ['done', 'cancel'])
                 if not picking_not_process:
                     process_order = False
                     shopify_error_log += "\n" if shopify_error_log else ""
-                    shopify_error_log += "Order DO processing issue"
-            except:
+                    shopify_error_log += "Order DO processing issue - Picking not found"
+            except Exception as e:
                 shopify_error_log += "\n" if shopify_error_log else ""
                 shopify_error_log += "Order DO processing issue"
                 process_order = False
+                if e:
+                    error_string = "\n" + str(e)
+                    shopify_error_log += error_string
+                process_order = False
                 pass
+
             if not odoo_so_rec.invoice_ids and process_order:
                 try:
                     odoo_so_invoice = odoo_so_rec.action_invoice_create()
                     invoice = self.env['account.invoice'].browse(
                         odoo_so_invoice[0])
                     invoice.action_invoice_open()
-                except:
+                except Exception as e:
                     shopify_error_log += "\n" if shopify_error_log else ""
                     shopify_error_log += "Order invoice creation and validation issue"
+                    if e:
+                        error_string = "\n" + str(e)
+                        shopify_error_log += error_string
+                    process_order = False
                     pass
         return shopify_error_log
 
@@ -783,9 +794,12 @@ class ShopifyConfig(models.Model):
             # it in shopify_error_log variable)
             try:
                 odoo_so_rec = so_env.create(so_vals)
-            except:
+            except Exception as e:
                 shopify_error_log += "\n" if shopify_error_log else ""
                 shopify_error_log += "Order creation issue"
+                if e:
+                    error_string = "\n" + str(e)
+                    shopify_error_log += error_string
                 pass
 
             # Now process picking
@@ -953,9 +967,13 @@ class ShopifyConfig(models.Model):
                         src_vendor_bill_rec.sudo(shopify_user_id).purchase_order_change()
                         src_vendor_bill_rec._onchange_invoice_line_ids()
                         src_vendor_bill_rec.sudo(shopify_user_id).action_invoice_open()
-                    except:
+
+                    except Exception as e:
                         shopify_error_log += "\n" if shopify_error_log else ""
                         shopify_error_log += "Vendor Bill creation issue"
+                        if e:
+                            error_string = "\n" + str(e)
+                            shopify_error_log += error_string
                         pass
 
                     so_line_vals = []
@@ -984,16 +1002,35 @@ class ShopifyConfig(models.Model):
                         # Process Multi company Orders
                         try:
                             src_so_rec = so_env.sudo(src_shopify_user_id).create(src_so_vals)
-                            _logger.info("PO Order created with id ***************************%s"%(src_so_rec))
-                        except:
+                        except Exception as e:
                             shopify_error_log += "\n" if shopify_error_log else ""
-                            shopify_error_log += "Order creation issue"
+                            shopify_error_log += "Other company Order creation issue"
+                            if e:
+                                error_string = "\n" + str(e)
+                                shopify_error_log += error_string
                             pass
 
-                        shopify_error_log += self.sudo(src_shopify_user_id)._process_so(src_so_rec)
+                        try:
+                            shopify_error_log += self.sudo(src_shopify_user_id)._process_so(src_so_rec)
+                        except Exception as e:
+                            shopify_error_log += "\n" if shopify_error_log else ""
+                            shopify_error_log += "Other company order process issue"
+                            if e:
+                                error_string = "\n" + str(e)
+                                shopify_error_log += error_string
+                            pass
+
                 # Once the quantity is fulfilled at Shopify location - start
                 # processing order using process_order function
-                shopify_error_log += self.sudo(shopify_user_id)._process_so(odoo_so_rec,done_qty_vals)
+                try:
+                    shopify_error_log += self.sudo(shopify_user_id)._process_so(odoo_so_rec,done_qty_vals)
+                except Exception as e:
+                    shopify_error_log += "\n" if shopify_error_log else ""
+                    shopify_error_log += "Main order process issue"
+                    if e:
+                        error_string = "\n" + str(e)
+                        shopify_error_log += error_string
+                    pass
 
             # If any value have shopify_error_log variable then record that error
             # in shopify.order.error.log master
