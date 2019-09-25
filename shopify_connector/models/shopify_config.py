@@ -939,46 +939,32 @@ class ShopifyConfig(models.Model):
 #                     #to do : - Process vendor bill for this PO. Create a vendor bill and process to Validate.
 # #                     partner_rec = self.env['res.partner'].browse(src_shopify_customer_id)
                     po_partner_rec = odoo_po_rec.partner_id
-                    vendor_bill_vals = []
-                    so_line_vals = []
-                    for vb in odoo_po_rec.order_line:
-                        prod_id = vb.product_id
-                        vb._compute_tax_id()
-                        vb._onchange_quantity()
-                        vendor_bill_vals.append((0,0,{'product_id': prod_id.id,
-                                                      'name': odoo_po_rec.name + ": " +prod_id.name,
-                                                      'price_unit': vb.sudo(shopify_user_id).price_unit,
-                                                      'quantity': vb.product_qty,
-                                                      'uom_id': prod_id.uom_id.id,
-                                                      'account_id': po_partner_rec.property_account_payable_id.id,
-                                                      'purchase_line_id': vb.id}))
-                        so_line_vals.append((0,0,{'product_id': prod_id.id,
-                                                  'price_unit': vb.price_unit,
-                                                  'product_uom_qty': vb.product_qty,
-                                                  'product_uom': prod_id.uom_id.id}))
+#                     vendor_bill_vals = []
+                    odoo_po_rec.order_line._compute_tax_id()
+                    odoo_po_rec.order_line._onchange_quantity()
                     src_vb_vals = {'partner_id': po_partner_rec.id,
-                                   'origin': odoo_po_rec.name,
-                                   'invoice_line_ids': vendor_bill_vals,
-                                   'type': 'in_invoice'
+                                    'purchase_id': odoo_po_rec.id,
+                                    'account_id': po_partner_rec.property_account_payable_id.id,
+                                    'type': 'in_invoice',
                                    }
                     try:
                         src_vendor_bill_rec = self.env['account.invoice'].sudo(shopify_user_id).create(
                             src_vb_vals)
-                        odoo_po_rec.sudo(shopify_user_id).write({'invoice_ids': [(6,0,[int(src_vendor_bill_rec.id)])]})
+                        src_vendor_bill_rec.sudo(shopify_user_id).purchase_order_change()
+                        src_vendor_bill_rec._onchange_invoice_line_ids()
                         src_vendor_bill_rec.sudo(shopify_user_id).action_invoice_open()
                     except:
                         shopify_error_log += "\n" if shopify_error_log else ""
                         shopify_error_log += "Vendor Bill creation issue"
                         pass
 
-                    # Start processing SO against this PO
-#                     so_line_vals = []
-#                     for v in odoo_po_rec.order_line:
-#                         vp = v.product_id
-#                         so_line_vals.append((0,0,{'product_id': vp.id,
-#                                                   'price_unit': v.price_unit,
-#                                                   'product_uom_qty': v.product_qty,
-#                                                   'product_uom': vp.uom_id.id}))
+                    so_line_vals = []
+                    for vb in odoo_po_rec.order_line:
+                        prod_id = vb.product_id
+                        so_line_vals.append((0,0,{'product_id': prod_id.id,
+                                                  'price_unit': vb.price_unit,
+                                                  'product_uom_qty': vb.product_qty,
+                                                  'product_uom': prod_id.uom_id.id}))
                     if so_line_vals:
                         shopify_note = "Order is created from purchase order reference "+odoo_po_rec.name
                         src_so_vals = {'partner_id': src_shopify_customer_id,
