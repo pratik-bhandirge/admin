@@ -144,7 +144,8 @@ class ShopifyConfig(models.Model):
         and pass it to the export_product
         """
         self.ensure_one()
-        product_tmpl_ids = self.env['shopify.product.template'].sudo().search(
+        user_id = self.env.user.id
+        product_tmpl_ids = self.env['shopify.product.template'].sudo(user_id).search(
             [('shopify_config_id', '=', self.id), ('shopify_prod_tmpl_id', 'in', ['', False])])
 #         product_tmpl_ids = [44038]
         return self.export_product(product_tmpl_ids)
