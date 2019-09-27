@@ -949,13 +949,10 @@ class ShopifyConfig(models.Model):
                         for move in picking.move_lines:
                             move.update({'quantity_done': move.product_uom_qty})
                         picking.action_done()
-#                 if odoo_po_rec and src_shopify_customer_id and src_location_company and src_shopify_warehouse_id:
-#                     #to do : - Process vendor bill for this PO. Create a vendor bill and process to Validate.
-# #                     partner_rec = self.env['res.partner'].browse(src_shopify_customer_id)
+                    #to do : - Process vendor bill for this PO. Create a vendor bill and process to Validate.
                     po_partner_rec = odoo_po_rec.partner_id
-#                     vendor_bill_vals = []
                     odoo_po_rec.order_line._compute_tax_id()
-                    odoo_po_rec.order_line._onchange_quantity()
+                    odoo_po_rec.order_line._compute_amount()
                     src_vb_vals = {'partner_id': po_partner_rec.id,
                                     'purchase_id': odoo_po_rec.id,
                                     'account_id': po_partner_rec.property_account_payable_id.id,
