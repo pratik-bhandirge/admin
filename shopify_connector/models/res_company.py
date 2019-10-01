@@ -18,3 +18,5 @@ class ResCompany(models.Model):
                                           help="Here you can set default Shopify Stock Location", track_visibility="onchange")
     shopify_user_id = fields.Many2one("res.users", "Default User", track_visibility="onchange", required=True,
                                       help="Default user who'll create SO and PO for a company")
+    shopify_intercompany_customer_id = fields.Many2one(
+        "res.partner", "Shopify Intercompany Customer", help="Shopify Intercompany Customer", track_visibility="onchange")

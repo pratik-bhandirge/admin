@@ -52,6 +52,10 @@ class ShopifyProductTemplate(models.Model):
         readonly=True)
     check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
 
+    r_prod_tags = fields.Many2many(related='product_tmpl_id.prod_tags_ids', string='Product Tags', track_visibility='onchange')
+    r_prov_tags = fields.Many2many(related='product_tmpl_id.province_tags_ids', string='Province Tags', track_visibility='onchange')
+    r_allowed_variants = fields.One2many(related='product_tmpl_id.allowed_variants_ids', string='Allowed Variants', track_visibility='onchange')
+
     @api.model
     def create(self, vals):
         '''
@@ -117,6 +121,9 @@ class ShopifyProductTemplate(models.Model):
                 return True
             rec.check_multi_click = True
             rec._cr.commit()
+            if not (rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids):
+                raise ValidationError(
+                    _("Please select atleast 1 product or province tags before exporting product to shopify!"))
             if rec.product_tmpl_id.sale_ok and rec.product_tmpl_id.purchase_ok:
                 try:
                     shopify_product_id = str(rec.shopify_prod_tmpl_id)
