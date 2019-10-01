@@ -12,26 +12,28 @@
                                 <field name="product_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <!-- <field name="name" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/> -->
                                 <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}" widget="many2many_tags"/>
-                            </group>
-                            <group>
-                                <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
-                                <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <field name="shopify_published"/>
                             </group>
                             <group>
+                                <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
+                                <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
+                            </group>
+                            <group>
                                 <field name="shopify_prod_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                                <field name="r_allowed_variants" widget="many2many_tags"/>
+                            </group>
+                            <group>
+                                <field name="r_prod_tags" widget="many2many_tags"/>
+                                <field name="r_prov_tags" widget="many2many_tags"/>
                             </group>
                             <group>
                                 <field name="shopify_error_log"/>
                             </group>
                         </group>
-                        <notebook invisible="1">
-                            <page string="Body Html" invisible="0">
+                        <notebook>
+                            <page name="body_html_page" string="Body Html">
                                 <field name="body_html" nolabel="1"/>
-                            </page>
-                            <page string="Images" invisible="1">
-                                <field name="image_ids"/>
                             </page>
                         </notebook>
                     </sheet>

@@ -111,6 +111,22 @@ class StockMoveLine(models.Model):
     shopify_export = fields.Boolean(
         "Shopify Export", help="Enter Shopify Export", readonly=True)
 
+    def _check_location_config(self, location_id, location_dest_id):
+        """
+        Warning raise if account are wrongly configured in locations
+        'Cannot create moves for different companies.'
+        till that time shopify call is executed. To avoid this
+        function will try to access configure accounts and it's company
+        """
+        if location_id:
+            valuation_in_account_id = location_id.valuation_in_account_id
+            if valuation_in_account_id:
+                location_company_id = valuation_in_account_id.company_id
+        if location_dest_id:
+            valuation_out_account_id = location_dest_id.valuation_out_account_id
+            if valuation_out_account_id:
+                location_dest_company_id = valuation_out_account_id.company_id
+
     def _action_done(self):
         res = super(StockMoveLine, self)._action_done()
         # exclude the method call if action done happening while shopify order import
@@ -130,6 +146,7 @@ class StockMoveLine(models.Model):
                             negative_qty = qty * -1
                             location_id = move.location_id
                             location_dest_id = move.location_dest_id
+                            self._check_location_config(location_id,location_dest_id)
                             if location_id:
                                 for shopify_location_rec in location_id.shopify_location_ids:
                                     shopify_config_rec = shopify_location_rec.shopify_config_id
@@ -165,7 +182,7 @@ class StockMoveLine(models.Model):
                     if shopify_export_val:
                         move.shopify_export = shopify_export_val
             except Exception as e:
-                _logger.error('Stock update opration have following error: %s', e)
+                _logger.error('Stock update operation have following error: %s', e)
                 move.shopify_error_log = str(e)
                 pass
         return res

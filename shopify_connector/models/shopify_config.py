@@ -156,7 +156,8 @@ class ShopifyConfig(models.Model):
         Export newly created variant of a product to shopify
         '''
         self.ensure_one()
-        new_product_variant_ids = self.env['shopify.product.product'].sudo().search(
+        user_id = self.env.user.id
+        new_product_variant_ids = self.env['shopify.product.product'].sudo(user_id).search(
             [('shopify_config_id', '=', self.id),
              ('shopify_product_id', 'in', ['', False]),
              ('shopify_inventory_item_id', 'in', ['', False]),
@@ -776,6 +777,28 @@ class ShopifyConfig(models.Model):
                 else:
                     shopify_error_log += "\n" if shopify_error_log else ""
                     shopify_error_log += "Product does not exist"
+            #Prepare vals for shiping lines
+            for shipping_line in shopify_order.shipping_lines:
+                shipping_line_data = shipping_line.attributes
+                line_prod_name = shipping_line_data.get('title').encode('utf-8')
+                if shipping_line_data.get('handle').encode('utf-8'):
+                    handle_str = " / " + shipping_line_data.get('handle').encode('utf-8')
+                    line_prod_name += handle_str
+                line_prod_price = shipping_line_data.get('price') or 0
+                product = product_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('is_shopify_shipping','=',True)], limit=1).product_variant_id
+                if product:
+                    line_vals_dict = {'product_id': product.id,
+                    'name': line_prod_name,
+                    'price_unit': line_prod_price,
+                    'product_uom_qty': 1,
+                    'product_uom': product.uom_id.id,
+                    'tax_id': [(6, 0, [])]
+                    }
+                    line_vals.append((0, 0, line_vals_dict))
+                else:
+                    shopify_error_log += "\n" if shopify_error_log else ""
+                    shopify_error_log += "Shipping product does not exist in odoo system"
+
             # Prepare vals for sale.order master
             so_vals = {'partner_id': shopify_customer_id,
                        'company_id': company_id,
@@ -860,7 +883,10 @@ class ShopifyConfig(models.Model):
                                 shopify_location_company = shopify_location_rec.company_id.id if shopify_location_rec.company_id else ''
                                 if src_location_company and shopify_location_company and shopify_location_company != src_location_company:
                                     multi_comp = True
-                                    src_shopify_customer_id = src_location_company_rec.shopify_customer_id.id
+                                    if src_location_company_rec.shopify_intercompany_customer_id:
+                                        src_shopify_customer_id = src_location_company_rec.shopify_intercompany_customer_id.id
+                                    else:
+                                        src_shopify_customer_id = src_location_company_rec.shopify_customer_id.id
 #                                     src_shopify_warehouse_id = src_location_rec.m_warehouse_id.id or src_location_rec.get_warehouse().id
                                     src_shopify_warehouse_id = src_location_company_rec.shopify_warehouse_id.id
                                     src_shopify_location_rec = src_location_company_rec.shopify_location_id

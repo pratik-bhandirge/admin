@@ -88,6 +88,9 @@
                 <xpath expr="//notebook/page[last()]" position="after">
                    <page string="Shopify Variant fields" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user">
                         <group>
+                            <field name="shopify_shipping_product"/>
+                        </group>
+                        <group>
                             <field name="shopify_product_product_ids" nolabel="1">
                                 <tree delete="false">
                                     <field name="product_variant_id"/>

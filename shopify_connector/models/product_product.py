@@ -9,6 +9,8 @@ class ProductProduct(models.Model):
 
     shopify_product_product_ids = fields.One2many(
         "shopify.product.product", "product_variant_id", "Shopify Product Variants", help="Enter Shopify Product Variants")
+    shopify_shipping_product = fields.Boolean(
+        "Is Shopify Shipping Product", help="Check if this is prduct use a shipping product while import order?", track_visibility='onchange')
     # shopify_weight = fields.Float(
     #     "Weight", help="Enter Shopify Product Variants", track_visibility="onchange")
     # shopify_uom = fields.Many2one(
