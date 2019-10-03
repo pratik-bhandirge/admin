@@ -5,7 +5,6 @@ from odoo import models, fields, api, _
 
 
 class UpdateProductVariant(models.TransientModel):
-    
     _name = 'update.shopify.variant'
     
     @api.multi
