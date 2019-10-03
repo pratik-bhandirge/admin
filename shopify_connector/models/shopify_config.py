@@ -781,18 +781,18 @@ class ShopifyConfig(models.Model):
             for shipping_line in shopify_order.shipping_lines:
                 shipping_line_data = shipping_line.attributes
                 line_prod_name = shipping_line_data.get('title').encode('utf-8')
-                if shipping_line_data.get('handle').encode('utf-8'):
+                if shipping_line_data.get('handle'):
                     handle_str = " / " + shipping_line_data.get('handle').encode('utf-8')
                     line_prod_name += handle_str
                 line_prod_price = shipping_line_data.get('price') or 0
-                product = product_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('is_shopify_shipping','=',True)], limit=1).product_variant_id
+                product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_shipping_product','=',True)], limit=1)
                 if product:
                     line_vals_dict = {'product_id': product.id,
                     'name': line_prod_name,
                     'price_unit': line_prod_price,
                     'product_uom_qty': 1,
                     'product_uom': product.uom_id.id,
-                    'tax_id': [(6, 0, [])]
+                    # 'tax_id': [(6, 0, [])]
                     }
                     line_vals.append((0, 0, line_vals_dict))
                 else:
