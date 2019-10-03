@@ -94,7 +94,7 @@ class ShopifyProductProduct(models.Model):
                         try:
                             shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
                         except Exception as e:
-                            raise ValidationError(_('Product doesnot exist on Shopify.'))
+                            raise ValidationError(_("Issue comes while finding product on Shopify. Kindly contact to your administrator ! - %e"%(e)))
                         if not shopify_product_variant:
                             raise ValidationError(_("Product doesnot exist on Shopify. Kindly contact to your administrator !")) 
                         shopify_variant_image = shopify_product_variant.image_id
