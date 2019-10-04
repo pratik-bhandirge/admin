@@ -11,13 +11,13 @@
                             <group>
                                 <field name="product_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <!-- <field name="name" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/> -->
-                                <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}" widget="many2many_tags"/>
-                                <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
+                                <field name="meta_fields_ids" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" widget="many2many_tags"/>
+                                <field name="vendor" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                 <field name="shopify_published"/>
                             </group>
                             <group>
                                 <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
-                                <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
+                                <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                             </group>
                             <group>
                                 <field name="shopify_prod_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
