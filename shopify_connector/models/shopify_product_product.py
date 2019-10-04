@@ -6,7 +6,7 @@ import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
-
+_product_variant_list = []
 
 class ShopifyProductProduct(models.Model):
 
@@ -47,7 +47,7 @@ class ShopifyProductProduct(models.Model):
                                   related="product_variant_id.uom_id", readonly=True)
     meta_fields_ids = fields.Many2many("shopify.metafields",
                                      help="Enter Shopify Variant Metafields", track_visibility='onchange')
-    check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
+    # check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
 
     @api.multi
     def export_shopify_variant(self):
@@ -73,19 +73,21 @@ class ShopifyProductProduct(models.Model):
         '''
         self.shopify_config_id.test_connection()
         for rec in self:
-            if rec.check_multi_click:
+            record_id = rec.id
+            product_tmpl_rec = rec.product_template_id
+            product_variant_rec = rec.product_variant_id
+            if record_id in _product_variant_list:
                 return True
-            rec.check_multi_click = True
-            rec._cr.commit()                
-            if rec.product_template_id.sale_ok and rec.product_template_id.purchase_ok:
+            _product_variant_list.append(record_id)
+
+            if product_tmpl_rec.sale_ok and product_tmpl_rec.purchase_ok:
                 try:
-                    product_variant_default_code = str(rec.product_variant_id.default_code)
+                    product_variant_default_code = str(product_variant_rec.default_code)
                     product_variant_price = rec.lst_price
                     shopify_product_variant_id = rec.shopify_product_id
-                    product_variant_id = rec.product_variant_id
-                    product_variant_image = product_variant_id.image_medium.decode("utf-8") if product_variant_id.image_medium else False
+                    product_variant_image = product_variant_rec.image_medium.decode("utf-8") if product_variant_rec.image_medium else False
                     product_variant_metafields = rec.meta_fields_ids
-                    product_variant_metafields_key_list = [mt.key for mt in rec.meta_fields_ids]
+                    product_variant_metafields_key_list = [mt.key for mt in product_variant_metafields]
                     shopify_product_template_id = str(rec.shopify_product_template_id.shopify_prod_tmpl_id)
                     shopify_product = shopify.Product({'id': shopify_product_template_id})
                     is_shopify_variant = shopify.Variant.exists(shopify_product_variant_id)
@@ -94,9 +96,19 @@ class ShopifyProductProduct(models.Model):
                         try:
                             shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
                         except Exception as e:
+                            _product_variant_list.remove(record_id)
                             raise ValidationError(_("Issue comes while finding product on Shopify. Kindly contact to your administrator ! - %e"%(e)))
                         if not shopify_product_variant:
+                            _product_variant_list.remove(record_id)
                             raise ValidationError(_("Product doesnot exist on Shopify. Kindly contact to your administrator !")) 
+
+                        count = 1
+                        for value in product_variant_rec.attribute_value_ids:
+                            # shopify_prod.'option' + str(count) = value.name
+                            opt_cmd = 'shopify_product_variant.option' + str(count) + " = '" + str(value.name) +"'"
+                            exec(opt_cmd)
+                            count += 1
+
                         shopify_variant_image = shopify_product_variant.image_id
                         shopify_image_search = shopify.Image.find(product_id=shopify_product_template_id)
                         for image in shopify_image_search:
@@ -107,7 +119,6 @@ class ShopifyProductProduct(models.Model):
                             image.product_id = shopify_product_template_id
                             image.attachment = product_variant_image
                             image.save()
-    #                         image.variant_ids = [image.id]
                             shopify_product_variant.image_id = image.id
                             shopify_product_variant.save()
                         metafield_list = shopify_product_variant.metafields()
@@ -133,19 +144,16 @@ class ShopifyProductProduct(models.Model):
                         shopify_product_variant.sku = product_variant_default_code
                         shopify_product_variant.price = product_variant_price
                         success = shopify_product_variant.save()
-                        rec.check_multi_click = False
+                        _product_variant_list.remove(record_id)
                     else:
-                        rec.check_multi_click = False
-                        rec._cr.commit() 
+                        _product_variant_list.remove(record_id)
                         raise ValidationError(_("Product does not exist in shopify!"))
                 except Exception as e:
                     _logger.error('Error occurs while updating product variant on shopify: %s', e)
-                    rec.check_multi_click = False
-                    rec._cr.commit() 
+                    _product_variant_list.remove(record_id)
                     pass
             else:
-                rec.check_multi_click = False
-                rec._cr.commit() 
+                _product_variant_list.remove(record_id)
                 raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before updation"))
 
     @api.model

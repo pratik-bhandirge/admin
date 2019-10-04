@@ -7,7 +7,7 @@ from odoo import models, fields, api, _
 from odoo.tools.translate import html_translate
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
-
+_product_list = []
 
 class ShopifyProductTemplate(models.Model):
 
@@ -50,7 +50,7 @@ class ShopifyProductTemplate(models.Model):
     shopify_error_log = fields.Text(
         "Shopify Error", help="Error occurs while exporting move to the shopify",
         readonly=True)
-    check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
+    # check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
 
     r_prod_tags = fields.Many2many(related='product_tmpl_id.prod_tags_ids', string='Product Tags', track_visibility='onchange')
     r_prov_tags = fields.Many2many(related='product_tmpl_id.province_tags_ids', string='Province Tags', track_visibility='onchange')
@@ -117,27 +117,31 @@ class ShopifyProductTemplate(models.Model):
         '''
         self.shopify_config_id.test_connection()
         for rec in self:
-            if rec.check_multi_click:
+            record_id = rec.id
+            product_tmpl_rec = rec.product_tmpl_id
+
+            if record_id in _product_list:
                 return True
-            rec.check_multi_click = True
-            rec._cr.commit()
-            if not (rec.product_tmpl_id.prod_tags_ids or rec.product_tmpl_id.province_tags_ids):
-                raise ValidationError(
-                    _("Please select atleast 1 product or province tags before exporting product to shopify!"))
-            if rec.product_tmpl_id.sale_ok and rec.product_tmpl_id.purchase_ok:
+            _product_list.append(record_id)
+
+            if not (product_tmpl_rec.prod_tags_ids or product_tmpl_rec.province_tags_ids):
+                _product_list.remove(record_id)
+                raise ValidationError(_("Please select atleast 1 product or province tags before exporting product to shopify!"))
+
+            if product_tmpl_rec.sale_ok and product_tmpl_rec.purchase_ok:
                 try:
                     shopify_product_id = str(rec.shopify_prod_tmpl_id)
                     is_shopify_product = shopify.Product.exists(shopify_product_id)
                     if is_shopify_product:
-                        prod_tags = rec.product_tmpl_id.prod_tags_ids
-                        province_tags = rec.product_tmpl_id.province_tags_ids
+                        prod_tags = product_tmpl_rec.prod_tags_ids
+                        province_tags = product_tmpl_rec.province_tags_ids
                         str_prod_province_tags = []
                         for prod_tag in prod_tags:
                             str_prod_province_tags.append(prod_tag.name)
                         for prov_tag in province_tags:
                             str_prod_province_tags.append(prov_tag.name)
                         product_template_tags = ",".join(str_prod_province_tags)
-                        product_template_image_medium = rec.product_tmpl_id.image_medium.decode('utf-8') if rec.product_tmpl_id.image_medium else False
+                        product_template_image_medium = product_tmpl_rec.image_medium.decode('utf-8') if product_tmpl_rec.image_medium else False
                         product_template_metafields = rec.meta_fields_ids
                         product_template_metafields_keys = [mt.key for mt in product_template_metafields]
                         shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
@@ -145,18 +149,29 @@ class ShopifyProductTemplate(models.Model):
                         shopify_product_metafields_keys = [mt.key for mt in shopify_product_metafields]
                         image_list = []
                         if product_template_image_medium:
-                            image_list = [{'attachment': rec.product_tmpl_id.image_medium.decode('utf-8'),
+                            image_list = [{'attachment': product_tmpl_rec.image_medium.decode('utf-8'),
                                            'position': 1}]
-                        for product_image in rec.product_tmpl_id.product_image_ids:
+                        for product_image in product_tmpl_rec.product_image_ids:
                             image_list.append({'attachment': product_image.image.decode('utf-8')})
                         get_images = shopify.Image.find(product_id=rec.shopify_prod_tmpl_id)
                         if get_images:
                             for images in get_images:
                                 images.destroy()
-
                         if image_list:
                             shopify_product.images = image_list
                             shopify_product.save()
+
+                        # Get attribute data from product template recordset
+                        options = []
+                        for attribute_line in product_tmpl_rec.attribute_line_ids:
+                            options_val = {}
+                            options_val.update(
+                                {'name': attribute_line.attribute_id.name})
+                            values = []
+                            for value_id in attribute_line.value_ids:
+                                values.append(value_id.name)
+                            options_val.update({'values': values})
+                            options += [options_val]
 
                         if product_template_metafields_keys == shopify_product_metafields_keys and (len(product_template_metafields_keys) and len(shopify_product_metafields_keys)) > 0:
                             for temp_metafield in product_template_metafields:
@@ -176,15 +191,17 @@ class ShopifyProductTemplate(models.Model):
                                                         'key': meta_rec.key or '',
                                                         'value': meta_rec.value or '',
                                                         'value_type': meta_rec.value_type or ''}))
-                        shopify_product.title = rec.product_tmpl_id.name
+                        shopify_product.title = product_tmpl_rec.name
                         shopify_product.body_html = rec.body_html
                         shopify_product.vendor = rec.vendor.name
                         shopify_product.product_type = rec.product_type.name
                         shopify_product.tags = product_template_tags
+                        if options:
+                            shopify_product.options = options
                         success = shopify_product.save()
                         # The code is written to update the shopify variants along with templates
                         shopify_product_products_list = []
-                        product_variants = rec.product_tmpl_id.product_variant_ids.ids
+                        product_variants = product_tmpl_rec.product_variant_ids.ids
                         shopify_product_search = self.env['shopify.product.product'].search([('product_variant_id','in',product_variants),
                                                                         ('shopify_config_id','=',rec.shopify_config_id.id)])
                         for shopify_prod in shopify_product_search:
@@ -192,16 +209,14 @@ class ShopifyProductTemplate(models.Model):
                                 shopify_prod.update_shopify_variant()
                             else:
                                 shopify_prod.export_shopify_variant()
-                        rec.check_multi_click = False
+                        _product_list.remove(record_id)
                     else:
-                        rec.check_multi_click = False
-                        rec._cr.commit() 
+                        _product_list.remove(record_id)
                         raise ValidationError(_("Product Template does not exist in shopify !"))
                 except Exception as e:
                     _logger.error('Error occurs while updating product template on shopify: %s', e)
-                    rec.check_multi_click = False
-                    rec._cr.commit()
+                    _product_list.remove(record_id)
                     pass
             else:
-                rec.check_multi_click = False
+                _product_list.remove(record_id)
                 raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before updation"))
