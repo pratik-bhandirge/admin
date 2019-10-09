@@ -125,7 +125,8 @@ class ShopifyProductTemplate(models.Model):
             _product_list.append(record_id)
 
             if not (product_tmpl_rec.prod_tags_ids or product_tmpl_rec.province_tags_ids):
-                _product_list.remove(record_id)
+                if record_id in _product_list:
+                    _product_list.remove(record_id)
                 raise ValidationError(_("Please select atleast 1 product or province tags before exporting product to shopify!"))
 
             if product_tmpl_rec.sale_ok and product_tmpl_rec.purchase_ok:
@@ -209,14 +210,18 @@ class ShopifyProductTemplate(models.Model):
                                 shopify_prod.update_shopify_variant()
                             else:
                                 shopify_prod.export_shopify_variant()
-                        _product_list.remove(record_id)
+                        if record_id in _product_list:
+                            _product_list.remove(record_id)
                     else:
-                        _product_list.remove(record_id)
+                        if record_id in _product_list:
+                            _product_list.remove(record_id)
                         raise ValidationError(_("Product Template does not exist in shopify !"))
                 except Exception as e:
                     _logger.error('Error occurs while updating product template on shopify: %s', e)
-                    _product_list.remove(record_id)
+                    if record_id in _product_list:
+                        _product_list.remove(record_id)
                     pass
             else:
-                _product_list.remove(record_id)
+                if record_id in _product_list:
+                    _product_list.remove(record_id)
                 raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before updation"))

@@ -70,7 +70,13 @@
                 <search>
                     <!-- <field name="product_id" /> -->
                     <field name="product_variant_id" />
-                    <filter string="Available in Shopify" name="shopify_published_variant_filter" domain="[('product_template_id.shopify_product_template_ids','!=',False)]"/>
+                    <field name="shopify_product_template_id"/>
+                    <field name="shopify_product_id"/>
+
+                    <filter string="Published Templates" name="shopify_published_variant_filter" domain="[('product_template_id.shopify_product_template_ids','!=',False)]"/>
+                    <filter string="Published On Shopify" name="shopify_v_published_filter" domain="[('shopify_product_id','not in',['',False])]"/>
+                    <filter string="Ready To Published" name="shopify_v_ready_published_filter" domain="[('shopify_product_id','in',['',False])]"/>
+
                     <group expand="1" string="Group By">
                         <filter string="Shopify Config." name="shopify_config" context="{'group_by':'shopify_config_id'}"/>
                     </group>

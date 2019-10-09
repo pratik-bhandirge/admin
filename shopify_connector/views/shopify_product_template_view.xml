@@ -68,7 +68,8 @@
                     <field name="product_tmpl_id" />
                     <field name="shopify_config_id" />
                     <field name="shopify_prod_tmpl_id" />
-                    <filter string="Published in Shopify" name="shopify_published_filter" domain="[('shopify_published','=',True)]"/>
+                    <filter string="Published On Shopify" name="shopify_published_filter" domain="[('shopify_prod_tmpl_id','not in',['',False])]"/>
+                    <filter string="Ready To Published" name="shopify_ready_published_filter" domain="[('shopify_prod_tmpl_id','in',['',False])]"/>
                     <group expand="1" string="Group By">
                         <filter string="Product Type" name="product_type" context="{'group_by':'product_type'}"/>
                         <filter string="Vendor" name="vendor" context="{'group_by':'vendor'}"/>

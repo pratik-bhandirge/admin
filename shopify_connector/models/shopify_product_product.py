@@ -96,10 +96,12 @@ class ShopifyProductProduct(models.Model):
                         try:
                             shopify_product_variant = shopify.Variant.find(shopify_product_variant_id, product_id=shopify_product_template_id)
                         except Exception as e:
-                            _product_variant_list.remove(record_id)
+                            if record_id in _product_variant_list:
+                                _product_variant_list.remove(record_id)
                             raise ValidationError(_("Issue comes while finding product on Shopify. Kindly contact to your administrator ! - %e"%(e)))
                         if not shopify_product_variant:
-                            _product_variant_list.remove(record_id)
+                            if record_id in _product_variant_list:
+                                _product_variant_list.remove(record_id)
                             raise ValidationError(_("Product doesnot exist on Shopify. Kindly contact to your administrator !")) 
 
                         count = 1
@@ -144,16 +146,20 @@ class ShopifyProductProduct(models.Model):
                         shopify_product_variant.sku = product_variant_default_code
                         shopify_product_variant.price = product_variant_price
                         success = shopify_product_variant.save()
-                        _product_variant_list.remove(record_id)
+                        if record_id in _product_variant_list:
+                            _product_variant_list.remove(record_id)
                     else:
-                        _product_variant_list.remove(record_id)
+                        if record_id in _product_variant_list:
+                            _product_variant_list.remove(record_id)
                         raise ValidationError(_("Product does not exist in shopify!"))
                 except Exception as e:
                     _logger.error('Error occurs while updating product variant on shopify: %s', e)
-                    _product_variant_list.remove(record_id)
+                    if record_id in _product_variant_list:
+                        _product_variant_list.remove(record_id)
                     pass
             else:
-                _product_variant_list.remove(record_id)
+                if record_id in _product_variant_list:
+                    _product_variant_list.remove(record_id)
                 raise ValidationError(_("A Product should be 'Can be Sold' and 'Can be Purchased' before updation"))
 
     @api.model

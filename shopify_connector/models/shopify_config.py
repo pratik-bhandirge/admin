@@ -145,10 +145,13 @@ class ShopifyConfig(models.Model):
         """
         self.ensure_one()
         user_id = self.env.user.id
-        product_tmpl_ids = self.env['shopify.product.template'].sudo(user_id).search(
-            [('shopify_config_id', '=', self.id), ('shopify_prod_tmpl_id', 'in', ['', False])])
+        product_tmpl_ids = self.env['shopify.product.template'].sudo(user_id).search([
+            ('shopify_config_id', '=', shopify_config_id),
+            ('shopify_prod_tmpl_id', 'in', ['', False])])
+        shopify_locations_records = self.env['shopify.locations'].sudo().search([
+            ('shopify_config_id', '=', shopify_config_id)])
 #         product_tmpl_ids = [44038]
-        return self.export_product(product_tmpl_ids)
+        return self.export_product(product_tmpl_ids, shopify_locations_records)
 
     @api.multi
     def export_new_shopify_variants(self):
@@ -170,7 +173,7 @@ class ShopifyConfig(models.Model):
             raise ValidationError(_('No New shopify product variants available to export !'))
 
     @api.multi
-    def export_product(self, s_product_tmpl_ids):
+    def export_product(self, s_product_tmpl_ids, shopify_locations_records=False):
         """
         Process Product template and pass it to the shopify
 
@@ -200,8 +203,9 @@ class ShopifyConfig(models.Model):
 
         # Fetch Shopify Locations base on the configuration from
         # shopify.locations master
-        shopify_locations_records = self.env['shopify.locations'].sudo().search(
-            [('shopify_config_id', '=', shopify_config_id)])
+        if not shopify_locations_records:
+            shopify_locations_records = self.env['shopify.locations'].sudo().search(
+                [('shopify_config_id', '=', shopify_config_id)])
 
         # Get Product template recordset from shopify_proouct_template masters
         for s_product_tmpl_id in s_product_tmpl_ids:
@@ -515,6 +519,7 @@ class ShopifyConfig(models.Model):
         Fetch order ids from shopify with give condition and pass it to import_order function
         """
         self.test_connection()
+        shopify_order_id = 1346887714636
 #         shopify_orders = shopify.Order.find(
 #             status='any', financial_status='paid', fulfillment_status='fulfilled')
 #         for shopify_order in shopify_orders:
@@ -524,7 +529,8 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        self.import_order(1340194129740)
+        order_company = self.get_shopify_order_company(1346887714636)
+        self.import_order(1346887714636,order_company,True)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
@@ -658,8 +664,8 @@ class ShopifyConfig(models.Model):
         """
         so_env = self.env['sale.order']
         shopify_order_id = int(shopify_order_id)
-        if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
-            return True
+        # if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
+        #     return True
         
         shopify_order = shopify.Order.find(shopify_order_id)
         # base on Shopify order fetch financial_status and fulfillment_status
