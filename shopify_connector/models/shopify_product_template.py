@@ -54,7 +54,7 @@ class ShopifyProductTemplate(models.Model):
 
     r_prod_tags = fields.Many2many(related='product_tmpl_id.prod_tags_ids', string='Product Tags', track_visibility='onchange')
     r_prov_tags = fields.Many2many(related='product_tmpl_id.province_tags_ids', string='Province Tags', track_visibility='onchange')
-    r_allowed_variants = fields.One2many(related='product_tmpl_id.allowed_variants_ids', string='Allowed Variants', track_visibility='onchange')
+    r_allowed_variants = fields.One2many(related='product_tmpl_id.allowed_variants_ids', string='Allowed Variants', track_visibility='onchange', readonly=True)
 
     @api.model
     def create(self, vals):
