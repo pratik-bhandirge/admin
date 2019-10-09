@@ -145,13 +145,17 @@ class ShopifyConfig(models.Model):
         """
         self.ensure_one()
         user_id = self.env.user.id
-        product_tmpl_ids = self.env['shopify.product.template'].sudo(user_id).search([
-            ('shopify_config_id', '=', shopify_config_id),
-            ('shopify_prod_tmpl_id', 'in', ['', False])])
-        shopify_locations_records = self.env['shopify.locations'].sudo().search([
-            ('shopify_config_id', '=', shopify_config_id)])
+        product_tmpl_ids = self.env['shopify.product.template'].sudo(user_id).search(
+            [('shopify_config_id', '=', self.id), ('shopify_prod_tmpl_id', 'in', ['', False])])
+        print ("product_tmpl_ids ---->>", product_tmpl_ids)
+        for prod_tmpl in product_tmpl_ids:
+            if prod_tmpl.product_tmpl_id.prod_tags_ids or prod_tmpl.product_tmpl_id.province_tags_ids:
+                    self.export_product(prod_tmpl)
+            elif not (prod_tmpl.product_tmpl_id.prod_tags_ids or prod_tmpl.product_tmpl_id.province_tags_ids):
+                raise ValidationError(
+                    _("Product or province tags for some products should be setup correctly before exporting product to shopify!"))
 #         product_tmpl_ids = [44038]
-        return self.export_product(product_tmpl_ids, shopify_locations_records)
+#         return self.export_product(product_tmpl_ids)
 
     @api.multi
     def export_new_shopify_variants(self):
@@ -529,8 +533,10 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        order_company = self.get_shopify_order_company(1346887714636)
-        self.import_order(1346887714636,order_company,True)
+        order_company = self.sudo().get_shopify_order_company(1709430767701)
+#         self.import_order(1706514022485, order_company, True)
+        self.sudo(order_company.shopify_user_id.id).import_order(
+                            1709430767701, order_company, True)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
