@@ -147,12 +147,12 @@ class ShopifyConfig(models.Model):
         user_id = self.env.user.id
         product_tmpl_ids = self.env['shopify.product.template'].sudo(user_id).search(
             [('shopify_config_id', '=', self.id), ('shopify_prod_tmpl_id', 'in', ['', False])])
-
+        
         list_prod = []
 
         for prod_tmpl in product_tmpl_ids:
             if not (prod_tmpl.product_tmpl_id.prod_tags_ids or prod_tmpl.product_tmpl_id.province_tags_ids):
-                list_prod.append(prod_tmpl.name or '')
+                list_prod.append(prod_tmpl.product_tmpl_id.name or '')
 
         if list_prod:
             raise ValidationError(_("Following products doesn't have any province tags or product tags - \n %s"%(list_prod)))
