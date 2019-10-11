@@ -283,7 +283,7 @@ class ShopifyConfig(models.Model):
                                      "inventory_management": "shopify"})
                                 variants += [variant_val]
                             else:
-                                raise ValidationError(_("Please set Internal Reference for product variant before exporting to shopify"))
+                                raise ValidationError(_("Please set internal reference for product variant before exporting to shopify"))
                     else:
                         raise ValidationError(_('Please set alteast one product variant for shopify product export'))
                 else:
@@ -470,7 +470,7 @@ class ShopifyConfig(models.Model):
                         if product.default_code:
                             shopify_prod.sku = product.default_code
                         else:
-                            raise ValidationError(_("Please set Internal Reference for product variant before exporting to shopify !"))
+                            raise ValidationError(_("Please set Internal reference for product variant before exporting to shopify !"))
                         shopify_prod.inventory_management = "shopify"
                         shopify_prod.product_id = shopify_prod_tmpl_id
                         success = shopify_prod.save()
