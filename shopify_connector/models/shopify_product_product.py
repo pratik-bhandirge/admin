@@ -81,8 +81,11 @@ class ShopifyProductProduct(models.Model):
             _product_variant_list.append(record_id)
 
             if product_tmpl_rec.sale_ok and product_tmpl_rec.purchase_ok:
-                try:
+                if product_variant_rec.default_code:
                     product_variant_default_code = str(product_variant_rec.default_code)
+                else:
+                    raise ValidationError(_("Please set Internal Reference for product variant before updating to shopify !"))
+                try:
                     product_variant_price = rec.lst_price
                     shopify_product_variant_id = rec.shopify_product_id
                     product_variant_image = product_variant_rec.image_medium.decode("utf-8") if product_variant_rec.image_medium else False

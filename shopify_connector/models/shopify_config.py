@@ -231,54 +231,61 @@ class ShopifyConfig(models.Model):
                         search([('shopify_config_id', '=', shopify_config_id),
                                 ('shopify_product_id', 'in', ['', False]),
                                 ('product_variant_id', 'in', product_tmpl_id.product_variant_ids.ids)])
+                    if products.ids:
 
                     # Get attribute data from product template recordset
-                    options = []
-                    for attribute_line in product_tmpl_id.attribute_line_ids:
-                        options_val = {}
-                        options_val.update(
-                            {'name': attribute_line.attribute_id.name})
-                        values = []
-                        for value_id in attribute_line.value_ids:
-                            values.append(value_id.name)
-                        options_val.update({'values': values})
-                        options += [options_val]
+                        options = []
+                        for attribute_line in product_tmpl_id.attribute_line_ids:
+                            options_val = {}
+                            options_val.update(
+                                {'name': attribute_line.attribute_id.name})
+                            values = []
+                            for value_id in attribute_line.value_ids:
+                                values.append(value_id.name)
+                            options_val.update({'values': values})
+                            options += [options_val]
 
-                    # Prepare product's variant vals using shopify_product_product  recordset
-                    # - Variant's SKU, as well as weight and weight unit, are fetching from product variant while the price is fetched from shopify_product_product master
-                    variants = []
-                    for s_product in products:
-                        variant_val = {}
-                        product = s_product.product_variant_id
+                        # Prepare product's variant vals using shopify_product_product  recordset
+                        # - Variant's SKU, as well as weight and weight unit, are fetching from product variant while the price is fetched from shopify_product_product master
+                        variants = []
+                        for s_product in products:
+                            variant_val = {}
+                            product = s_product.product_variant_id
+                            if product.default_code:
+                                default_code = product.default_code
 
-                        count = 1
-                        for value in product.attribute_value_ids:
-                            variant_val.update({'option' + str(count): value.name})
-                            count += 1
+                                count = 1
+                                for value in product.attribute_value_ids:
+                                    variant_val.update({'option' + str(count): value.name})
+                                    count += 1
 
-                            # variant_meta_rec = s_product.meta_fields_id
-                            # variant_meta_data_dict = {"key": variant_meta_rec.key or '',
-                            #                         "value": variant_meta_rec.value or '',
-                            #                         "value_type": variant_meta_rec.value_type or '',
-                            #                         "namespace": variant_meta_rec.namespace or ''}
-                            # if variant_meta_data_dict:
-                            #     variant_val.update({'metafields': [variant_meta_data_dict]})
+                                    # variant_meta_rec = s_product.meta_fields_id
+                                    # variant_meta_data_dict = {"key": variant_meta_rec.key or '',
+                                    #                         "value": variant_meta_rec.value or '',
+                                    #                         "value_type": variant_meta_rec.value_type or '',
+                                    #                         "namespace": variant_meta_rec.namespace or ''}
+                                    # if variant_meta_data_dict:
+                                    #     variant_val.update({'metafields': [variant_meta_data_dict]})
 
-                        # lst_price = s_product.lst_price if s_product.lst_price > 0 else product.lst_price
+                                # lst_price = s_product.lst_price if s_product.lst_price > 0 else product.lst_price
 
-                        weight_unit = product.uom_id
-                        if weight_unit and weight_unit.name in _shopify_allow_weights:
-                            variant_val.update({'weight': product.weight,
-                                                'weight_unit': weight_unit.name})
-                        else:
-                            _logger.error(
-                                _('UOM is not define for product variant id!: %s') % str(product.id))
+                                weight_unit = product.uom_id
+                                if weight_unit and weight_unit.name in _shopify_allow_weights:
+                                    variant_val.update({'weight': product.weight,
+                                                        'weight_unit': weight_unit.name})
+                                else:
+                                    _logger.error(
+                                        _('UOM is not define for product variant id!: %s') % str(product.id))
 
-                        variant_val.update(
-                            {'price': s_product.lst_price,
-                             'sku': product.default_code or product.id,
-                             "inventory_management": "shopify"})
-                        variants += [variant_val]
+                                variant_val.update(
+                                    {'price': s_product.lst_price,
+                                     'sku': default_code,
+                                     "inventory_management": "shopify"})
+                                variants += [variant_val]
+                            else:
+                                raise ValidationError(_("Please set Internal Reference for product variant before exporting to shopify"))
+                    else:
+                        raise ValidationError(_('Please set alteast one product variant for shopify product export'))
                 else:
                     raise ValidationError(_("A product should be 'Can be Sold' and 'Can be Purchased' before exporting"))
 
@@ -460,7 +467,10 @@ class ShopifyConfig(models.Model):
                                 _('UOM is not define for product variant id!: %s') % str(product.id))
 
                         shopify_prod.price = shopify_prod_rec.lst_price
-                        shopify_prod.sku = product.default_code or product.id
+                        if product.default_code:
+                            shopify_prod.sku = product.default_code
+                        else:
+                            raise ValidationError(_("Please set Internal Reference for product variant before exporting to shopify !"))
                         shopify_prod.inventory_management = "shopify"
                         shopify_prod.product_id = shopify_prod_tmpl_id
                         success = shopify_prod.save()

@@ -193,7 +193,7 @@ class ShopifyProductTemplate(models.Model):
                                                         'value': meta_rec.value or '',
                                                         'value_type': meta_rec.value_type or ''}))
                         shopify_product.title = product_tmpl_rec.name
-                        shopify_product.body_html = rec.body_html
+                        shopify_product.body_html = rec.body_html #if rec.body_html else ''
                         shopify_product.vendor = rec.vendor.name
                         shopify_product.product_type = rec.product_type.name
                         shopify_product.tags = product_template_tags
