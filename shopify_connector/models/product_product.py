@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ProductProduct(models.Model):
@@ -33,3 +34,23 @@ class ProductProduct(models.Model):
         (_check_default_code_uniq_product,
          'Default Code must be unique per Product!', ['default_code']),
     ]
+
+    @api.model
+    def create(self, vals):
+        res = super(ProductProduct, self).create(vals)
+        shopify_shipping_product = vals.get('shopify_shipping_product') or self.shopify_shipping_product
+        if shopify_shipping_product:
+            shipping_product_variant_count = self.search_count([('type','=','service'),('shopify_shipping_product', '=', True)])
+            if shipping_product_variant_count > 1:
+                raise ValidationError(_("Shipping Product Already Exists in the system !"))
+        return res
+
+    @api.multi
+    def write(self, vals):
+        res = super(ProductProduct, self).write(vals)
+        shopify_shipping_product = vals.get('shopify_shipping_product') or self.shopify_shipping_product
+        if shopify_shipping_product:
+            shipping_product_variant_count = self.search_count([('type','=','service'),('shopify_shipping_product', '=', True)])
+            if shipping_product_variant_count > 1:
+                raise ValidationError(_("Shipping Product Already Exists in the system !"))
+        return res
