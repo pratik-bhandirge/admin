@@ -12,7 +12,7 @@ class SaleOrderLine(models.Model):
     def _get_cost_price(self):
         '''
         This method sets cost price according to company dependent cost price field
-        in product. If we do not get company wise cost price, the it is set to zero.
+        in product. If we do not get cost price, the it will be set to zero.
         '''
         for rec in self:
             cost_price = 0
