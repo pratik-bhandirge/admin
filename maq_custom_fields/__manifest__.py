@@ -10,8 +10,8 @@
     "license": "AGPL-3",
     'summary': 'This module adds two extra fields Cost and Vendor Code.',
     'description': """In this module, we have added two fields in two different objects: - 
-            1) A custom cost field in sale order lines to display cost price according to company.
-            2) A vendor code field on incoming shipment for purchase order.""",
+            1) A custom cost field in sale order lines object to display cost price according to company.
+            2) A vendor code field on stock moves object to display vendor code set in vendor pricelist.""",
     "depends": ['sale', 'stock'],
     "data": [
         "views/sale_order_view_inherit.xml",
