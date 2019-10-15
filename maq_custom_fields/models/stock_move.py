@@ -11,8 +11,8 @@ class StockMove(models.Model):
     @api.depends('picking_id.partner_id', 'picking_id.company_id', 'product_id')
     def _get_vendor_code(self):
         '''
-        This method sets the vendor code by searching vendor code from vendor pricelists. Id no vendor code is set,
-        then blank value is sent.
+        This method sets the vendor code by searching vendor code from vendor pricelists on stock move. If no vendor code is set,
+        then blank value is set for the field.
         '''
         for rec in self:
             vendor_name = rec.picking_id.partner_id.id
@@ -26,4 +26,4 @@ class StockMove(models.Model):
 
     m_vendor_code = fields.Char(string="Vendor Code", compute="_get_vendor_code",
                                 help="This vendor's product code will be used when printing a request for quotation. Keep empty to use the internal one.",
-                                track_visibility="onchange", store=True)
+                                track_visibility="onchange")
