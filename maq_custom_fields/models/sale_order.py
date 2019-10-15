@@ -12,7 +12,7 @@ class SaleOrderLine(models.Model):
     def _get_cost_price(self):
         '''
         This method sets cost price according to company dependent cost price field
-        in product. If we do not get cost price, the it will be set to zero.
+        in sale order line. If we do not get cost price, the it will be set to 0.
         '''
         for rec in self:
             cost_price = 0
@@ -24,4 +24,4 @@ class SaleOrderLine(models.Model):
             rec.m_cost_price = cost_price
 
     m_cost_price = fields.Float(string="Cost", compute="_get_cost_price", readonly=True, 
-                          help="Cost used for stock valuation in standard price and as a first price to set in average/fifo. Also used as a base price for pricelists. Expressed in the default unit of measure of the product.", track_visibility="onchange", store=True)
+                          help="Cost used for stock valuation in standard price and as a first price to set in average/fifo. Also used as a base price for pricelists. Expressed in the default unit of measure of the product.", track_visibility="onchange")
