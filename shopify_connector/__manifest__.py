@@ -43,6 +43,7 @@ Key Features
         "views/shopify_prod_tags_view.xml",
         "views/product_views.xml",
         "wizard/export_shopify_product_variant.xml",
+        "wizard/shopify_product_variant_sync_inventory_view.xml",
         "wizard/update_shopify_product_variant.xml",
         "views/shopify_product_product_view.xml",
         "wizard/export_shopify_product_template_view.xml",
