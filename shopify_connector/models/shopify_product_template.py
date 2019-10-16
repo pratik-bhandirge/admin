@@ -142,15 +142,15 @@ class ShopifyProductTemplate(models.Model):
                         for prov_tag in province_tags:
                             str_prod_province_tags.append(prov_tag.name)
                         product_template_tags = ",".join(str_prod_province_tags)
-                        product_template_image_medium = product_tmpl_rec.image_medium.decode('utf-8') if product_tmpl_rec.image_medium else False
+                        product_template_image = product_tmpl_rec.image.decode('utf-8') if product_tmpl_rec.image else False
                         product_template_metafields = rec.meta_fields_ids
                         product_template_metafields_keys = [mt.key for mt in product_template_metafields]
                         shopify_product = shopify.Product({'id': shopify_product_id, 'published': rec.shopify_published})
                         shopify_product_metafields = shopify_product.metafields()
                         shopify_product_metafields_keys = [mt.key for mt in shopify_product_metafields]
                         image_list = []
-                        if product_template_image_medium:
-                            image_list = [{'attachment': product_tmpl_rec.image_medium.decode('utf-8'),
+                        if product_template_image:
+                            image_list = [{'attachment': product_template_image,
                                            'position': 1}]
                         for product_image in product_tmpl_rec.product_image_ids:
                             image_list.append({'attachment': product_image.image.decode('utf-8')})
@@ -193,7 +193,7 @@ class ShopifyProductTemplate(models.Model):
                                                         'value': meta_rec.value or '',
                                                         'value_type': meta_rec.value_type or ''}))
                         shopify_product.title = product_tmpl_rec.name
-                        shopify_product.body_html = rec.body_html #if rec.body_html else ''
+                        shopify_product.body_html = rec.body_html if rec.body_html else ''
                         shopify_product.vendor = rec.vendor.name
                         shopify_product.product_type = rec.product_type.name
                         shopify_product.tags = product_template_tags
