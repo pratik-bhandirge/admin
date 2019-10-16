@@ -88,7 +88,7 @@ class ShopifyProductProduct(models.Model):
                 try:
                     product_variant_price = rec.lst_price
                     shopify_product_variant_id = rec.shopify_product_id
-                    product_variant_image = product_variant_rec.image_medium.decode("utf-8") if product_variant_rec.image_medium else False
+                    product_variant_image = product_variant_rec.image.decode("utf-8") if product_variant_rec.image else False
                     product_variant_metafields = rec.meta_fields_ids
                     product_variant_metafields_key_list = [mt.key for mt in product_variant_metafields]
                     shopify_product_template_id = str(rec.shopify_product_template_id.shopify_prod_tmpl_id)

@@ -195,7 +195,7 @@ class ShopifyConfig(models.Model):
         5. Prepare product's variant vals using shopify_product_product  recordset
             5.1 Variant's SKU, as well as weight and weight unit, are fetching from product variant
             5.2 sale price is fetched from shopify_product_product master
-        6. Prepare vals for images using product template image_medium and image_ids records
+        6. Prepare vals for images using product template image and image_ids records
         7. Get tags data from using product template recordset (prod_tags_ids & province_tags_ids)
         8. Create Product Template on Shopify using the above details
         9. If a product is created successfully, then update shopify_template_id in shopify_product_template master and marked shopify_publsihed True in shopify_product_template master (to identify the product is created published on Shopify in future we can use this field to make product publish and unpublish on Shopify) else update an error message in the shopify_error_log field.
@@ -289,11 +289,11 @@ class ShopifyConfig(models.Model):
                 else:
                     raise ValidationError(_("A product should be 'Can be Sold' and 'Can be Purchased' before exporting"))
 
-                # Prepare vals for images using product template image_medium
+                # Prepare vals for images using product template image
                 # and image_ids records
                 images = []
-                if product_tmpl_id.image_medium:
-                    images += [{'attachment': product_tmpl_id.image_medium.decode("utf-8"),
+                if product_tmpl_id.image:
+                    images += [{'attachment': product_tmpl_id.image.decode("utf-8"),
                                 'position': 1}]
                 for product_image in product_tmpl_id.product_image_ids:
                     if product_image.image:
@@ -323,6 +323,8 @@ class ShopifyConfig(models.Model):
                     new_product.tags = tags  # "Barnes & Noble, John's Fav, \"Big Air\""
                 if s_product_tmpl_id.body_html:
                     new_product.body_html = str(s_product_tmpl_id.body_html)
+                else:
+                    new_product.body_html = ''
                 if options:
                     new_product.options = options
                 if variants:
@@ -373,7 +375,7 @@ class ShopifyConfig(models.Model):
 
                             # Update an image on shopify for the variant
                             if product_variant_rec:
-                                variant_image = product_variant_rec.image_medium
+                                variant_image = product_variant_rec.image
                                 if variant_image:
                                     image = shopify.Image()
                                     image.product_id = shopify_product_tmpl_id
@@ -480,7 +482,7 @@ class ShopifyConfig(models.Model):
                             default_code = shopify_prod.sku
                             product_variant_rec = shopify_prod_rec.product_variant_id
                             if shopify_prod_rec:
-                                variant_image = product_variant_rec.image_medium
+                                variant_image = product_variant_rec.image
                                 if variant_image:
                                     image = shopify.Image()
                                     image.product_id = shopify_prod_tmpl_id
