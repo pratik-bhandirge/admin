@@ -33,8 +33,8 @@ class ShopifyVariantInventorySync(models.TransientModel):
                     if quant_locations:
                         for quant_location in quant_locations:
                             available_qty += quant_location.quantity
-                        location = shopify.InventoryLevel.set(
-                            shopify_location, inventory_item_id, int(available_qty))
+                    location = shopify.InventoryLevel.set(
+                        shopify_location, inventory_item_id, int(available_qty))
                 if (count % 2 == 0):
                     time.sleep(0.5)
                 count += 1
