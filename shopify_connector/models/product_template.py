@@ -39,6 +39,12 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def write(self, vals):
+        """
+        Restrict a user from making can_be_sold and can_be_purchased false if a
+        product is exported on Shopify.If we import SO who's is can be sold
+        and can be purchased then it'll create an issue for creating a sales
+        order or purchase order.
+        """
         res = super(ProductTemplate, self).write(vals)
         for rec in self:
             can_be_sold = vals.get('sale_ok') or rec.sale_ok

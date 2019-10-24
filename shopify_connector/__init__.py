@@ -61,13 +61,15 @@ def _create_company_records(cr, registry):
                          'company_id': company.id}
         try:
             shopify_customer_id = partner_env.create(cust_vals)
-            company_vals.update({'shopify_customer_id': shopify_customer_id.id})
+            company_vals.update(
+                {'shopify_customer_id': shopify_customer_id.id})
         except Exception as e:
             _logger.error(
                 'Customer is not created in the system for the company - ' + company_name + ' : %s', e)
             pass
 
-        warehouse_code_search = warehouse_env.search_count([('code', '=', code)])
+        warehouse_code_search = warehouse_env.search_count(
+            [('code', '=', code)])
         if warehouse_code_search > 0:
             count = 1
             while warehouse_code_search > 0:
