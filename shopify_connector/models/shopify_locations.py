@@ -7,9 +7,9 @@ _logger = logging.getLogger(__name__)
 
 
 class ShopifyLocations(models.Model):
-
     _name = 'shopify.locations'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+    _description = 'Shopify Locations'
 
     shopify_config_id = fields.Many2one("shopify.config", "Shopify Configuration",
                                         help="Enter Shopify Config.", track_visibility='onchange', required=True)
@@ -60,7 +60,6 @@ class ShopifyLocations(models.Model):
 
 
 class StockLocation(models.Model):
-
     _inherit = 'stock.location'
 
     shopify_location_ids = fields.Many2many(
@@ -79,17 +78,6 @@ class StockLocation(models.Model):
         (shopify_location_id_select,
          'You can select only one shopify location!', ['shopify_location_ids']),
     ]
-
-
-# class StockMove(models.Model):
-#
-#     _inherit = 'stock.move'
-#
-#     shopify_update_id = fields.Char(
-#         "Shopify Update ID", help="Enter Shopify Update ID", readonly=True)
-#     shopify_export = fields.Boolean(
-#         "Shopify Export", help="Enter Shopify Export")
-
 
 class StockPicking(models.Model):
 

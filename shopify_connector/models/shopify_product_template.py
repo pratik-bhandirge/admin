@@ -10,8 +10,8 @@ _logger = logging.getLogger(__name__)
 _product_list = []
 
 class ShopifyProductTemplate(models.Model):
-
     _name = 'shopify.product.template'
+    _description = 'Shopify Product Template'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _rec_name = 'product_tmpl_id'
 

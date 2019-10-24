@@ -4,8 +4,8 @@ from odoo import models, fields, api
 
 
 class ShopifyVendor(models.Model):
-
     _name = 'shopify.vendor'
+    _description = 'Shopify Vendor'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
 
     name = fields.Char("Name", help="Enter Name",

@@ -5,7 +5,6 @@ from lxml import etree
 
 
 class SaleOrder(models.Model):
-
     _inherit = 'sale.order'
 
     shopify_name = fields.Char(
@@ -56,7 +55,6 @@ class SaleOrder(models.Model):
 
 
 class SaleOrderLine(models.Model):
-
     _inherit = 'sale.order.line'
 
     shopify_order_line_id = fields.Char(

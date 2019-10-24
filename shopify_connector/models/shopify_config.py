@@ -14,8 +14,8 @@ _logger = logging.getLogger(__name__)
 _shopify_allow_weights = ['kg', 'lb', 'oz', 'g']
 
 class ShopifyConfig(models.Model):
-
     _name = 'shopify.config'
+    _description = 'Shopify Configuration'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _rec_name = 'name'
 
@@ -689,8 +689,8 @@ class ShopifyConfig(models.Model):
         """
         so_env = self.env['sale.order']
         shopify_order_id = int(shopify_order_id)
-        # if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
-        #     return True
+        if so_env.sudo().search_count([('shopify_order_id', '=', shopify_order_id)]) > 0:
+            return True
         
         shopify_order = shopify.Order.find(shopify_order_id)
         # base on Shopify order fetch financial_status and fulfillment_status
