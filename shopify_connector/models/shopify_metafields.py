@@ -5,8 +5,8 @@ from odoo.exceptions import ValidationError
 
 
 class ShopifyMetafields(models.Model):
-
     _name = 'shopify.metafields'
+    _description = 'Shopify Metafields'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _rec_name = 'key'
 

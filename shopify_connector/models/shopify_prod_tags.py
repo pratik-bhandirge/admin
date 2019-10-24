@@ -4,8 +4,8 @@ from odoo import models, fields, api
 
 
 class ShopifyProdTags(models.Model):
-
     _name = 'shopify.prod.tags'
+    _description = 'Shopify Product Tags'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
 
     name = fields.Char('Name', help='Enter Name',

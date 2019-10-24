@@ -4,8 +4,8 @@ from odoo import models, fields, api
 
 
 class ShopifyOrderErrorLog(models.Model):
-
     _name = 'shopify.order.error.log'
+    _description = 'Shopify Order Error Log'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _order = "create_date desc"
 
