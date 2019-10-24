@@ -37,6 +37,9 @@ class ProductProduct(models.Model):
 
     @api.model
     def create(self, vals):
+        """
+        Restrict a user from creating multiple shipping products for Shopify.
+        """
         res = super(ProductProduct, self).create(vals)
         shopify_shipping_product = vals.get('shopify_shipping_product') or self.shopify_shipping_product
         if shopify_shipping_product:
@@ -47,6 +50,9 @@ class ProductProduct(models.Model):
 
     @api.multi
     def write(self, vals):
+        """
+        Restrict a user from creating multiple shipping products for Shopify.
+        """
         res = super(ProductProduct, self).write(vals)
         shopify_shipping_product = vals.get('shopify_shipping_product') or self.shopify_shipping_product
         if shopify_shipping_product:

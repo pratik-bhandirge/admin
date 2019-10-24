@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from . import export_shopify_product_template
 from . import export_shopify_product_variant
