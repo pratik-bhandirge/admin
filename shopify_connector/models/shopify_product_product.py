@@ -9,8 +9,8 @@ _logger = logging.getLogger(__name__)
 _product_variant_list = []
 
 class ShopifyProductProduct(models.Model):
-
     _name = 'shopify.product.product'
+    _description = 'Shopify Product Variant'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _rec_name = 'product_variant_id'
 

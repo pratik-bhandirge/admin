@@ -4,8 +4,8 @@ from odoo import models, fields, api
 
 
 class ShopifyProductType(models.Model):
-
-    _name = "shopify.product.type"
+    _name = 'shopify.product.type'
+    _description = 'Shopify Product Type'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
 
     name = fields.Char("Name", help="Enter Name",
