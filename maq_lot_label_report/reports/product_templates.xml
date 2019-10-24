@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_productlabel">
+        <t t-call="web.basic_layout">
+            <div class="page" style="margin-right: -18px !important;">
+                <t t-foreach="docs" t-as="doc">
+                <t t-set="lot_ids" t-value="lot_by_product_dict.get(str(doc.id),0)"/>
+                <t t-foreach="lot_ids" t-as="lot">
+                    <t t-foreach="range(pqty_by_product.get(str(doc.id), 0))" t-as="n">
+                        <t t-call="maq_lot_label_report.label_lot_report">
+                            <t t-set="product" t-value="doc"/>
+                            <t t-set="lot_id" t-value="lot"/>
+                        </t>
+                    </t>
+                </t>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
