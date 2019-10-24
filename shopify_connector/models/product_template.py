@@ -5,7 +5,6 @@ from odoo.exceptions import ValidationError
 
 
 class ProductTemplate(models.Model):
-
     _inherit = 'product.template'
 
     shopify_product_template_ids = fields.One2many("shopify.product.template", 'product_tmpl_id',

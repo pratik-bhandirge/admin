@@ -4,9 +4,9 @@ from odoo import models, fields, api
 
 
 class ShopifyImages(models.Model):
-
     _name = 'shopify.images'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+    _description = 'Shopify Images'
 
     type = fields.Selection([('url', 'URL'), ('binary', 'Binary')], string="type",
                             help="Enter Type of Image", default="binary", track_visibility='onchange')

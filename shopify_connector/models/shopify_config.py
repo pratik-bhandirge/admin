@@ -14,8 +14,8 @@ _logger = logging.getLogger(__name__)
 _shopify_allow_weights = ['kg', 'lb', 'oz', 'g']
 
 class ShopifyConfig(models.Model):
-
     _name = 'shopify.config'
+    _description = 'Shopify Configuration'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _rec_name = 'name'
 
