@@ -18,7 +18,7 @@ class SaleOrderLine(models.Model):
             cost_price = 0
             if rec.order_id.company_id:
                 resource = 'product.product,'+ str(rec.product_id.id)
-                product_company_search = self.env['ir.property'].search([('res_id','like',resource), ('company_id', '=', rec.order_id.company_id.id)], limit=1)
+                product_company_search = self.env['ir.property'].search([('res_id','=',resource), ('company_id', '=', rec.order_id.company_id.id)], limit=1)
                 if product_company_search:
                     cost_price = product_company_search.value_float or 0
             rec.m_cost_price = cost_price
