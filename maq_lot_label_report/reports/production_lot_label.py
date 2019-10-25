@@ -18,6 +18,7 @@ class ReportProductionLotLabel(models.AbstractModel):
             'stock.production.lot'].browse(production_lot_ids)
         report_format = data['form'].get('label_formats')
         pqty_by_product = data['form'].get('pqty_by_product')
+        lotid_by_product = data['form'].get('lotid_by_product')
         return {
             'doc_ids': production_lot_ids,
             'doc_model': 'stock.production.lot',
@@ -25,4 +26,5 @@ class ReportProductionLotLabel(models.AbstractModel):
             'data': data,
             'report_format': report_format,
             'pqty_by_product': pqty_by_product,
+            'lotid_by_product': lotid_by_product
         }
