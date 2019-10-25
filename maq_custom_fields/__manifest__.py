@@ -12,7 +12,7 @@
     'description': """In this module, we have added two fields in two different objects: - 
             1) A custom cost field in sale order lines object to display cost price according to company.
             2) A vendor code field on stock moves object to display vendor code set in vendor pricelist.""",
-    "depends": ['sale', 'stock'],
+    "depends": ['sale', 'stock', 'sale_margin'],
     "data": [
         "views/sale_order_view_inherit.xml",
         "views/stock_picking_view_inherit.xml",
