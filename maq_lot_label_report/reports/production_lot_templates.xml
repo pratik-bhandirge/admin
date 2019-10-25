@@ -4,12 +4,10 @@
         <t t-call="web.basic_layout">
             <div class="page" style="margin-right: -18px !important;">
                 <t t-foreach="docs" t-as="doc">
-                    <t t-foreach="doc" t-as="lot">
-                        <t t-foreach="range(lotid_by_product.get(str(lot.id), 0))" t-as="n">
-                            <t t-call="maq_lot_label_report.label_lot_report">
-                                <t t-set="product" t-value="lot.product_id"/>
-                                <t t-set="lot_id" t-value="lot"/>
-                            </t>
+                    <t t-foreach="range(lotid_by_product.get(str(doc.id), 0))" t-as="n">
+                        <t t-call="maq_lot_label_report.label_lot_report">
+                            <t t-set="product" t-value="doc.product_id"/>
+                            <t t-set="lot_id" t-value="doc"/>
                         </t>
                     </t>
                 </t>
