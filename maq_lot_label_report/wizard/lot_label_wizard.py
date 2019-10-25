@@ -42,6 +42,8 @@ class LotLabelWizard(models.TransientModel):
             report = 'maq_lot_label_report.report_product_label'
         data['form']['pqty_by_product'] = {
             p.product_id.id: p.print_qty for p in self.product_lot_label_ids}
+        data['form']['lotid_by_product'] = {
+            p.lot_id.id : p.print_qty for p in self.product_lot_label_ids}
         data['form']['lot_by_product'] = {
             p.product_id.id: p.lot_ids.ids for p in self.product_lot_label_ids}
         return self.env.ref(report).with_context(from_transient_model=True).report_action([], data=data)
