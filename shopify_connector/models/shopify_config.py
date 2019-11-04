@@ -794,14 +794,17 @@ class ShopifyConfig(models.Model):
                     # set product_id and product_uom base on Odoo product recordset
                     # If any error occurs while finding a product will log it
                     # in shopify_error_log variable
+                    line_price_unit = line_data.get('price')
+                    if line_data.get('total_discount') and line_data.get('quantity') > 0:
+                        line_price_unit = line_price_unit - (float(line_data.get('total_discount'))/line_data.get('quantity') or 0)
                     line_vals_dict = {'product_id': product.id,
-                                             'name': line_data.get('name').encode('utf-8'),
-                                             'price_unit': line_data.get('price'),
-                                             'product_uom_qty': line_data.get('quantity'),
-                                             'product_uom': product.uom_id.id,
-                                             # 'tax_id': shopify_tax and [(6, 0, tax_ids)] or
-                                             # [(6, 0, [])]
-                                             }
+                                      'name': line_data.get('name').encode('utf-8'),
+                                      'price_unit': line_price_unit,
+                                      'product_uom_qty': line_data.get('quantity'),
+                                      'product_uom': product.uom_id.id,
+                                      # 'tax_id': shopify_tax and [(6, 0, tax_ids)] or
+                                      # [(6, 0, [])]
+                                      }
                     line_vals.append((0, 0, line_vals_dict))
 #                     line_vals.extend([(0, 0, line_vals_dict)])
                     
