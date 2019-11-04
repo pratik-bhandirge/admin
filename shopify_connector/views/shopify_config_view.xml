@@ -12,9 +12,9 @@
                         <button name="export_products_to_shopify" type="object"
                             class="oe_highlight" string="Export Products"/>
                        <!--  <button name="test_import_locations" type="object"
-                            class="oe_highlight" string="Import Location"/>
+                            class="oe_highlight" string="Import Location"/> -->
                         <button name="test_import_orders" type="object" 
-                            class="oe_highlight" string="Import Orders"/> -->
+                            class="oe_highlight" string="Import Orders"/>
                         <button name="export_new_shopify_variants" type="object"
                             class="oe_highlight" string="Export New Shopify Variants"/>
                         <button name="reset_to_draft" type="object"
