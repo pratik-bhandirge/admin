@@ -89,6 +89,7 @@
                    <page string="Shopify Variant fields" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user">
                         <group>
                             <field name="shopify_shipping_product" attrs="{'invisible': [('type','!=','service')]}"/>
+                            <field name="shopify_discount_product" attrs="{'invisible': [('type','!=','service')]}"/>
                         </group>
                         <group>
                             <field name="shopify_product_product_ids" nolabel="1">
