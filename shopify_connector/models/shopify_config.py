@@ -832,7 +832,7 @@ class ShopifyConfig(models.Model):
                 else:
                     shopify_error_log += "\n" if shopify_error_log else ""
                     shopify_error_log += "Shipping product does not exist in odoo system"
-            #Prepare vals for discount lines
+            #Prepare vals to add discount product
             for app in shopify_order.discount_applications:
                 allocation_method = app.allocation_method
                 target_selection = app.target_selection
