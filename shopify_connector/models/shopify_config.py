@@ -552,10 +552,10 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        order_company = self.sudo().get_shopify_order_company(1709430767701)
+        order_company = self.sudo().get_shopify_order_company(1359818688332)
 #         self.import_order(1706514022485, order_company, True)
         self.sudo(order_company.shopify_user_id.id).import_order(
-                            1709430767701, order_company, True)
+                            1359818688332, order_company, True)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
@@ -794,7 +794,7 @@ class ShopifyConfig(models.Model):
                     # set product_id and product_uom base on Odoo product recordset
                     # If any error occurs while finding a product will log it
                     # in shopify_error_log variable
-                    line_price_unit = line_data.get('price')
+                    line_price_unit = float(line_data.get('price'))
                     if line_data.get('total_discount') and line_data.get('quantity') > 0:
                         line_price_unit = line_price_unit - (float(line_data.get('total_discount'))/line_data.get('quantity') or 0)
                     line_vals_dict = {'product_id': product.id,
@@ -832,6 +832,25 @@ class ShopifyConfig(models.Model):
                 else:
                     shopify_error_log += "\n" if shopify_error_log else ""
                     shopify_error_log += "Shipping product does not exist in odoo system"
+            #Prepare vals to add discount product
+            for app in shopify_order.discount_applications:
+                allocation_method = app.allocation_method
+                target_selection = app.target_selection
+                discount = float(app.value)
+                if target_selection == 'all' and allocation_method == 'across':
+                    product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
+                    if product:
+                        line_vals_dict = {'product_id': product.id,
+                        'name': app.title,
+                        'price_unit': -(discount),
+                        'product_uom_qty': 1,
+                        'product_uom': product.uom_id.id,
+                        # 'tax_id': [(6, 0, [])]
+                        }
+                        line_vals.append((0, 0, line_vals_dict))
+                    else:
+                        shopify_error_log += "\n" if shopify_error_log else ""
+                        shopify_error_log += "Discount product does not exist in odoo system"
 
             # Prepare vals for sale.order master
             so_vals = {'partner_id': shopify_customer_id,
