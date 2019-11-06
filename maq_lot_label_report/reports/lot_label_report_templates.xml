@@ -7,7 +7,7 @@
                     <tr>
                         <td width="70%" style="text-align: center; vertical-align: middle;">
                             <div style="line-height: 90%">
-                                <span t-field="product.govt_sku"/> - <span t-field="product.default_code"/>
+                                <span t-field="product.govt_sku"/>
                             </div>
                             <div style="line-height: 98%;font-size:11px; margin-bottom: 1px;">
                                 <span t-field="lot_id.name"/>

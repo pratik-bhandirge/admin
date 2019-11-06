@@ -2,6 +2,7 @@
 
 import shopify
 import logging
+import json
 
 
 from datetime import datetime
@@ -552,10 +553,10 @@ class ShopifyConfig(models.Model):
 #             status='any', financial_status='partially_refunded', fulfillment_status='partial')
 #         for shopify_order in shopify_orders:
 #             self.import_order(shopify_order.id)
-        order_company = self.sudo().get_shopify_order_company(1359818688332)
+        order_company = self.sudo().get_shopify_order_company(1360243590988)
 #         self.import_order(1706514022485, order_company, True)
         self.sudo(order_company.shopify_user_id.id).import_order(
-                            1359818688332, order_company, True)
+                            1360243590988, order_company, True)
         # self.import_order(1112794693725)
 
     def _process_so(self, odoo_so_rec, done_qty_vals = {}):
@@ -765,6 +766,7 @@ class ShopifyConfig(models.Model):
 
             # Prepare order_line vals
             line_vals = []
+            subtotal = 0
             for line_item in shopify_order.line_items:
                 line_data = line_item.attributes
                 # Get product_id of Odoo system base on shopify_product_product
@@ -795,12 +797,14 @@ class ShopifyConfig(models.Model):
                     # If any error occurs while finding a product will log it
                     # in shopify_error_log variable
                     line_price_unit = float(line_data.get('price'))
+                    line_data_quantity = line_data.get('quantity')
                     if line_data.get('total_discount') and line_data.get('quantity') > 0:
                         line_price_unit = line_price_unit - (float(line_data.get('total_discount'))/line_data.get('quantity') or 0)
+                    subtotal += line_price_unit * line_data_quantity
                     line_vals_dict = {'product_id': product.id,
                                       'name': line_data.get('name').encode('utf-8'),
                                       'price_unit': line_price_unit,
-                                      'product_uom_qty': line_data.get('quantity'),
+                                      'product_uom_qty': line_data_quantity,
                                       'product_uom': product.uom_id.id,
                                       # 'tax_id': shopify_tax and [(6, 0, tax_ids)] or
                                       # [(6, 0, [])]
@@ -836,18 +840,28 @@ class ShopifyConfig(models.Model):
             for app in shopify_order.discount_applications:
                 allocation_method = app.allocation_method
                 target_selection = app.target_selection
+                value_type = app.value_type
                 discount = float(app.value)
                 if target_selection == 'all' and allocation_method == 'across':
-                    product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
-                    if product:
-                        line_vals_dict = {'product_id': product.id,
-                        'name': app.title,
-                        'price_unit': -(discount),
-                        'product_uom_qty': 1,
-                        'product_uom': product.uom_id.id,
-                        # 'tax_id': [(6, 0, [])]
-                        }
-                        line_vals.append((0, 0, line_vals_dict))
+                    discount_product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
+                    if discount_product:
+                        if value_type == 'fixed_amount':
+                            line_vals_dict = {'product_id': discount_product.id,
+                            'name': value_type,
+                            'price_unit': -(discount),
+                            'product_uom_qty': 1,
+                            'product_uom': discount_product.uom_id.id,
+                            }
+                            line_vals.append((0, 0, line_vals_dict))
+                        elif value_type == 'percentage':
+                            final_discount = (subtotal * discount)/100
+                            line_vals_dict = {'product_id': discount_product.id,
+                            'name': value_type,
+                            'price_unit': -(final_discount),
+                            'product_uom_qty': 1,
+                            'product_uom': discount_product.uom_id.id,
+                            }
+                            line_vals.append((0, 0, line_vals_dict))
                     else:
                         shopify_error_log += "\n" if shopify_error_log else ""
                         shopify_error_log += "Discount product does not exist in odoo system"
