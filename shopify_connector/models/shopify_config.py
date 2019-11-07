@@ -816,6 +816,7 @@ class ShopifyConfig(models.Model):
                     shopify_error_log += "\n" if shopify_error_log else ""
                     shopify_error_log += "Product does not exist"
             #Prepare vals for shiping lines
+            shipping_product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_shipping_product','=',True)], limit=1)
             for shipping_line in shopify_order.shipping_lines:
                 shipping_line_data = shipping_line.attributes
                 line_prod_name = shipping_line_data.get('title').encode('utf-8')
@@ -823,13 +824,12 @@ class ShopifyConfig(models.Model):
                     handle_str = " / " + shipping_line_data.get('handle').encode('utf-8')
                     line_prod_name += handle_str
                 line_prod_price = shipping_line_data.get('price') or 0
-                product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_shipping_product','=',True)], limit=1)
-                if product:
-                    line_vals_dict = {'product_id': product.id,
+                if shipping_product:
+                    line_vals_dict = {'product_id': shipping_product.id,
                     'name': line_prod_name,
                     'price_unit': line_prod_price,
                     'product_uom_qty': 1,
-                    'product_uom': product.uom_id.id,
+                    'product_uom': shipping_product.uom_id.id,
                     # 'tax_id': [(6, 0, [])]
                     }
                     line_vals.append((0, 0, line_vals_dict))
@@ -842,9 +842,10 @@ class ShopifyConfig(models.Model):
                 target_selection = app.target_selection
                 value_type = app.value_type
                 discount = float(app.value)
-                if target_selection == 'all' and allocation_method == 'across':
-                    discount_product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
-                    if discount_product:
+                # if target_selection == 'all' and allocation_method == 'across':
+                discount_product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
+                if discount_product:
+                    if target_type == 'line_item' and target_selection == 'all' and allocation_method == 'across':
                         if value_type == 'fixed_amount':
                             if subtotal <= discount:
 #                                 discount = subtotal
@@ -880,9 +881,27 @@ class ShopifyConfig(models.Model):
                                 'product_uom': discount_product.uom_id.id,
                                 }
                                 line_vals.append((0, 0, line_vals_dict))
-                    else:
-                        shopify_error_log += "\n" if shopify_error_log else ""
-                        shopify_error_log += "Discount product does not exist in odoo system"
+                    elif target_type == 'shipping_line' and shipping_product:
+                        shipping_product_id = shipping_product.id
+                        if value_type == 'fixed_amount':
+                            temp_shipping_line_vals = []
+                            for k,v,d in line_vals:
+                                if d['product_id'] == shipping_product_id:
+                                    d['price_unit'] = discount
+                                temp_shipping_line_vals.append((0,0,d))
+                            if temp_shipping_line_vals:
+                                line_vals = temp_shipping_line_vals
+                        elif value_type == 'percentage':
+                            temp_shipping_line_vals = []
+                            for k,v,d in line_vals:
+                                if d['product_id'] == shipping_product_id:
+                                    d['discount'] = discount
+                                temp_shipping_line_vals.append((0,0,d))
+                            if temp_shipping_line_vals:
+                                line_vals = temp_shipping_line_vals
+                # else:
+                #     shopify_error_log += "\n" if shopify_error_log else ""
+                #     shopify_error_log += "Discount product does not exist in odoo system"
 
             # Prepare vals for sale.order master
             so_vals = {'partner_id': shopify_customer_id,
