@@ -845,6 +845,8 @@ class ShopifyConfig(models.Model):
                 if target_selection == 'all' and allocation_method == 'across':
                     discount_product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
                     if discount_product:
+                        if subtotal < discount:
+                            discount = subtotal
                         if value_type == 'fixed_amount':
                             line_vals_dict = {'product_id': discount_product.id,
                             'name': value_type,
@@ -855,6 +857,8 @@ class ShopifyConfig(models.Model):
                             line_vals.append((0, 0, line_vals_dict))
                         elif value_type == 'percentage':
                             final_discount = (subtotal * discount)/100
+                            if subtotal < final_discount:
+                                final_discount = subtotal
                             line_vals_dict = {'product_id': discount_product.id,
                             'name': value_type,
                             'price_unit': -(final_discount),
