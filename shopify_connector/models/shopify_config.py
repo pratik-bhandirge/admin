@@ -845,27 +845,41 @@ class ShopifyConfig(models.Model):
                 if target_selection == 'all' and allocation_method == 'across':
                     discount_product = product_variant_env.sudo(shopify_user_id).search([('type', '=', 'service'), ('shopify_discount_product','=',True)], limit=1)
                     if discount_product:
-                        if subtotal < discount:
-                            discount = subtotal
                         if value_type == 'fixed_amount':
-                            line_vals_dict = {'product_id': discount_product.id,
-                            'name': value_type,
-                            'price_unit': -(discount),
-                            'product_uom_qty': 1,
-                            'product_uom': discount_product.uom_id.id,
-                            }
-                            line_vals.append((0, 0, line_vals_dict))
+                            if subtotal <= discount:
+#                                 discount = subtotal
+                                temp_line_vals = []
+                                for k,v,d in line_vals:
+                                    d.update({'discount': 100})
+                                    temp_line_vals.append((0,0,d))
+                                if temp_line_vals:
+                                    line_vals = temp_line_vals
+                            else:
+                                line_vals_dict = {'product_id': discount_product.id,
+                                'name': value_type,
+                                'price_unit': -(discount),
+                                'product_uom_qty': 1,
+                                'product_uom': discount_product.uom_id.id,
+                                }
+                                line_vals.append((0, 0, line_vals_dict))
                         elif value_type == 'percentage':
                             final_discount = (subtotal * discount)/100
-                            if subtotal < final_discount:
-                                final_discount = subtotal
-                            line_vals_dict = {'product_id': discount_product.id,
-                            'name': value_type,
-                            'price_unit': -(final_discount),
-                            'product_uom_qty': 1,
-                            'product_uom': discount_product.uom_id.id,
-                            }
-                            line_vals.append((0, 0, line_vals_dict))
+                            if subtotal <= final_discount:
+#                                 final_discount = subtotal
+                                temp_line_vals = []
+                                for k,v,d in line_vals:
+                                    d.update({'discount': 100})
+                                    temp_line_vals.append((0,0,d))
+                                if temp_line_vals:
+                                    line_vals = temp_line_vals
+                            else:
+                                line_vals_dict = {'product_id': discount_product.id,
+                                'name': value_type,
+                                'price_unit': -(final_discount),
+                                'product_uom_qty': 1,
+                                'product_uom': discount_product.uom_id.id,
+                                }
+                                line_vals.append((0, 0, line_vals_dict))
                     else:
                         shopify_error_log += "\n" if shopify_error_log else ""
                         shopify_error_log += "Discount product does not exist in odoo system"
