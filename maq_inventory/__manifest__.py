@@ -12,8 +12,8 @@
     'depends': ['stock', 'website_sale', 'stock_account'],
     'category': 'Warehouse',
     'data': [
-        'security/ir.model.access.csv',
         'security/maq_security.xml',
+        'security/ir.model.access.csv',
         'views/stock_inventory_view.xml',
     ],
     'installable': True,
