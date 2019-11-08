@@ -840,6 +840,7 @@ class ShopifyConfig(models.Model):
             for app in shopify_order.discount_applications:
                 allocation_method = app.allocation_method
                 target_selection = app.target_selection
+                target_type = app.target_type
                 value_type = app.value_type
                 discount = float(app.value)
                 # if target_selection == 'all' and allocation_method == 'across':
