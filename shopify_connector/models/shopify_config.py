@@ -852,8 +852,11 @@ class ShopifyConfig(models.Model):
 #                                 discount = subtotal
                                 temp_line_vals = []
                                 for k,v,d in line_vals:
-                                    d.update({'discount': 100})
-                                    temp_line_vals.append((0,0,d))
+                                    if shipping_product and d.get('product_id') and d.get('product_id') != shipping_product.id:
+                                        d.update({'discount': 100})
+                                        temp_line_vals.append((0,0,d))
+                                    else:
+                                        temp_line_vals.append((0,0,d))
                                 if temp_line_vals:
                                     line_vals = temp_line_vals
                             else:
@@ -870,8 +873,11 @@ class ShopifyConfig(models.Model):
 #                                 final_discount = subtotal
                                 temp_line_vals = []
                                 for k,v,d in line_vals:
-                                    d.update({'discount': 100})
-                                    temp_line_vals.append((0,0,d))
+                                    if shipping_product and d.get('product_id') and d.get('product_id') != shipping_product.id:
+                                        d.update({'discount': 100})
+                                        temp_line_vals.append((0,0,d))
+                                    else:
+                                        temp_line_vals.append((0,0,d))
                                 if temp_line_vals:
                                     line_vals = temp_line_vals
                             else:
