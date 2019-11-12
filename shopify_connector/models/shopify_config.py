@@ -626,7 +626,11 @@ class ShopifyConfig(models.Model):
 
             if not odoo_so_rec.invoice_ids and process_order:
                 try:
-                    odoo_so_invoice = odoo_so_rec.action_invoice_create()
+                    if odoo_so_rec.shopify_financial_status == 'partially_refunded' and odoo_so_rec.shopify_fulfillment_status == 'partial':
+                        #todo pass the context
+                        odoo_so_invoice = odoo_so_rec.action_invoice_create()
+                    else:
+                        odoo_so_invoice = odoo_so_rec.action_invoice_create()
                     invoice = self.env['account.invoice'].browse(
                         odoo_so_invoice[0])
                     invoice.action_invoice_open()
@@ -869,6 +873,10 @@ class ShopifyConfig(models.Model):
                                 line_vals.append((0, 0, line_vals_dict))
                         elif value_type == 'percentage':
                             final_discount = (subtotal * discount)/100
+                            final_discount = str(final_discount)
+                            final_discount_split_list = final_discount.split(".")
+                            final_discount = final_discount_split_list[0] + "." + final_discount_split_list[1][:2]
+                            final_discount = float(final_discount)
                             if subtotal <= final_discount:
 #                                 final_discount = subtotal
                                 temp_line_vals = []
