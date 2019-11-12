@@ -627,8 +627,8 @@ class ShopifyConfig(models.Model):
             if not odoo_so_rec.invoice_ids and process_order:
                 try:
                     if odoo_so_rec.shopify_financial_status == 'partially_refunded' and odoo_so_rec.shopify_fulfillment_status == 'partial':
-                        #todo pass the context
-                        odoo_so_invoice = odoo_so_rec.action_invoice_create()
+                        #to pass the context if order is partial refunded and partial fulfilled
+                        odoo_so_invoice = odoo_so_rec.with_context({'partial_fulfill_refund_order':1}).action_invoice_create()
                     else:
                         odoo_so_invoice = odoo_so_rec.action_invoice_create()
                     invoice = self.env['account.invoice'].browse(

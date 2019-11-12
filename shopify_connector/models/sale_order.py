@@ -53,6 +53,31 @@ class SaleOrder(models.Model):
             res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
 
+    @api.multi
+    def action_invoice_create(self, grouped=False, final=False):
+        res = super(SaleOrder, self).action_invoice_create(grouped, final)
+        account_invoice_id = res[0]
+        ordered_qty = 0
+        invoiced_qty = 0
+        discount_amount = 0
+        final_discount_amount = 0
+        for order in self:
+            order_discount_product = order.order_line.filtered(lambda l: l.product_id.shopify_discount_product)
+            if order._context.get('partial_fulfill_refund_orde') and order_discount_product:
+                account_invoice_obj = self.env['account.invoice'].browse(account_invoice_id)
+                invoice_lines = account_invoice_obj.invoice_line_ids
+                for line in invoice_lines:
+                    if line.product_id.shopify_discount_product:
+                        discount_amount += line.price_unit
+                    if not line.product_id.shopify_discount_product:
+                        ordered_qty += line.ordered_qty
+                        invoiced_qty += line.quantity
+                if ordered_qty != invoiced_qty:
+                    final_discount_amount += (invoiced_qty * discount_amount)/ordered_qty
+                inv_discount_product = invoice_lines.filtered(lambda i: i.product_id.shopify_discount_product)
+                inv_discount_product.price_unit = final_discount_amount
+        return res
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
