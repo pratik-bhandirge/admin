@@ -55,6 +55,9 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
+        '''
+        Inherit this method to improve the discount price according to invoiced quantities to set exact discount amount
+        '''
         res = super(SaleOrder, self).action_invoice_create(grouped, final)
         account_invoice_id = res[0]
         ordered_qty = 0
@@ -63,7 +66,7 @@ class SaleOrder(models.Model):
         final_discount_amount = 0
         for order in self:
             order_discount_product = order.order_line.filtered(lambda l: l.product_id.shopify_discount_product)
-            if order._context.get('partial_fulfill_refund_orde') and order_discount_product:
+            if order._context.get('partial_fulfill_refund_order') and order_discount_product:
                 account_invoice_obj = self.env['account.invoice'].browse(account_invoice_id)
                 invoice_lines = account_invoice_obj.invoice_line_ids
                 for line in invoice_lines:
