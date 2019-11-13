@@ -72,7 +72,7 @@ class SaleOrder(models.Model):
                 for line in invoice_lines:
                     if line.product_id.shopify_discount_product:
                         discount_amount += line.price_unit
-                    if not line.product_id.shopify_discount_product:
+                    if not line.product_id.shopify_discount_product and not line.product_id.shopify_shipping_product:
                         ordered_qty += line.ordered_qty
                         invoiced_qty += line.quantity
                 if ordered_qty != invoiced_qty:
