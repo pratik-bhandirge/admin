@@ -64,19 +64,36 @@ class SaleOrder(models.Model):
         invoiced_qty = 0
         discount_amount = 0
         final_discount_amount = 0
+        inv_qty_subtotal = 0
+        order_qty_subtotal = 0
+        discount_percentage = 0
+        account_invoice_obj = self.env['account.invoice'].browse(account_invoice_id)
+        invoice_lines = account_invoice_obj.invoice_line_ids
         for order in self:
             order_discount_product = order.order_line.filtered(lambda l: l.product_id.shopify_discount_product)
-            if order._context.get('partial_fulfill_refund_order') and order_discount_product:
-                account_invoice_obj = self.env['account.invoice'].browse(account_invoice_id)
-                invoice_lines = account_invoice_obj.invoice_line_ids
+            if order._context.get('partial_fulfill_refund_order') and order_discount_product.name == 'fixed_amount':
                 for line in invoice_lines:
                     if line.product_id.shopify_discount_product:
                         discount_amount += line.price_unit
                     if not line.product_id.shopify_discount_product and not line.product_id.shopify_shipping_product:
                         ordered_qty += line.ordered_qty
                         invoiced_qty += line.quantity
-                if ordered_qty != invoiced_qty:
-                    final_discount_amount += (invoiced_qty * discount_amount)/ordered_qty
+                final_discount_amount += (invoiced_qty * discount_amount)/ordered_qty
+                inv_discount_product = invoice_lines.filtered(lambda i: i.product_id.shopify_discount_product)
+                inv_discount_product.price_unit = final_discount_amount
+            elif order._context.get('partial_fulfill_refund_order') and order_discount_product.name == 'percentage':
+                for line in invoice_lines:
+                    if line.product_id.shopify_discount_product:
+                        discount_amount += line.price_unit
+                    if not line.product_id.shopify_discount_product and not line.product_id.shopify_shipping_product:
+                        inv_qty_subtotal += line.price_unit * line.quantity
+                        order_qty_subtotal += line.price_unit * line.ordered_qty
+                discount_percentage = (discount_amount * 100)/order_qty_subtotal
+                final_discount_amount += (inv_qty_subtotal * discount_percentage)/100
+                final_discount_amount = str(final_discount_amount)
+                final_discount_amount_split_list = final_discount_amount.split(".")
+                final_discount_amount = final_discount_amount_split_list[0] + "." + final_discount_amount_split_list[1][:2]
+                final_discount_amount = float(final_discount_amount)
                 inv_discount_product = invoice_lines.filtered(lambda i: i.product_id.shopify_discount_product)
                 inv_discount_product.price_unit = final_discount_amount
         return res
