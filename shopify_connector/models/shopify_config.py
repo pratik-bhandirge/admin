@@ -4,7 +4,6 @@ import shopify
 import logging
 import json
 
-
 from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -357,7 +356,8 @@ class ShopifyConfig(models.Model):
                     if shopify_product_tmpl_id:
                         s_product_tmpl_id.update(
                             {'shopify_prod_tmpl_id': shopify_product_tmpl_id,
-                             'shopify_published': True})
+                             'shopify_published': True,
+                             'last_updated_date':datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
                         # Get shopify variant vals using shopify create
                         # recordset
                         for variant in new_product.variants:
@@ -392,7 +392,8 @@ class ShopifyConfig(models.Model):
                                 # shopify_product_product master
                                 shopify_product_product.sudo().update({'shopify_product_id': variant_id,
                                                                        'shopify_product_template_id': s_product_tmpl_id.id,
-                                                                       'shopify_inventory_item_id': inventory_item_id})
+                                                                       'shopify_inventory_item_id': inventory_item_id,
+                                    'last_updated_date':datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
                                 variant_meta_rec = shopify_product_product.meta_fields_ids
                                 if variant_meta_rec:
@@ -495,7 +496,8 @@ class ShopifyConfig(models.Model):
 
                                 shopify_prod_rec.sudo().update({'shopify_product_id': variant_id,
                                                                 'shopify_product_template_id': s_prod_tmpl_rec.id,
-                                                                'shopify_inventory_item_id': inventory_item_id})
+                                                                'shopify_inventory_item_id': inventory_item_id,
+                                    'last_updated_date':datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
                                 shopify_metafields_dict = {}
                                 if shopify_prod_rec.meta_fields_ids:
                                     variant_meta_rec = shopify_prod_rec.meta_fields_ids

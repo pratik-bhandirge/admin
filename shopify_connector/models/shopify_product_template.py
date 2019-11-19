@@ -3,9 +3,13 @@
 import shopify
 import logging
 
+from datetime import datetime
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
 from odoo import models, fields, api, _
 from odoo.tools.translate import html_translate
 from odoo.exceptions import ValidationError
+
 _logger = logging.getLogger(__name__)
 _product_list = []
 
@@ -55,6 +59,7 @@ class ShopifyProductTemplate(models.Model):
     r_prod_tags = fields.Many2many(related='product_tmpl_id.prod_tags_ids', string='Product Tags', track_visibility='onchange')
     r_prov_tags = fields.Many2many(related='product_tmpl_id.province_tags_ids', string='Province Tags', track_visibility='onchange')
     r_allowed_variants = fields.One2many(related='product_tmpl_id.allowed_variants_ids', string='Allowed Variants', track_visibility='onchange', readonly=True)
+    last_updated_date = fields.Datetime(string='Last Updated Date', readonly=True)
 
     @api.model
     def create(self, vals):
@@ -210,6 +215,7 @@ class ShopifyProductTemplate(models.Model):
                                 shopify_prod.update_shopify_variant()
                             else:
                                 shopify_prod.export_shopify_variant()
+                        rec.update({'last_updated_date':datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
                         if record_id in _product_list:
                             _product_list.remove(record_id)
                     else:

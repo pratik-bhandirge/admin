@@ -18,6 +18,7 @@
                             <group>
                                 <field name="shopify_config_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" attrs="{'readonly': [('shopify_prod_tmpl_id','not in',('',False))]}"/>
                                 <field name="product_type" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                                <field name="last_updated_date"/>
                             </group>
                             <group>
                                 <field name="shopify_prod_tmpl_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
@@ -56,6 +57,7 @@
                     <field name="product_type"/>
                     <field name="shopify_config_id"/>
                     <field name="shopify_prod_tmpl_id"/>
+                    <field name="last_updated_date"/>
                 </tree>
             </field>
         </record>
