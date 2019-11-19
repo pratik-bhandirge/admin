@@ -65,8 +65,8 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="invoice_status" invisible="1"/>
                     <field name="state" invisible="1"/>
-                    <field name="shopify_order_id"/>
-                    <field name="shopify_config_id"/>
+                    <field name="shopify_order_id" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
+                    <field name="shopify_config_id" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
                 </tree>
             </field>
         </record>
