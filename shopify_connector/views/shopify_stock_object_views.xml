@@ -8,7 +8,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/group" position="inside">
                     <group string="Shopify">
-                        <field name="shopify_location_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                        <field name="shopify_location_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
+                        groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
                     </group>
                 </xpath>
             </field>
@@ -33,8 +34,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/group" position="inside">
                     <group string="Shopify">
-                        <field name="shopify_error_log"/>
-                        <field name="shopify_export"/>
+                        <field name="shopify_error_log" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
+                        <field name="shopify_export" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
                     </group>
                 </xpath>
             </field>
@@ -47,8 +48,8 @@
                 <xpath expr="//form/sheet/notebook" position="inside">
                     <page string="Shopify">
                         <group>
-                            <field name="shopify_fulfillment_id"/>
-                            <field name="shopify_order_id"/>
+                            <field name="shopify_fulfillment_id" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
+                            <field name="shopify_order_id" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
                         </group>
                     </page>
                 </xpath>

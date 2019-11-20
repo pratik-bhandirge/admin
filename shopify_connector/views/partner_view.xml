@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='sale']" position="inside">
-                <field name="is_shopify"/>
+                <field name="is_shopify" groups="shopify_connector.group_shopify_admin,shopify_connector.group_shopify_manager,shopify_connector.group_shopify_user"/>
             </xpath>
         </field>
     </record>

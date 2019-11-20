@@ -3,8 +3,12 @@
 import shopify
 import logging
 
+from datetime import datetime
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+
 _logger = logging.getLogger(__name__)
 _product_variant_list = []
 
@@ -48,6 +52,7 @@ class ShopifyProductProduct(models.Model):
     meta_fields_ids = fields.Many2many("shopify.metafields",
                                      help="Enter Shopify Variant Metafields", track_visibility='onchange')
     # check_multi_click = fields.Boolean("Multi Click", help="Check Multi Click?", track_visibility='onchange', readonly=True)
+    last_updated_date = fields.Datetime(string='Last Updated Date', readonly=True)
 
     @api.multi
     def export_shopify_variant(self):
@@ -149,6 +154,9 @@ class ShopifyProductProduct(models.Model):
                         shopify_product_variant.sku = product_variant_default_code
                         shopify_product_variant.price = product_variant_price
                         success = shopify_product_variant.save()
+                        if success:
+                            rec.update({'last_updated_date':datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+
                         if record_id in _product_variant_list:
                             _product_variant_list.remove(record_id)
                     else:
