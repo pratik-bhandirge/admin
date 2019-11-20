@@ -7,7 +7,8 @@
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/notebook" position="inside">
-                    <page name="maq_shopify_company" string="Shopify">
+                    <page name="maq_shopify_company" string="Shopify"
+                        groups="shopify_connector.group_shopify_admin">
                         <group>
                             <group>
                                 <field name="shopify_vendor_id"/>
